@@ -1,0 +1,222 @@
+"""
+Most Lorentza — czysty zamek (softplus×2) pod PhiMost.
+
+Lift z lab: mcps/moje badania/most.py
+Bez EMA-S / superpozycji (odrzucone 2026-09-08/09).
+
+QK z content; A = γ C / (γ² + ΔE(tracer)²)
+"""
+
+from __future__ import annotations
+
+import math
+
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+from phi_schema import PhiGraphBatch
+
+
+class BridgeTransformer(nn.Module):
+    """QK z x, zamek Lorentz na tracerze n-D, values z treści."""
+
+    def __init__(
+        self,
+        input_dim: int = 8,
+        d: int = 32,
+        h: int = 2,
+        n_classes: int = 4,
+        dim_tracer: int = 6,
+        num_layers: int = 2,
+        coupling: str = "softplus",
+    ):
+        super().__init__()
+        self.h, self.dh = h, d // h
+        self.dim_tracer = dim_tracer
+        self.num_layers = num_layers
+        self.coupling = coupling
+        self.embed = nn.Linear(input_dim, d)
+        self.cls = nn.Parameter(torch.zeros(1, 1, d))
+        self.layers = nn.ModuleList(
+            [
+                nn.ModuleDict(
+                    {
+                        "qkv": nn.Linear(d, 3 * d, bias=False),
+                        "o": nn.Linear(d, d, bias=False),
+                        "e": nn.Linear(dim_tracer, h),
+                        "n1": nn.LayerNorm(d),
+                        "ff": nn.Sequential(
+                            nn.LayerNorm(d),
+                            nn.Linear(d, 4 * d),
+                            nn.GELU(),
+                            nn.Linear(4 * d, d),
+                        ),
+                    }
+                )
+                for _ in range(num_layers)
+            ]
+        )
+        for layer in self.layers:
+            nn.init.ones_(layer["e"].weight)
+            nn.init.zeros_(layer["e"].bias)
+        self.log_gammas = nn.ParameterList(
+            [nn.Parameter(torch.zeros(h, 1, 1)) for _ in range(num_layers)]
+        )
+        self.head = nn.Linear(d, n_classes)
+
+    def _couple(self, S: torch.Tensor) -> torch.Tensor:
+        if self.coupling == "relu":
+            return F.relu(S).square()
+        if self.coupling == "softplus":
+            return F.softplus(S).square()
+        raise ValueError(self.coupling)
+
+    def forward(self, x_raw: torch.Tensor, tracer: torch.Tensor):
+        B, N, _ = x_raw.shape
+        x = self.embed(x_raw)
+        x = torch.cat([self.cls.expand(B, 1, -1), x], dim=1)
+        tracer = torch.cat(
+            [torch.zeros(B, 1, tracer.shape[-1], device=x.device), tracer], dim=1
+        )
+        N = x.shape[1]
+        dE_last = None
+        w_last = None
+
+        for li, layer in enumerate(self.layers):
+            q, k, v = layer["qkv"](layer["n1"](x)).chunk(3, dim=-1)
+            q, k, v = [
+                t.view(B, N, self.h, self.dh).transpose(1, 2) for t in (q, k, v)
+            ]
+            S = q @ k.transpose(-2, -1) / math.sqrt(self.dh)
+
+            E = layer["e"](tracer).transpose(1, 2).unsqueeze(-1)
+            dE = E - E.transpose(-2, -1)
+            g = F.softplus(self.log_gammas[li]) + 1e-3
+
+            A = g * self._couple(S) / (g.square() + dE.square() + 1e-12)
+            A = A.masked_fill(
+                torch.eye(N, device=x.device, dtype=torch.bool), 0.0
+            )
+            w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
+
+            y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
+            x = x + layer["o"](y)
+            x = x + layer["ff"](x)
+            dE_last, w_last = dE.detach(), w
+
+        return self.head(x[:, 0]), w_last, dE_last
+
+
+class SoftmaxTransformer(nn.Module):
+    """Ten sam szkielet co Bridge, ale wagi = softmax(QK). Tracer ignorowany."""
+
+    def __init__(
+        self,
+        input_dim: int = 8,
+        d: int = 32,
+        h: int = 2,
+        n_classes: int = 4,
+        dim_tracer: int = 6,
+        num_layers: int = 2,
+    ):
+        super().__init__()
+        self.h, self.dh = h, d // h
+        self.embed = nn.Linear(input_dim, d)
+        self.cls = nn.Parameter(torch.zeros(1, 1, d))
+        self.layers = nn.ModuleList(
+            [
+                nn.ModuleDict(
+                    {
+                        "qkv": nn.Linear(d, 3 * d, bias=False),
+                        "o": nn.Linear(d, d, bias=False),
+                        "n1": nn.LayerNorm(d),
+                        "ff": nn.Sequential(
+                            nn.LayerNorm(d),
+                            nn.Linear(d, 4 * d),
+                            nn.GELU(),
+                            nn.Linear(4 * d, d),
+                        ),
+                    }
+                )
+                for _ in range(num_layers)
+            ]
+        )
+        self.head = nn.Linear(d, n_classes)
+
+    def forward(self, x_raw: torch.Tensor, tracer: torch.Tensor):
+        B, N, _ = x_raw.shape
+        x = self.embed(x_raw)
+        x = torch.cat([self.cls.expand(B, 1, -1), x], dim=1)
+        N = x.shape[1]
+        w_last = None
+
+        for layer in self.layers:
+            q, k, v = layer["qkv"](layer["n1"](x)).chunk(3, dim=-1)
+            q, k, v = [
+                t.view(B, N, self.h, self.dh).transpose(1, 2) for t in (q, k, v)
+            ]
+            S = q @ k.transpose(-2, -1) / math.sqrt(self.dh)
+            eye = torch.eye(N, device=x.device, dtype=torch.bool)
+            w = F.softmax(S, dim=-1)
+            w = w.masked_fill(eye, 0.0)
+            w = w / w.sum(-1, keepdim=True).clamp_min(1e-12)
+
+            y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
+            x = x + layer["o"](y)
+            x = x + layer["ff"](x)
+            w_last = w
+
+        return self.head(x[:, 0]), w_last, None
+
+
+def batch_to_xy(batch: PhiGraphBatch, zero_tracer: bool = False):
+    x = batch.content
+    y = batch.labels
+    if zero_tracer:
+        tracer = torch.zeros_like(batch.tracer)
+    else:
+        tracer = batch.tracer
+    return x, y, tracer
+
+
+def train_eval(
+    model: nn.Module,
+    train_batches: list[PhiGraphBatch],
+    val_batches: list[PhiGraphBatch],
+    zero_tracer: bool = False,
+    epochs: int = 6,
+    lr: float = 1e-3,
+) -> dict:
+    opt = torch.optim.Adam(model.parameters(), lr=lr)
+    crit = nn.CrossEntropyLoss()
+    for _ in range(epochs):
+        model.train()
+        for batch in train_batches:
+            x, y, tracer = batch_to_xy(batch, zero_tracer=zero_tracer)
+            opt.zero_grad()
+            logits, _, _ = model(x, tracer)
+            loss = crit(logits, y)
+            loss.backward()
+            opt.step()
+
+    model.eval()
+    total_loss, total_acc, count = 0.0, 0.0, 0
+    dE_vals = []
+    with torch.no_grad():
+        for batch in val_batches:
+            x, y, tracer = batch_to_xy(batch, zero_tracer=zero_tracer)
+            logits, _, dE = model(x, tracer)
+            loss = crit(logits, y)
+            pred = logits.argmax(1)
+            total_loss += loss.item() * x.shape[0]
+            total_acc += (pred == y).float().sum().item()
+            count += x.shape[0]
+            if dE is not None:
+                dE_vals.append(dE.abs().mean().item())
+    return {
+        "loss": total_loss / count,
+        "acc": total_acc / count,
+        "mean_dE": float(np.mean(dE_vals)) if dE_vals else 0.0,
+    }

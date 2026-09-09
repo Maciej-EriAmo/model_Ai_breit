@@ -1,0 +1,74 @@
+[
+    {
+        "atom_number": 1,
+        "symbol": "H",
+        "name": "Wodór",
+        "group": 1,
+        "period": 1,
+        "electron_configuration": "1s1",
+        "electrons_per_shell": "1"
+    },
+    {
+        "atom_number": 2,
+        "symbol": "He",
+        "name": "Hel",
+        "group": 18,
+        "period": 1,
+        "electron_configuration": "1s2",
+        "electrons_per_shell": "2"
+    },
+    {
+        "atom_number": 3,
+        "symbol": "Li",
+        "name": "Lit",
+        "group": 1,
+        "period": 2,
+        "electron_configuration": "[He] 2s1",
+        "electrons_per_shell": "2, 1"
+    },
+    {
+        "atom_number": 6,
+        "symbol": "C",
+        "name": "Węgiel",
+        "group": 14,
+        "period": 2,
+        "electron_configuration": "[He] 2s2 2p2",
+        "electrons_per_shell": "2, 4"
+    },
+    {
+        "atom_number": 7,
+        "symbol": "N",
+        "name": "Azot",
+        "group": 15,
+        "period": 2,
+        "electron_configuration": "[He] 2s2 2p3",
+        "electrons_per_shell": "2, 5"
+    },
+    {
+        "atom_number": 8,
+        "symbol": "O",
+        "name": "Tlen",
+        "group": 16,
+        "period": 2,
+        "electron_configuration": "[He] 2s2 2p4",
+        "electrons_per_shell": "2, 6"
+    },
+    {
+        "atom_number": 11,
+        "symbol": "Na",
+        "name": "Sód",
+        "group": 1,
+        "period": 3,
+        "electron_configuration": "[Ne] 3s1",
+        "electrons_per_shell": "2, 8, 1"
+    },
+    {
+        "atom_number": 26,
+        "symbol": "Fe",
+        "name": "Żelazo",
+        "group": 8,
+        "period": 4,
+        "electron_configuration": "[Ar] 3d6 4s2",
+        "electrons_per_shell": "2, 8, 14, 2"
+    }
+]

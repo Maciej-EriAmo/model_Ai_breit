@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+*.pt
+*.pth
+checkpoints/
+# wygenerowane dumpy / wagi
+dumps/
+historia/*.png
+historia/*.txt
+historia/*.json
+.DS_Store
+Thumbs.db
