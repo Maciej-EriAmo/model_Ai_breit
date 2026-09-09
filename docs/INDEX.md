@@ -9,14 +9,16 @@
 | # | Dokument | Po co |
 |---|----------|--------|
 | 1 | [`../README.md`](../README.md) | start, teza, komendy |
-| 2 | [`LEARN.md`](LEARN.md) | **ładowanie danych + nauka** (`phimost_learn`) |
-| 3 | [`PAMIEC_I_KARMIENIE.md`](PAMIEC_I_KARMIENIE.md) | **kanon** pamięci M1/M2/M3 + karmienie `x`/`τ` |
-| 4 | [`../config.py`](../config.py) | hiperparametry empiryczne (kod) |
-| 5 | [`AUDYT.md`](AUDYT.md) | luki, zgodność z wynikami |
-| 6 | [`WYNIKI.md`](WYNIKI.md) | skrót tabel PASS/FAIL |
-| 7 | [`MODULY.md`](MODULY.md) | mapa plików `.py` |
-| 8 | [`STATUS.md`](STATUS.md) / [`PLAN_NEXT.md`](PLAN_NEXT.md) | stan + plan |
-| 9 | [`../plan.txt`](../plan.txt) | plan faz A–E + decyzje |
+| 2 | [`INSTRUKCJA.md`](INSTRUKCJA.md) | **obsługa** — co klikać na co dzień |
+| 3 | [`LEARN.md`](LEARN.md) | ładowanie danych + nauka (`phimost_learn`) |
+| 4 | [`POROWNANIE_MODELE.md`](POROWNANIE_MODELE.md) | Most vs Transformer/LLM · czemu uczyć się na własnym |
+| 5 | [`PAMIEC_I_KARMIENIE.md`](PAMIEC_I_KARMIENIE.md) | **kanon** pamięci M1/M2/M3 + karmienie `x`/`τ` |
+| 6 | [`../config.py`](../config.py) | hiperparametry empiryczne (kod) |
+| 7 | [`AUDYT.md`](AUDYT.md) | luki, zgodność z wynikami |
+| 8 | [`WYNIKI.md`](WYNIKI.md) | skrót tabel PASS/FAIL |
+| 9 | [`MODULY.md`](MODULY.md) | mapa plików `.py` |
+| 10 | [`STATUS.md`](STATUS.md) / [`PLAN_NEXT.md`](PLAN_NEXT.md) | stan + plan |
+| 11 | [`../plan.txt`](../plan.txt) | plan faz A–E + decyzje |
 
 ## Fazy (szczegóły)
 
