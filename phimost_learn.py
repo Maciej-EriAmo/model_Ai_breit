@@ -597,6 +597,12 @@ def main(argv: list[str] | None = None) -> int:
             name = "karmazyn"
         elif "qm" in dump_name:
             name = "qm"
+        elif "from_photo" in dump_name or (
+            "photo" in dump_name and "glyph" not in dump_name
+        ):
+            name = "glyphs_photo"
+        elif "glyph" in dump_name or "glyph" in str(src).lower():
+            name = "glyphs"
         auto_restrict = name in ("struktura", "qm") or kind.startswith("struktura")
 
     if args.load_only:
@@ -622,6 +628,8 @@ def main(argv: list[str] | None = None) -> int:
             "literature": "most_literature.pt",
             "phijson": "most_phijson.pt",
             "bubblefs": "most_bubblefs.pt",
+            "glyphs": "most_glyphs.pt",
+            "glyphs_photo": "most_glyphs_photo.pt",
         }
         ckpt = CKPT_DIR / alias.get(name, f"most_{name}.pt")
     promote = bool(args.promote) and not args.no_promote

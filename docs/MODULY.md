@@ -20,6 +20,9 @@ Root: `C:\Users\drwis\model Ai`
 | `recall_data.py` | recall syntetyczny topic+depth (Faza C) |
 | `nbody_data.py` | solar + three-body (walidacja fizyczna) |
 | `make_dump_textfile.py` | budowa dumpa `dumps/textfile_phi` |
+| `make_dump_glyphs.py` | PR-G0: lat+hira → `dumps/from_glyphs` |
+| `glyph_transcribe.py` | PR-G1: PNG/JPEG → PhiJSON (`dumps/from_photo`) |
+| `desi_cutouts.py` / `image_batch.py` | szkic DESI/patchy (tor boczny, nie alfabet) |
 | `phi_dump.py` | loader PhiJSON |
 | `dump_recall.py` | recall z bind na dumpie |
 
@@ -52,6 +55,14 @@ Karmazyn (poza root): `software/mazur_crystal/neural_lambda.py` — szew `releva
 | `phimost_day.py` | rytuał dnia: export→encode→top-k→epizod |
 | `memory_bus.py` | ingest→encode→recall (`exclude_nucleus`) |
 | `gen_head.py` / `phimost_gen.py` | gen E produkt |
+
+## Glify / alfabety
+
+| Plik | Rola |
+|------|------|
+| `docs/GLYPHS.md` | notatki badawcze (teza, metoda, G0, roadmap) |
+| `ZdjęcieW/` | szkice osi T + kontrakt atomu + DESI notes |
+| `bench_desi.py` | smoke Softmax\|Most\|ZERO na cutoutach (opc.) |
 
 ## Benchy i testy
 

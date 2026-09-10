@@ -30,6 +30,23 @@ python phimost_learn.py --src dumps/from_struktura --skip-load --skip-train --re
 | `textfile` | lab `dumps/textfile_phi` |
 | `literature` | `.md`/`.txt` z root projektu |
 
+### Glify / alfabety (G0+)
+
+```powershell
+# G0 — syntetyczne atomy
+python make_dump_glyphs.py
+python phimost_learn.py --src dumps/from_glyphs --no-warm --no-promote --baselines
+python phimost_learn.py --src dumps/from_glyphs --skip-load --skip-train --recall-id lat/word_most/0/M
+
+# G1 — zdjęcie → atomy (skrypty na osobnych PNG)
+python glyph_transcribe.py --demo --demo-script lat --out dumps/from_photo --focus 0
+python glyph_transcribe.py --src .\ZdjęcieW\demo\demo_hira.png --text "こんにちは`nあいうえお" --out dumps/from_photo_hira
+python phimost_learn.py --src dumps/from_photo --no-warm --no-promote --baselines
+```
+
+Ckpt: `checkpoints/most_glyphs.pt` (G0) / `most_glyphs_photo.pt` (G1).  
+Metoda: [`GLYPHS.md`](GLYPHS.md) · kontrakt: [`../ZdjęcieW/GLYPH_ATOMS.md`](../ZdjęcieW/GLYPH_ATOMS.md).
+
 ## Tryby treningu
 
 | Flaga | Zachowanie |

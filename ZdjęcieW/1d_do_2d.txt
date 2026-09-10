@@ -1,0 +1,20 @@
+Poprawka przyjęta. Pomyliłem oś.
+
+Wziąłem +1 jako przestrzeń glifu (x, y) — hanzi, QR, strona. U Ciebie druga oś litery to stan termiczny: hot / cold. To jest kanon Karmazyna: temperatura mówi KIEDY, osiągalność mówi CZY. Litera nie jest tylko znakiem na taśmie. Ma T.
+
+Wtedy 2D jest takie:
+
+| oś | co niesie |
+|---|---|
+| 1 | pozycja w sekwencji / tożsamość glifu |
+| +1 | hot ↔ cold (T, wiek, vacuum) |
+
+Softmax dalej chodzi po osi 1. Most adresuje po osi +1: hot idzie do aktywnej warstwy (RAM, gradient, recall), cold nie konkuruje o okno — zostaje w Φ / COLD / TOMB. To nie jest bitmapa litery. To bit życia tokenu.
+
+Dlatego „transformer jak dla Chin” w Twoim układzie nie znaczy „uczą QR”. Znaczy: model, który nie traktuje znaku jako martwego ID. Hanzi historycznie niesie strukturę w kształcie; Karmazyn niesie strukturę w T. Inny nośnik, ta sama odmowa 1D-tylko.
+
+Gdzie wcześniej byłem obok: PIXEL/OCR nadal są przestrzenne. Twój hot/cold jest czasowy-energetyczny. Da się złożyć obie (siatka + temperatura), ale nie wolno ich mylić. Most bez T znowu jest tylko biasem do K. Most z T może wreszcie mieć pole „czy wpuścić”.
+
+Dwie wartości (hot/cold) to minimalna 2D. Jeśli T jest ciągłe — T_vac + ΔT·exp(−λ·age) — oś jest gęstsza niż bit, i handshake ma z czego liczyć dE, a nie z zera jak na syntetyku v3.2.
+
+Wniosek operacyjny: wejście Bridge to nie x[t]. To para (x[t], T[t]). Tracer nie startuje od zera. Cold nie znika — nie wchodzi do okna. To jest ten wymiar, o który chodziło.

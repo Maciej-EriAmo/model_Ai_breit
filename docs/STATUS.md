@@ -1,6 +1,6 @@
 # Status projektu PhiMost
 
-**Data:** 2026-09-09 (audyt wieczorny)  
+**Data:** 2026-09-10 (tor glify G0)  
 **Katalog:** `C:\Users\drwis\model Ai`  
 **Komora SE:** `Most_Lorentz`
 
@@ -13,8 +13,11 @@
 | CLI nauki | **`phimost_learn.py`** (Most-only domyślnie) |
 | Struktura atomów CSV/JSON | import + ckpt `most_struktura_atomow.pt` (r@1≈0.45) |
 | Literatura `.md`/`.txt` | `import_literature.py` → `dumps/from_literature` |
+| **Glify G0** | **PASS** seed42 ΔSM≈+0.028 · `dumps/from_glyphs` · `most_glyphs.pt` |
+| **Glify G1** | **PASS** seed0 ΔSM≈+0.044 · `glyph_transcribe` → `dumps/from_photo` · `most_glyphs_photo.pt` |
 | Recall orbitali | `exclude_nucleus=True` (bez jądra w top-k) |
 | Softmax/ZERO w nauce | **opcjonalne** `--baselines` (nie w default) |
+| Następne | **PR-G2** multi-script / ablacje T · notatki [`GLYPHS.md`](GLYPHS.md) |
 
 ## Artefakty ckpt (lokalne, gitignore)
 
@@ -25,6 +28,8 @@
 | `most_struktura_atomow.pt` | CSV/JSON Aufbau |
 | `most_qm_orbitals.pt` | QM syntetyczny |
 | `most_literature.pt` | tekst |
+| `most_glyphs.pt` | glify lat+hira (G0) |
+| `most_glyphs_photo.pt` | glify z transkrypcji zdjęcia (G1) |
 | `most_gen_head.pt` | gen E |
 
 ## Komendy dnia

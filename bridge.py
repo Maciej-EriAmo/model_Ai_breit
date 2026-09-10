@@ -73,14 +73,26 @@ class BridgeTransformer(nn.Module):
             return F.softplus(S).square()
         raise ValueError(self.coupling)
 
-    def forward(self, x_raw: torch.Tensor, tracer: torch.Tensor):
-        B, N, _ = x_raw.shape
+    def forward(
+        self,
+        x_raw: torch.Tensor,
+        tracer: torch.Tensor,
+        mask: torch.Tensor | None = None,
+    ):
+        """mask [B,N] 1=valid (przed CLS); pad nie bierze udziału w uwadze."""
+        B, N0, _ = x_raw.shape
         x = self.embed(x_raw)
         x = torch.cat([self.cls.expand(B, 1, -1), x], dim=1)
         tracer = torch.cat(
             [torch.zeros(B, 1, tracer.shape[-1], device=x.device), tracer], dim=1
         )
         N = x.shape[1]
+        key_pad = None
+        if mask is not None:
+            m = mask.to(device=x.device)
+            cls = torch.ones(B, 1, device=x.device, dtype=m.dtype)
+            full = torch.cat([cls, m], dim=1)
+            key_pad = (full < 0.5).view(B, 1, 1, N)
         dE_last = None
         w_last = None
 
@@ -99,6 +111,8 @@ class BridgeTransformer(nn.Module):
             A = A.masked_fill(
                 torch.eye(N, device=x.device, dtype=torch.bool), 0.0
             )
+            if key_pad is not None:
+                A = A.masked_fill(key_pad, 0.0)
             w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
 
             y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
@@ -145,11 +159,22 @@ class SoftmaxTransformer(nn.Module):
         )
         self.head = nn.Linear(d, n_classes)
 
-    def forward(self, x_raw: torch.Tensor, tracer: torch.Tensor):
-        B, N, _ = x_raw.shape
+    def forward(
+        self,
+        x_raw: torch.Tensor,
+        tracer: torch.Tensor,
+        mask: torch.Tensor | None = None,
+    ):
+        B, N0, _ = x_raw.shape
         x = self.embed(x_raw)
         x = torch.cat([self.cls.expand(B, 1, -1), x], dim=1)
         N = x.shape[1]
+        key_pad = None
+        if mask is not None:
+            m = mask.to(device=x.device)
+            cls = torch.ones(B, 1, device=x.device, dtype=m.dtype)
+            full = torch.cat([cls, m], dim=1)
+            key_pad = (full < 0.5).view(B, 1, 1, N)
         w_last = None
 
         for layer in self.layers:
@@ -158,9 +183,13 @@ class SoftmaxTransformer(nn.Module):
                 t.view(B, N, self.h, self.dh).transpose(1, 2) for t in (q, k, v)
             ]
             S = q @ k.transpose(-2, -1) / math.sqrt(self.dh)
+            if key_pad is not None:
+                S = S.masked_fill(key_pad, -1e9)
             eye = torch.eye(N, device=x.device, dtype=torch.bool)
             w = F.softmax(S, dim=-1)
             w = w.masked_fill(eye, 0.0)
+            if key_pad is not None:
+                w = w.masked_fill(key_pad, 0.0)
             w = w / w.sum(-1, keepdim=True).clamp_min(1e-12)
 
             y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)

@@ -14,3 +14,9 @@ historia/*.txt
 historia/*.json
 .DS_Store
 Thumbs.db
+
+# ZdjęcieW: cutouty DESI / cache (nie w repo)
+ZdjęcieW/demo/*.fits
+ZdjęcieW/demo/*.png
+ZdjęcieW/__pycache__/
+

@@ -1,0 +1,145 @@
+# Mapa DESI Legacy Imaging Surveys – wprowadzenie
+
+To świetny pomysł, żeby wpiąć taki zbiór do naszego pipeline'u. DESI Legacy Surveys DR11 to obecnie **największa 2D mapa nieba** – 5,6 biliona pikseli, ~4 miliardy obiektów, 75% nieba w świetle widzialnym i bliskiej podczerwieni. Idealny kandydat, żeby wreszcie przetestować most Lorentza na **prawdziwej geometrii zamiast syntetycznego drzewa**.
+
+## 1. Co to za dane
+
+- **DR11** to najnowsze wydanie (2026), rozszerza DR9 o 50% i przywraca północne niebo z DR10
+- Powstała z 263 407 ekspozycji, 2285 nocy obserwacyjnych, trzech teleskopów (DECaLS, MzLS, BASS) plus WISE
+- **5.6 bln pikseli**, ~4 mld obiektów: gwiazdy, galaktyki, kwazary, czarne dziury, asteroidy
+- 1,800+ publikacji już cytuje te dane
+- Zawiera fotometrię (jasności w pasmach g, r, z), pozycje (RA/Dec), przesunięcia ku czerwieni dla ~48 mln galaktyk i ~21 mln gwiazd
+
+## 2. Jak uzyskać dostęp
+
+Trzy drogi, zależnie od tego, co chcesz robić:
+
+### A. Sky Viewer (przeglądarka – do wizualizacji i testów)
+Publiczny, otwarty w przeglądarce, bez rejestracji:
+```
+https://www.legacysurvey.org/viewer
+```
+Możesz wpisać współrzędne, nazwę obiektu, ustawić zoom (20–50 arcmin to sweet spot wg recenzenta Yahoo). Kluczowe: **można pobierać cutouty FITS z konkretnych obszarów** przez URL.
+
+### B. FITS cutouts (do pipeline'u ML)
+Bezpośredni dostęp przez API URL:
+```python
+import requests
+from astropy.io import fits
+
+base_url = "https://www.legacysurvey.org/viewer/fits-cutout"
+params = {
+    "ra": 185.0, "dec": 15.0,
+    "layer": "ls-dr10",
+    "pixscale": 0.262,
+    "bands": "grz",
+    "size": 256,
+    "invvar": ""  # dołącza mapy wariancji odwrotnej
+}
+url = base_url + "?" + "&".join(f"{k}={v}" for k,v in params.items())
+hdu = fits.open(url)
+# hdu[0].data[0] -> pasmo g, [1] -> r, [2] -> z
+# hdu[1].data[i] -> mapy invvar (niepewność pomiaru)
+```
+To jest najprostsza droga do wpięcia w Twój model – **pobierasz cutout 2D, traktujesz pasma jako cechy, a pozycje pikseli jako tracer geometryczny**.
+
+### C. Astro Data Lab (do pełnych katalogów i cross-match)
+Dla całych katalogów i zapytań SQL-owych:
+```
+https://datalab.noirlab.edu/legacy/xmatch.php
+```
+Wymaga rejestracji, masz tabelę `desi_dr1.photometry` z RA, Dec, inverse-variance, proper motions. Nadaje się, gdy potrzebujesz **milionów obiektów** z metadanymi.
+
+## 3. Dlaczego to jest ciekawe dla mostu Lorentza
+
+Twoje drzewo (`tree_data`) działało, bo miało **jawną strukturę hierarchiczną**: warstwy 0/1/2, małe dE wewnątrz warstwy, duże między. Niebo DESI ma dokładnie tę samą własność, tylko w naturalnej formie:
+
+- **Warstwy = klastry galaktyk** (BAO – baryon acoustic oscillations to powtarzalny wzorzec grupowania)
+- **Energia = redshift** (odległość) – galaktyki w tym samym rejonie mają zbliżone z
+- **Tracer = RA/Dec + redshift** – to są współrzędne 3D, dokładnie jak w Twoim tracerze n-D
+- **Most Lorentza może wyłapywać struktury wielkoskalowe** – grupy galaktyk o podobnym z, filamenty, pustki kosmiczne
+
+Innymi słowy: DESI to naturalny test, czy most Lorentza wykrywa **prawdziwe korelacje przestrzenne**, a nie tylko sztucznie wstrzyknięte warstwy.
+
+## 4. Propozycja konkretnego eksperymentu
+
+### Zadanie: klasyfikacja środowiska kosmicznego
+Bierzemy cutout nieba (np. 256×256 px, obszar ~1 stopnia²) i pytamy: **czy centrum znajduje się w gęstym klastrze, czy w pustce?**
+
+### Dane wejściowe
+- 3 kanały (g, r, z) → `input_dim=3`
+- Pozycje pikseli w cutoutcie → tracer `[N, 2]` (x, y znormalizowane do [0,1])
+- Ewentualnie: redshift jeśli dostępny → 4. wymiar tracera
+
+### Etykieta
+- Policz liczbę źródeł w promieniu R od centrum
+- Jeśli > próg → klasa „klaster"
+- Jeśli < próg → klasa „pustka"
+- Trzy klasy dla „średnie zagęszczenie"
+
+To jest **bezpośredni odpowiednik** Twojego `generate_spatial_data`, ale z realną geometrią nieba.
+
+### Dlaczego powinno działać
+- Most Lorentza z dE = |r_i - r_j| będzie silnie łączył piksele **bliskie sobie** (rezonans przestrzenny), a tłumił odległe
+- Softmax tego nie zrobi, bo nie ma pojęcia odległości – widzi tylko podobieństwo cech (jasność)
+- Jeśli Lorentz wygra na prawdziwych danych nieba, to **dowód, że mechanizm działa poza syntetykiem**
+
+## 5. Gotowy szkielet do pobrania danych
+
+```python
+import numpy as np
+import requests
+from astropy.io import fits
+from astropy.wcs import WCS
+
+def fetch_legacy_cutout(ra, dec, size=256, bands="grz", layer="ls-dr10"):
+    """Pobiera cutout z DESI Legacy Survey."""
+    url = "https://www.legacysurvey.org/viewer/fits-cutout"
+    params = {
+        "ra": ra, "dec": dec,
+        "layer": layer,
+        "pixscale": 0.262,
+        "bands": bands,
+        "size": size,
+        "invvar": ""
+    }
+    r = requests.get(url, params=params, timeout=60)
+    hdul = fits.HDUList.fromstring(r.content)
+    # hdul[0].data: [n_bands, H, W]
+    # hdul[1].data: [n_bands, H, W] invvar
+    return hdul
+
+def make_tracer(H, W):
+    """Pozycje pikseli jako tracer 2D."""
+    yy, xx = np.meshgrid(np.linspace(0,1,H), np.linspace(0,1,W), indexing='ij')
+    tracer = np.stack([xx, yy], axis=-1)  # [H, W, 2]
+    return tracer.reshape(-1, 2)  # [N, 2]
+
+# Przykład: Łabędź A (znany klaster galaktyk)
+hdul = fetch_legacy_cutout(ra=299.868, dec=40.733)
+cutout = hdul[0].data.astype(np.float32)  # [3, H, W]
+invvar = hdul[1].data.astype(np.float32)
+
+# Spłaszczamy do sekwencji tokenów
+N = cutout.shape[1] * cutout.shape[2]
+x = cutout.reshape(3, N).T  # [N, 3] - cechy
+tracer = make_tracer(*cutout.shape[1:])  # [N, 2] - pozycje
+```
+
+## 6. Kwestie praktyczne
+
+**Rozmiar**: jeden cutout 256×256×3 to ~200 KB. Dla 1000 przykładów ~200 MB – zarządzalne.
+
+**Normalizacja jasności**: musisz zalogarytmować i odjąć tło, bo rozkład jasności jest bardzo szeroki (od 16 mag do 24 mag).
+
+**Klasa imbalance**: na niebie większość obszarów to pustka, klastry są rzadkie. Trzeba zbalansować przez ważenie loss.
+
+**Koszt pobierania**: każdy cutout ~1 sekunda. 1000 przykładów to ~17 minut jednorazowo. Warto zapisać do pliku HDF5.
+
+**Geometria vs cechy**: kluczowe wyzwanie – czy most Lorentza złapie strukturę *pikseli* (jasność w lokalnym sąsiedztwie), czy strukturę *obiektów* (galaktyk jako osobnych tokenów). Dla pierwszego podejścia cutout jest wystarczający. Dla drugiego trzeba by najpierw wykryć źródła (np. przez segmentację) i zbudować sekwencję obiektów.
+
+## 7. Rekomendacja
+
+**Zacznij od podejścia opartego na cutoutach pikselowych**. To najprostsze, w pełni automatyczne i bezpośrednio testuje most Lorentza z tracerem pozycyjnym. Jeśli okaże się, że mechanizm wygrywa na *rzeczywistej* geometrii kosmosu, to nie jest już tylko sztuczny wynik z `tree_data.py` – to **realny dowód działania w warunkach, w których geometria jest treścią, a nie dekoracją**.
+
+Chcesz, żebym napisał pełny skrypt pobierający dane z DESI i budujący zbiór treningowy pod Twój model `BridgeAIAudit`?

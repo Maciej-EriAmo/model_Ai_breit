@@ -73,7 +73,7 @@ python phimost_learn.py --src dumps/from_struktura --skip-load --skip-train --re
 python test_not_flat.py; python test_mask.py; python test_memory_bus.py
 ```
 
-**Obsługa:** [`docs/INSTRUKCJA.md`](docs/INSTRUKCJA.md) · **Nauka:** [`docs/LEARN.md`](docs/LEARN.md) · **vs LLM:** [`docs/POROWNANIE_MODELE.md`](docs/POROWNANIE_MODELE.md).  
+**Obsługa:** [`docs/INSTRUKCJA.md`](docs/INSTRUKCJA.md) · **Nauka:** [`docs/LEARN.md`](docs/LEARN.md) · **Glify/alfabety:** [`docs/GLYPHS.md`](docs/GLYPHS.md) · **vs LLM:** [`docs/POROWNANIE_MODELE.md`](docs/POROWNANIE_MODELE.md).  
 Benchi: `bench_phi.py`, `bench_recall.py`, `bench_dump.py`, `bench_nbody.py`.
 
 ## Konfiguracja i flagi

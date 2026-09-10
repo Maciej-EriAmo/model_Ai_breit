@@ -1,13 +1,10 @@
 # phimost_learn
 
-dump=`C:\Users\drwis\model Ai\dumps\from_struktura` atoms=72 seed=7
-Most r@1=0.453 (fast, bez baseline)
-ckpt=`C:\Users\drwis\model Ai\checkpoints\most_struktura_atomow.pt` promote=False
+dump=`dumps\from_photo` atoms=13 seed=0
+ΔSM=+0.0442 → **PASS**
+ckpt=`checkpoints\most_glyphs_photo.pt` promote=False
 
-| seed | Most r@1 | r@3 | clean |
-|------|----------|-----|-------|
-| 0 | 0.439 | 0.738 | 0.438 |
-| 1 | 0.441 | 0.741 | 0.375 |
-| 2 | 0.422 | 0.723 | 0.375 |
-| 7 | 0.453 | 0.748 | 0.375 |
-| 42 | 0.436 | 0.761 | 0.312 |
+| seed | Most | SM | ZERO | ΔSM | gate |
+|------|------|----|------|-----|------|
+| 0 | 0.265 | 0.221 | 0.231 | +0.0442 | PASS |
+| 42 | 0.265 | 0.258 | 0.262 | +0.0077 | FAIL |

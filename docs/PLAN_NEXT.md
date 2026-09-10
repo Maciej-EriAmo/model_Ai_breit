@@ -83,3 +83,18 @@ Dzień: `python phimost_day.py`.
 - eksport z pełnego `KarmazynOS.bubbles`
 - PDF/EPUB w `import_literature` (dziś `.md`/`.txt`)
 - `--baselines` na większych dumpach struktura (gate ΔSM)
+
+---
+
+## Tor glify / alfabety (od 2026-09-10)
+
+**Teza:** zdjęcie → atomy → nauka ze stanu `(S,E,T)`; uniwersalny alfabet.  
+**Notatki (dla potomności):** [`GLYPHS.md`](GLYPHS.md) · labnote [`../historia/LABNOTE_GLYPHS_2026-09-10.md`](../historia/LABNOTE_GLYPHS_2026-09-10.md)
+
+| PR | Status | Treść |
+|----|--------|--------|
+| G0 | **DONE PASS** | `make_dump_glyphs` + learn baselines · `most_glyphs.pt` |
+| G1 | **DONE** | `glyph_transcribe.py` — zdjęcie → PhiJSON · demo `dumps/from_photo` |
+| G2 | **NEXT** | multi-script bench, ablacje T, mniej archive w recall |
+| G3 | opc. | Luneta Store → dump (nie screen) |
+| D\* | później | DESI jako test geometrii — nie fundament alfabetu |

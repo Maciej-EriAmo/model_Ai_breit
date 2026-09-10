@@ -13,6 +13,8 @@ Kanon silnika: **softplus × 2**, Softmax twin + **ZERO**, bez EMA-S.
 | **E** flagi / gen / live | guardy | — | — | — | tracer pomaga MSE | **PASS** |
 | **Solar** star/rocky/giant | +3 pkt | 0.356 | **0.621** | 0.367 | **+26.5 pkt** | **PASS** (po fix Moon) |
 | **3 ciała** Verlet | +3 pkt | 0.523 | **0.742** | 0.506 | **+21.9 pkt** | **PASS** (po fix dim5) |
+| **G0** glify lat+hira (recall) | +2 pkt r@1 | 0.231 | **0.259** | 0.227 | **+2.8 pkt** | **PASS** (seed 42) |
+| **G1** photo→atoms (demo) | +2 pkt r@1 | 0.221 | **0.265** | 0.231 | **+4.4 pkt** | **PASS** (seed 0) |
 
 \* Na dumpie D Most ZERO ≈ Most (słabsza przewaga tracera niż w C) — odnotowane w audycie.  
 † D: Most bije też skalarne R (~+12 pkt r@1).
@@ -41,6 +43,10 @@ Kanon silnika: **softplus × 2**, Softmax twin + **ZERO**, bez EMA-S.
 | `historia/WYNIKI_FAZA_D.md` | dump offline |
 | `historia/WYNIKI_FAZA_E.md` | live/gen/λ_neural |
 | `historia/WYNIKI_NBODY.md` | solar + three-body |
+| `historia/WYNIKI_GLYPHS.md` | glify → atomy (G0) |
+| `historia/WYNIKI_GLYPHS_G1.md` | zdjęcie → atomy (G1) |
+| `historia/LABNOTE_GLYPHS_2026-09-10.md` | dziennik lab / decyzje |
 | `historia/phi_most_*.png` | wykresy |
+| `docs/GLYPHS.md` | metoda + teza (kanwa pod opis badawczy) |
 
 Lab (poza tym katalogiem): `C:\Users\drwis\mcps\moje badania\WYNIKI_FINAL.md`, `RAPORT.md`.
