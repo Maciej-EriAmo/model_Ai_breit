@@ -22,8 +22,10 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy import ndimage
 
+from transcode import CONTRACT_VERSION
 from transcode.phi_build import bind, glyph_T, state_for_T
 from transcode.scripts import detect_script_char, script_prefix
+from transcode.units import semantic_unit
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_OUT = ROOT / "dumps" / "from_photo"
@@ -278,134 +280,150 @@ def boxes_to_phi(
     focus_index: int,
     source_name: str,
 ) -> tuple[list[dict], list[dict]]:
+    """
+    glyph_unit_v2: gdy jest --text, buduj przez transcode (word/char nuclei).
+    Bbox/ink z segmentacji dokładane do reading units w kolejności.
+    """
+    flat: list[GlyphBox] = [b for ln in lines for b in ln]
+
+    if text and text.strip():
+        from transcode.phi_build import build_from_spans, parse_text_spans
+
+        text_for_parse = " ".join(text.split())
+        spans = parse_text_spans(
+            text_for_parse, default_script=script if script != "auto" else "auto"
+        )
+        # Map focus_index onto char_focus / word letter focus
+        reading_chars = sum(len(s.chars) for s in spans)
+        fi = int(max(0, min(focus_index, max(reading_chars - 1, 0))))
+        # Assign focus into spans: walk chars
+        idx = 0
+        char_focus = 0
+        char_i = 0
+        for sp in spans:
+            if semantic_unit(sp.script) == "word":
+                for j in range(len(sp.chars)):
+                    if idx == fi:
+                        sp.focus = j
+                    idx += 1
+            else:
+                if idx == fi:
+                    char_focus = char_i
+                idx += 1
+                char_i += 1
+        result = build_from_spans(
+            spans,
+            corpus_note=f"PR-G1 photo→Φ {source_name} contract={CONTRACT_VERSION}",
+            page_id=f"page_{word_id}",
+            char_focus=char_focus,
+        )
+        atoms, edges = result.atoms, result.edges
+        reading = [
+            a
+            for a in atoms
+            if a.get("unit") in ("letter", "char") and "/archive/" not in a.get("id", "")
+        ]
+        for i, a in enumerate(reading):
+            if i >= len(flat):
+                break
+            box = flat[i]
+            a["E"] = (
+                f"{a.get('E', '')} "
+                f"bbox=[{box.x0},{box.y0},{box.x1},{box.y1}] ink={box.ink:.2f}"
+            ).strip()
+            a["T"] = confidence_boost(float(a["T"]), box.ink)
+            a["state"] = state_for_T(float(a["T"]))
+            if a["state"] == "HOT" and a.get("payload") is None:
+                # payload z S po dwukropku
+                if ":" in a.get("S", ""):
+                    a["payload"] = a["S"].split(":", 1)[1]
+        if len(reading) != len(flat):
+            atoms[0]["E"] += f" WARN reading={len(reading)} boxes={len(flat)}"
+        return atoms, edges
+
+    # Bez --text: nieznane glify jako letter pod syntetycznym słowem (unit v2)
     atoms: list[dict] = []
     edges: list[dict] = []
-
-    chars: list[str | None]
-    if text:
-        # usuń spacje — spacje = granice słów w przyszłości; MVP: ignoruj
-        chars = [c for c in text if not c.isspace()]
-    else:
-        chars = []
-
-    flat: list[tuple[int, int, GlyphBox]] = []  # line_i, pos_in_line, box
-    for li, line in enumerate(lines):
-        for j, b in enumerate(line):
-            flat.append((li, j, b))
-
     atoms.append(
         {
             "id": "corpus",
             "S": "glyphs/corpus",
-            "E": f"transcribed from image:{source_name}",
+            "E": f"transcribed from image:{source_name} (no labels)",
             "T": 1.0,
             "state": "HOT",
             "bubble": "glyphs",
             "depth": 0,
+            "unit": "page",
             "payload": f"PR-G1 source={source_name}",
             "mazur_tracer": 1.0,
             "topic": "corpus",
         }
     )
-
     page_id = f"page_{word_id}"
+    sc0 = script if script != "auto" else "sym"
     atoms.append(
         {
             "id": page_id,
-            "S": f"{script}/page/{word_id}",
+            "S": f"{sc0}/page/{word_id}",
             "E": f"page from photo; n_glyphs={len(flat)}",
             "T": 0.9,
             "state": "HOT",
-            "bubble": f"glyphs/{script}/{word_id}",
+            "bubble": f"glyphs/{sc0}/{word_id}",
             "depth": 0,
-            "payload": text or None,
+            "unit": "page",
+            "payload": None,
             "mazur_tracer": 0.9,
             "topic": word_id,
         }
     )
-    bind(edges, "corpus", page_id, f"has_page:{word_id}")
-
-    global_i = 0
-    all_glyph_ids: list[str] = []
-    for li, line in enumerate(lines):
-        line_id = f"line_{word_id}_{li}"
+    bind(edges, "corpus", page_id, "has_page")
+    wid = f"{sc0}/word_{word_id}"
+    atoms.append(
+        {
+            "id": wid,
+            "S": f"{sc0}:#{word_id}",
+            "E": "synthetic word nucleus (unlabeled photo)",
+            "T": 0.9,
+            "state": "HOT",
+            "bubble": f"glyphs/{sc0}/{word_id}",
+            "depth": 1,
+            "unit": "word",
+            "payload": None,
+            "mazur_tracer": 0.85,
+            "topic": word_id,
+        }
+    )
+    bind(edges, page_id, wid, "has_word")
+    edges.append({"kind": "parent", "src": wid, "dst": page_id, "name": "word_of"})
+    gids: list[str] = []
+    n = len(flat)
+    for i, box in enumerate(flat):
+        gid = f"{sc0}/{word_id}/{i}/g{i}"
+        T = confidence_boost(glyph_T(i, max(n, 1), focus_index), box.ink)
+        st = state_for_T(T)
         atoms.append(
             {
-                "id": line_id,
-                "S": f"{script}/line/{word_id}/{li}",
-                "E": f"line/{li} n={len(line)}",
-                "T": 0.8,
-                "state": "WARM",
-                "bubble": f"glyphs/{script}/{word_id}",
-                "depth": 1,
+                "id": gid,
+                "S": f"{sc0}:#{i}",
+                "E": (
+                    f"letter/{sc0} pos={i}/{n} "
+                    f"bbox=[{box.x0},{box.y0},{box.x1},{box.y1}] ink={box.ink:.2f}"
+                ),
+                "T": T,
+                "state": st,
+                "bubble": f"glyphs/{sc0}/{word_id}",
+                "depth": 2,
+                "unit": "letter",
                 "payload": None,
-                "mazur_tracer": 0.7,
+                "mazur_tracer": (i + 0.5) / max(n, 1),
                 "topic": word_id,
             }
         )
-        bind(edges, page_id, line_id, "has_line")
-        edges.append(
-            {"kind": "parent", "src": line_id, "dst": page_id, "name": "line_of"}
-        )
-
-        line_ids: list[str] = []
-        n_line = len(line)
-        for j, box in enumerate(line):
-            ch = chars[global_i] if global_i < len(chars) else None
-            sc, S = script_prefix(script, ch, global_i)
-            # id bezpieczny dla FS / JSON (unikaj dziwnych slash w znaku)
-            ch_tag = ch if ch is not None else f"g{global_i}"
-            gid = f"{sc}/{word_id}/{global_i}/{ch_tag}"
-            T_raw = glyph_T(global_i, max(len(flat), 1), focus_index)
-            T = confidence_boost(T_raw, box.ink)
-            st = state_for_T(T)
-            mazur = (j + 0.5) / max(n_line, 1)  # pozycja w wierszu — nie T
-            # bbox w E (metadane), nie w T
-            atoms.append(
-                {
-                    "id": gid,
-                    "S": S,
-                    "E": (
-                        f"glyph/{sc} pos={global_i} line={li} "
-                        f"bbox=[{box.x0},{box.y0},{box.x1},{box.y1}] ink={box.ink:.2f}"
-                    ),
-                    "T": T,
-                    "state": st,
-                    "bubble": f"glyphs/{sc}/{word_id}",
-                    "depth": 2,
-                    "payload": (ch if st == "HOT" and ch else None),
-                    "mazur_tracer": mazur,
-                    "topic": word_id,
-                }
-            )
-            line_ids.append(gid)
-            all_glyph_ids.append(gid)
-            edges.append(
-                {"kind": "parent", "src": gid, "dst": line_id, "name": "glyph_of"}
-            )
-            bind(edges, line_id, gid, f"contains:{S}")
-            global_i += 1
-
-        for a, b in zip(line_ids, line_ids[1:]):
-            bind(edges, a, b, "next")
-        for i, a in enumerate(line_ids):
-            for b in line_ids[i + 1 :]:
-                bind(edges, a, b, f"word:{word_id}")
-
-    # same-script HOT peers
-    hots = [
-        a
-        for a in atoms
-        if a["depth"] == 2 and a["state"] == "HOT" and a["id"] in all_glyph_ids
-    ]
-    for i, a in enumerate(hots):
-        for b in hots[i + 1 :]:
-            bind(edges, a["id"], b["id"], f"script:{a['S'].split(':')[0]}")
-
-    if text and len(chars) != len(flat):
-        # ostrzeżenie w corpus E
-        atoms[0]["E"] += f" WARN text_len={len(chars)} glyphs={len(flat)}"
-
+        gids.append(gid)
+        edges.append({"kind": "parent", "src": gid, "dst": wid, "name": "letter_of"})
+        bind(edges, wid, gid, f"contains:g{i}")
+    for a, b in zip(gids, gids[1:]):
+        bind(edges, a, b, "next")
     return atoms, edges
 
 
@@ -424,25 +442,28 @@ def write_dump(
         for e in edges:
             f.write(json.dumps(e, ensure_ascii=False) + "\n")
     n_hot = sum(1 for a in atoms if a["state"] == "HOT")
-    n_g = sum(1 for a in atoms if a["depth"] == 2)
+    n_g = sum(1 for a in atoms if a.get("unit") in ("letter", "char"))
+    n_words = sum(1 for a in atoms if a.get("unit") == "word")
     man = {
         "name": out.name,
-        "version": "1.0",
-        "description": "PR-G1: image→glyph atoms (T from focus/ink; not screenshot-learn)",
+        "version": "2.0",
+        "contract": CONTRACT_VERSION,
+        "description": "PR-G1: image→glyph atoms glyph_unit_v2",
         "n_atoms": len(atoms),
         "n_edges": len(edges),
         "n_glyphs": n_g,
+        "n_word_nuclei": n_words,
         "n_hot": n_hot,
         "source": "glyph_transcribe.py",
-        "canon": "PhiJSON; T≠XY; Bridge (x,T)",
+        "canon": "PhiJSON; T≠XY; Bridge (x,T); glyph_unit_v2",
         **meta,
     }
     (out / "manifest.json").write_text(
         json.dumps(man, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
-    case = f"""# CASE: {out.name} (PR-G1)
+    case = f"""# CASE: {out.name} (PR-G1 / {CONTRACT_VERSION})
 
-atoms={len(atoms)} edges={len(edges)} glyphs={n_g} HOT={n_hot}
+atoms={len(atoms)} edges={len(edges)} glyphs={n_g} words={n_words} HOT={n_hot}
 source={meta.get('image')} text={meta.get('text')!r} script={meta.get('script')}
 
 ```bat
@@ -502,8 +523,8 @@ def render_demo(
     draw = ImageDraw.Draw(img)
     y = pad
     for line in lines:
-        prefer_cjk = bool(
-            _HIRA_RE.search(line) or _KANJI_RE.search(line) or _KATA_RE.search(line)
+        prefer_cjk = any(
+            detect_script_char(ch) in ("hira", "kata", "kanji") for ch in line
         )
         font = _load_font(48 if prefer_cjk else 52, prefer_cjk=prefer_cjk)
         x = pad
@@ -539,7 +560,8 @@ def transcribe_image(
     if text and "\n" in text:
         line_texts = [ln.strip() for ln in text.splitlines() if ln.strip()]
     elif text and len(lines) == 1:
-        line_texts = ["".join(c for c in text if not c.isspace())]
+        # zachowaj spacje w etykiecie (słowa); projection liczy znaki bez spacji
+        line_texts = [text.strip()]
 
     # Gdy znamy N linii tekstu, a CC dało inną liczbę — utnij obraz na N pasów
     if line_texts is not None and len(line_texts) != len(lines) and boxes:
@@ -596,17 +618,17 @@ def transcribe_image(
         if votes:
             sc = max(set(votes), key=votes.count)
 
-    # złóż text bez spacji; jeśli line_texts — zachowaj kolejność
-    text_flat = None
+    # Zachowaj spacje między słowami (glyph_unit_v2); newline → spacja
+    text_for_phi = None
     if line_texts is not None:
-        text_flat = "".join(line_texts)
+        text_for_phi = " ".join(line_texts)
     elif text:
-        text_flat = "".join(c for c in text if not c.isspace())
+        text_for_phi = " ".join(text.split())
 
     atoms, edges = boxes_to_phi(
         lines,
         script=sc,
-        text=text_flat,
+        text=text_for_phi,
         word_id=wid,
         focus_index=fi,
         source_name=src.name,

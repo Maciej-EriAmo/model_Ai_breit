@@ -5,8 +5,9 @@ Depth bins (τ n_dim=6, MAX_DEPTH_BINS=3):
   Latin:  page@0 → word@1 (jądro) → letter@2
   CJK:    page@0 → line@1 → char@2 (jądro)
 
-Klasyczna sekwencja = łańcuch `next` na literach/znakach (depth 2) —
-Softmax-twin na niej = baseline „starej metody”.
+classical_token_sequence = litery/znaki w kolejności czytania (bez archive).
+Softmax w --baselines = Softmax-twin na tym samym dumpie Φ (bez ΔE) — nie
+osobny trening na classical_tokens; patrz docs/TRANSCODE.md §2.
 """
 
 from __future__ import annotations
@@ -46,14 +47,39 @@ def bind(edges: list, a: str, b: str, name: str) -> None:
     edges.append({"kind": "bind", "src": b, "dst": a, "name": name})
 
 
+def _unit_kind(ch: str) -> str:
+    """word-run vs char-run (sym idzie z alfabetem / word)."""
+    return semantic_unit(detect_script_char(ch))
+
+
+def _script_runs(chars: list[str]) -> list[tuple[str, list[str]]]:
+    """Dziel ciąg na runy: contiguous word-nucleus vs char-nucleus."""
+    if not chars:
+        return []
+    runs: list[tuple[str, list[str]]] = []
+    cur_kind = _unit_kind(chars[0])
+    buf = [chars[0]]
+    for ch in chars[1:]:
+        k = _unit_kind(ch)
+        # sym w środku word-run zostaje w word; char-run tylko char scripts
+        if k == cur_kind or (cur_kind == "word" and detect_script_char(ch) == "sym"):
+            buf.append(ch)
+        else:
+            runs.append((cur_kind, buf))
+            cur_kind = k
+            buf = [ch]
+    runs.append((cur_kind, buf))
+    return runs
+
+
 @dataclass
 class TextSpan:
-    """Jedna jednostka wejściowa: słowo łacińskie albo ciąg CJK."""
+    """Jedna jednostka wejściowa: słowo łacińskie albo pojedynczy znak CJK."""
 
     script: str
     chars: list[str]
     span_id: str
-    focus: int = 0  # indeks w chars
+    focus: int = 0  # indeks w chars (word) albo 0 (char)
 
 
 @dataclass
@@ -74,63 +100,75 @@ class BuildResult:
     def letters(self) -> list[dict]:
         return [a for a in self.atoms if a.get("unit") == "letter"]
 
+    @property
+    def reading_units(self) -> list[dict]:
+        """Litery + znaki w kolejności atomów (bez archive)."""
+        return [
+            a
+            for a in self.atoms
+            if a.get("unit") in ("letter", "char") and "/archive/" not in a.get("id", "")
+        ]
+
+
+def _spans_from_char_list(
+    chars: list[str], *, part_i: int, default_script: str = "auto"
+) -> list[TextSpan]:
+    spans: list[TextSpan] = []
+    si = 0
+    for kind, run in _script_runs(chars):
+        if kind == "word":
+            sc0 = detect_script_char(run[0])
+            if sc0 == "sym":
+                sc0 = "lat"
+            if default_script not in ("auto", "") and all(
+                detect_script_char(c) in ("sym", default_script) for c in run
+            ):
+                sc0 = default_script
+            lemma = "".join(run)
+            spans.append(
+                TextSpan(
+                    script=sc0,
+                    chars=list(run),
+                    span_id=f"word_{part_i}_{si}_{lemma}",
+                    focus=0,
+                )
+            )
+            si += 1
+        else:
+            for j, ch in enumerate(run):
+                sc = detect_script_char(ch)
+                spans.append(
+                    TextSpan(
+                        script=sc,
+                        chars=[ch],
+                        span_id=f"{sc}_{part_i}_{si}_{j}_{ch}",
+                        focus=0,
+                    )
+                )
+            si += 1
+    return spans
+
 
 def parse_text_spans(text: str, *, default_script: str = "auto") -> list[TextSpan]:
     """
-    Łacina: split po whitespace → osobne słowa.
-    CJK/kana: każdy znak = span (jądro char); bieżące runy tego samego skryptu
-    dostają wspólny line_id później w builderze.
+    Whitespace → granice słów łacińskich.
+    Wewnątrz tokena: runy skryptów (MOSTこんにちは → word MOST + 5× hira).
+    CJK/kana bez spacji: każdy znak = span char.
     """
     spans: list[TextSpan] = []
     if not text:
         return spans
 
-    # Najpierw dzielimy na tokeny whitespace (dla łaciny); CJK bez spacji = jeden token run
+    # Zachowaj kolejność; split na whitespace (spacje / newline)
     parts = text.split()
-    if len(parts) <= 1 and text.strip() and any(
-        semantic_unit(detect_script_char(c)) == "char" for c in text if not c.isspace()
-    ):
-        # Ciąg bez spacji z CJK → per-char spans
-        chars = [c for c in text if not c.isspace()]
-        for i, ch in enumerate(chars):
-            sc = detect_script_char(ch)
-            spans.append(
-                TextSpan(script=sc, chars=[ch], span_id=f"{sc}_{i}_{ch}", focus=0)
-            )
+    if not parts:
         return spans
 
     for pi, part in enumerate(parts):
         chars = list(part)
         if not chars:
             continue
-        # skrypt z pierwszego znaku „treściowego”
-        sc0 = detect_script_char(chars[0])
-        if default_script not in ("auto", "") and all(
-            detect_script_char(c) == "sym" or detect_script_char(c) == default_script
-            for c in chars
-        ):
-            sc0 = default_script if default_script != "auto" else sc0
-
-        if semantic_unit(sc0) == "word":
-            spans.append(
-                TextSpan(
-                    script=sc0 if sc0 != "sym" else "lat",
-                    chars=chars,
-                    span_id=f"word_{pi}_{''.join(chars)}",
-                    focus=0,
-                )
-            )
-        else:
-            for i, ch in enumerate(chars):
-                sc = detect_script_char(ch)
-                spans.append(
-                    TextSpan(
-                        script=sc,
-                        chars=[ch],
-                        span_id=f"{sc}_{pi}_{i}_{ch}",
-                        focus=0,
-                    )
-                )
+        spans.extend(_spans_from_char_list(chars, part_i=pi, default_script=default_script))
     return spans
 
 
@@ -139,7 +177,12 @@ def build_from_spans(
     *,
     corpus_note: str = "transcode glyph_unit_v2",
     page_id: str = "page_main",
+    char_focus: int | None = None,
 ) -> BuildResult:
+    """
+    char_focus: indeks w globalnej liście char-spans (CJK), domyślnie 0.
+    Word spans używają własnego span.focus.
+    """
     atoms: list[dict] = []
     edges: list[dict] = []
 
@@ -177,11 +220,12 @@ def build_from_spans(
 
     word_ids: list[str] = []
     char_ids: list[str] = []
-    letter_ids: list[str] = []
-    global_letter_i = 0
-    # dla CJK: jedna linia na run
+    char_span_indices = [i for i, s in enumerate(spans) if semantic_unit(s.script) == "char"]
+    n_chars = len(char_span_indices)
+    cf = 0 if char_focus is None else int(max(0, min(char_focus, max(n_chars - 1, 0))))
     line_id = f"line_{page_id}"
     line_created = False
+    char_ordinal = 0
 
     for span in spans:
         unit = semantic_unit(span.script)
@@ -189,17 +233,18 @@ def build_from_spans(
         focus = int(max(0, min(span.focus, max(n - 1, 0))))
 
         if unit == "word":
-            wid = f"lat/{span.span_id}"
+            sc_id = span.script if span.script != "sym" else "lat"
+            wid = f"{sc_id}/{span.span_id}"
             word_ids.append(wid)
             lemma = "".join(span.chars)
             atoms.append(
                 {
                     "id": wid,
-                    "S": f"{span.script}:{lemma}",
-                    "E": f"word nucleus script={span.script} n_letters={n}",
+                    "S": f"{sc_id}:{lemma}",
+                    "E": f"word nucleus script={sc_id} n_letters={n}",
                     "T": 0.92,
                     "state": "HOT",
-                    "bubble": f"glyphs/{span.script}/{span.span_id}",
+                    "bubble": f"glyphs/{sc_id}/{span.span_id}",
                     "depth": 1,
                     "unit": "word",
                     "payload": lemma,
@@ -214,7 +259,7 @@ def build_from_spans(
 
             gids: list[str] = []
             for i, ch in enumerate(span.chars):
-                sc, S = script_prefix(span.script, ch, i)
+                sc, S = script_prefix(sc_id, ch, i)
                 gid = f"{sc}/{span.span_id}/{i}/{ch}"
                 T = glyph_T(i, n, focus)
                 st = state_for_T(T)
@@ -234,16 +279,13 @@ def build_from_spans(
                     }
                 )
                 gids.append(gid)
-                letter_ids.append(gid)
                 edges.append(
                     {"kind": "parent", "src": gid, "dst": wid, "name": "letter_of"}
                 )
                 bind(edges, wid, gid, f"contains:{ch}")
-                global_letter_i += 1
             for a, b in zip(gids, gids[1:]):
                 bind(edges, a, b, "next")
         else:
-            # char nucleus (CJK / kana)
             if not line_created:
                 atoms.append(
                     {
@@ -267,10 +309,10 @@ def build_from_spans(
                 line_created = True
 
             ch = span.chars[0]
-            sc, S = script_prefix(span.script, ch, global_letter_i)
+            sc, S = script_prefix(span.script, ch, char_ordinal)
             cid = f"{sc}/{span.span_id}"
-            T = glyph_T(len(char_ids), max(len(spans), 1), 0)
-            # fokus na pierwszym char span — builder wywołań może nadpisać
+            # fokus w obrębie runu znaków (nie całej mieszanki ze słowami)
+            T = glyph_T(char_ordinal, max(n_chars, 1), cf)
             st = state_for_T(T)
             atoms.append(
                 {
@@ -283,7 +325,7 @@ def build_from_spans(
                     "depth": 2,
                     "unit": "char",
                     "payload": (ch if st == "HOT" else None),
-                    "mazur_tracer": (len(char_ids) + 0.5) / max(len(spans), 1),
+                    "mazur_tracer": (char_ordinal + 0.5) / max(n_chars, 1),
                     "topic": span.span_id,
                 }
             )
@@ -292,27 +334,20 @@ def build_from_spans(
                 {"kind": "parent", "src": cid, "dst": line_id, "name": "char_of"}
             )
             bind(edges, line_id, cid, f"contains:{S}")
-            global_letter_i += 1
+            char_ordinal += 1
 
-    # next między słowami (łacina)
     for a, b in zip(word_ids, word_ids[1:]):
         bind(edges, a, b, "next_word")
-    # next między znakami CJK
     for a, b in zip(char_ids, char_ids[1:]):
         bind(edges, a, b, "next")
 
-    # HOT peers same-script (word nuclei / char nuclei)
     for group, tag in (
-        (word_ids, "script:lat"),
+        ([w for w in word_ids if w.startswith("lat/")], "script:lat"),
         ([c for c in char_ids if c.startswith("hira/")], "script:hira"),
         ([c for c in char_ids if c.startswith("kanji/")], "script:kanji"),
         ([c for c in char_ids if c.startswith("kata/")], "script:kata"),
     ):
-        hots = [
-            a
-            for a in atoms
-            if a["id"] in group and a["state"] == "HOT"
-        ]
+        hots = [a for a in atoms if a["id"] in group and a["state"] == "HOT"]
         for i, a in enumerate(hots):
             for b in hots[i + 1 :]:
                 bind(edges, a["id"], b["id"], tag)
@@ -325,20 +360,16 @@ def build_from_text(
     *,
     default_script: str = "auto",
     corpus_note: str | None = None,
+    char_focus: int | None = None,
 ) -> BuildResult:
     spans = parse_text_spans(text, default_script=default_script)
     note = corpus_note or f"transcode v2 text={text!r}"
-    return build_from_spans(spans, corpus_note=note)
+    return build_from_spans(spans, corpus_note=note, char_focus=char_focus)
 
 
 def classical_token_sequence(result: BuildResult) -> list[str]:
     """
-    Klasyczna tokenizacja: litery (lat) + znaki (CJK) w kolejności `next`.
-    Softmax na tej liście = stara metoda.
+    Klasyczna tokenizacja: litery + znaki w kolejności czytania (kolejność atomów).
+    Pomija archive. (Bind `next` jest dwukierunkowy — nie nadaje się do walki.)
     """
-    seq: list[str] = []
-    # letters first in word order, then chars
-    for a in result.atoms:
-        if a.get("unit") in ("letter", "char") and a.get("S"):
-            seq.append(a["S"])
-    return seq
+    return [a["S"] for a in result.reading_units if a.get("S")]

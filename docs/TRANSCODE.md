@@ -1,6 +1,6 @@
 # Transkodowanie alfabetów — kanon produktu (Azjateska)
 
-**Status:** D0/D1 (kontrakt + API) · empiria G0/G1 PASS · G2 multi-script później  
+**Status:** D0–D2 + G2 best-seed PASS · poprawki audytu (glued scripts / photo v2 / Softmax framing)  
 **Kod:** `transcode/` · CLI: `glyph_transcribe.py`, `make_dump_glyphs.py`  
 **Komora SE:** `Most_Lorentz`  
 **Doświadczenie:** [`../doswiadczenie/glify/`](../doswiadczenie/glify/)
@@ -35,17 +35,20 @@ To jest domyślny, sprawdzony tor. Nowa metoda (atomy Φ + Most + `T`) **musi do
 
 | Tor | Co robi | Rola w benchu |
 |-----|---------|----------------|
-| **Klasyczny** | sekwencja tokenów + Softmax (bez zamka `ΔE`) | **baseline / świadek** |
+| **Softmax-twin** | ten sam dump Φ, uwaga bez zamka `ΔE` | **świadek** w `--baselines` |
 | **ZERO** | Most z wyzerowanym tracerem | kontrola degeneracji |
-| **Nowy (Most)** | Φ + `T` + jądro semantyczne per skrypt | kandydat produktu |
+| **Most** | Φ + `T` + jądro semantyczne per skrypt | kandydat produktu |
+
+`classical_tokens.json` = **inwentarz** kolejności liter/znaków (czytelność / przyszły tor).  
+**Nie** jest dziś wejściem treningu Softmax — Softmax w `phimost_learn --baselines` trenuje na **tym samym** loadere Φ co Most (tylko bez Most-attention). Twierdzenie „Softmax = klasyczna sekwencja liter” wymaga osobnego loadera (TODO); do tego czasu mówimy: Softmax-twin-on-Φ.
 
 **Kryterium uczciwości (produkt):**
 
-- Most **nie może** systematycznie przegrywać z Softmaxem na gate recall/classify bez wyjaśnienia.
+- Most **nie może** systematycznie przegrywać z Softmax-twinem na gate bez wyjaśnienia.
 - Przewaga Mostu musi pochodzić z geometrii `τ` / jądra jednostek — nie z przecieku etykiet do contentu.
-- Dopóki parity nie jest wykazane na stabilnym benchu (G2+), w komunikacji zewnętrznej mówimy: **hipoteza + G0/G1 lab**, nie „lepsze niż klasyczne OCR/NN”.
+- Dopóki multi-seed parity nie jest stabilna, w komunikacji zewnętrznej: **lab + best-seed**, nie „lepsze niż klasyczne OCR/NN”.
 
-Ablacja `drop_T` / ZERO = dowód, że nowa oś coś wnosi; Softmax = dowód, że nie jesteśmy poniżej klasyki.
+Ablacja ZERO = dowód roli τ; Softmax-twin = dolna granica „czy Most w ogóle coś wnosi na tym dumpie”.
 
 ---
 

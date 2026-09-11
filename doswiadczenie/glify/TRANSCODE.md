@@ -2,16 +2,15 @@
 
 Hub metody (produkt): [`../../docs/TRANSCODE.md`](../../docs/TRANSCODE.md)
 
-## Gate vs klasyka (ważne)
-
-Rozpoznawanie pisma przez **tokenizację liter + następstwo → NN (Softmax)** to stara, działająca metoda.  
-Nowa (Φ + Most + jądra word/char) **musi dorównać** starej na benchu — inaczej jest kaleką.
+## Gate vs Softmax-twin (ważne)
 
 | Artefakt | Rola |
 |----------|------|
-| `classical_tokens.json` (po `make_dump_glyphs`) | sekwencja klasyczna |
-| Softmax twin | stara metoda |
-| Most + ZERO | nowa + kontrola degeneracji |
+| Softmax `--baselines` | Softmax-twin na **tym samym** dumpie Φ (bez ΔE) |
+| `classical_tokens.json` | inwentarz liter/znaków (nie wejście treningu Softmax) |
+| Most + ZERO | kandydat + degeneracja τ |
+
+Pełny „Softmax na samej sekwencji liter” = TODO (osobny loader).
 
 ## Wyniki lab
 
@@ -26,7 +25,12 @@ python test_transcode_contract.py
 python make_dump_glyphs.py
 ```
 
+## Audyt zewnętrzny (2026-09-11)
+
+Naprawione: glued lat+CJK, classical≠archive, Softmax framing (twin-on-Φ), photo→v2, char focus.  
+Review scratch: `grok-review-b7ffadea.md`.
+
 ## FUTURE — metoda 2 (nie teraz)
 
 Hologramy liter/kany: składanie hologramów → słowa **lub** znaki pochodne od rdzenia (np. onna/女 + rodzina).  
-Kanon: [`../../docs/TRANSCODE.md`](../../docs/TRANSCODE.md) §7. Po G2 parity.
+Kanon: [`../../docs/TRANSCODE.md`](../../docs/TRANSCODE.md) §7. Po stabilnym multi-seed.

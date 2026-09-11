@@ -15,42 +15,44 @@ import json
 from pathlib import Path
 
 from transcode import CONTRACT_VERSION, build_from_text, classical_token_sequence
-from transcode.phi_build import bind, state_for_T
+from transcode.phi_build import state_for_T
 
 ROOT = Path(__file__).resolve().parent
 DUMP = ROOT / "dumps" / "from_glyphs"
 
 
 def build() -> tuple[list[dict], list[dict], dict]:
-    # Dwa słowa łacińskie + hiragana (znaki = jądra)
     text = "MOST BRIDGE あいうえお こんにちは"
+    # char_focus: indeks w runie CJK — こ jest 5. znakiem (0-based: あいうえお=0..4, こ=5)
     result = build_from_text(
         text,
         corpus_note="PR-G0 glyph_unit_v2: lat words + hira chars; learn from atom state",
+        char_focus=5,
     )
-    atoms, edges = result.atoms, result.edges
+    # Snapshot classical BEFORE archive mutation
+    classical = classical_token_sequence(result)
+    n_words = len(result.word_nuclei)
+    n_chars = len(result.char_nuclei)
+    n_letters = len(result.letters)
 
-    # Fokus czytania: podnieś T na M (pierwsza litera MOST) i こ
+    atoms = list(result.atoms)  # copy — archive nie psuje result
+    edges = list(result.edges)
+
     for a in atoms:
         if a.get("unit") == "letter" and a.get("S") == "lat:M":
             a["T"] = 0.95
             a["state"] = "HOT"
             a["payload"] = "M"
-        if a.get("unit") == "letter" and a.get("id", "").startswith("lat/word_0_MOST/"):
-            # dystans od M
-            pass
         if a.get("unit") == "char" and a.get("S") == "hira:こ":
             a["T"] = 0.95
             a["state"] = "HOT"
             a["payload"] = "こ"
 
-    # Archiwum COLD: obecne jako dystraktor, ALE bez bind do jąder (G2 —
-    # wcześniej archive_near psuło recall / zawyżało Softmax na fałszywkach).
-    cold = [
+    # Archive COLD distractors — poza classical_tokens
+    for cid, S, E, unit, T in (
         ("lat/archive/X", "lat:X", "false positive latin", "letter", 0.08),
         ("hira/archive/ん", "hira:ん", "stale hiragana crumb", "char", 0.08),
-    ]
-    for cid, S, E, unit, T in cold:
+    ):
         atoms.append(
             {
                 "id": cid,
@@ -69,11 +71,14 @@ def build() -> tuple[list[dict], list[dict], dict]:
 
     meta = {
         "contract": CONTRACT_VERSION,
-        "classical_tokens": classical_token_sequence(result),
-        "n_word_nuclei": len(result.word_nuclei),
-        "n_char_nuclei": len([a for a in atoms if a.get("unit") == "char" and "/archive/" not in a["id"]]),
-        "n_letters": len(result.letters),
-        "parity_note": "Softmax on classical_tokens = old method; Most on full Φ = candidate",
+        "classical_tokens": classical,
+        "n_word_nuclei": n_words,
+        "n_char_nuclei": n_chars,
+        "n_letters": n_letters,
+        "parity_note": (
+            "Softmax --baselines = Softmax-twin on same Φ dump (no ΔE). "
+            "classical_tokens.json = reading-order inventory, not Softmax train input."
+        ),
     }
     return atoms, edges, meta
 
@@ -99,7 +104,7 @@ def main() -> int:
         "n_edges": len(edges),
         "n_hot": n_hot,
         "source": "make_dump_glyphs.py",
-        "canon": "PhiJSON; T≠XY; Bridge (x,T); Softmax=classical baseline",
+        "canon": "PhiJSON; T≠XY; Bridge (x,T); Softmax-twin=Φ witness (not classical_tokens train)",
         **{k: v for k, v in meta.items() if k != "classical_tokens"},
         "classical_token_count": len(meta["classical_tokens"]),
     }
@@ -115,20 +120,21 @@ def main() -> int:
 atoms={len(atoms)} edges={len(edges)} HOT={n_hot}
 word_nuclei={meta['n_word_nuclei']} char_nuclei={meta['n_char_nuclei']} letters={meta['n_letters']}
 
-Classical token sequence (Softmax baseline): {meta['classical_tokens'][:12]}…
+classical_tokens (inventory): {meta['classical_tokens'][:12]}…
+Softmax --baselines = Softmax-twin on Φ (no ΔE), not train-on-classical_tokens.
 
 ```bat
 python make_dump_glyphs.py
 python phimost_learn.py --src dumps/from_glyphs --no-warm --no-promote --baselines
 ```
 
-Parity: Most must not be crippled vs Softmax on the same task — see docs/TRANSCODE.md §2.
+See docs/TRANSCODE.md §2.
 """
     (DUMP / "CASE_GLYPHS.md").write_text(case, encoding="utf-8")
     print(
         f"OK {DUMP} atoms={len(atoms)} edges={len(edges)} "
         f"words={meta['n_word_nuclei']} chars={meta['n_char_nuclei']} "
-        f"contract={CONTRACT_VERSION}"
+        f"classical={len(meta['classical_tokens'])} contract={CONTRACT_VERSION}"
     )
     return 0
 
