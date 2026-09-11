@@ -23,6 +23,7 @@ Root: `C:\Users\drwis\model Ai`
 | `make_dump_glyphs.py` | PR-G0: lat+hira → `dumps/from_glyphs` |
 | `glyph_transcribe.py` | PR-G1: PNG/JPEG → PhiJSON (`dumps/from_photo`) |
 | `most_seal.py` | uszczelnienie Most: hard mask T + kara COLD na kluczach |
+| `holo_phi.py` / `make_dump_holo.py` | Holo-Φ: fala/interferencja/rdzeń 女 → dump |
 | `transcode/` | **transkodowanie alfabetów** → Φ (`glyph_unit_v2`) |
 | `test_transcode_contract.py` | kontrakt lat=słowo / CJK=znak + classical tokens |
 | `desi_cutouts.py` / `image_batch.py` | DESI/patchy → wyniki w `doswiadczenie/desi/` (nie alfabet) |

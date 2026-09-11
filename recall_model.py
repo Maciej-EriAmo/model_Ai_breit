@@ -264,29 +264,14 @@ def recall_metrics(
     return out
 
 
-def train_encoder(
+def _avg_val_metrics(
     model: nn.Module,
-    train_batches: list[RecallBatch],
     val_batches: list[RecallBatch],
-    epochs: int = 8,
-    lr: float = 1e-3,
-    ablate_kw: dict | None = None,
+    ablate_kw: dict,
 ) -> dict:
-    ablate_kw = ablate_kw or {}
-    opt = torch.optim.Adam(model.parameters(), lr=lr)
-    for _ in range(epochs):
-        model.train()
-        for batch in train_batches:
-            b = batch.ablate(**ablate_kw)
-            opt.zero_grad()
-            tok, _ = model(b.content, b.tracer, b.mask)
-            loss = info_nce_loss(tok, b.query_idx, b.pos_idx, mask=b.mask)
-            loss.backward()
-            opt.step()
-
-    model.eval()
     metrics = []
     dE_vals = []
+    model.eval()
     with torch.no_grad():
         for batch in val_batches:
             b = batch.ablate(**ablate_kw)
@@ -296,8 +281,58 @@ def train_encoder(
             )
             if dE is not None:
                 dE_vals.append(dE.abs().mean().item())
-
     keys = metrics[0].keys()
     avg = {k: float(sum(m[k] for m in metrics) / len(metrics)) for k in keys}
     avg["mean_dE"] = float(sum(dE_vals) / len(dE_vals)) if dE_vals else 0.0
+    return avg
+
+
+def train_encoder(
+    model: nn.Module,
+    train_batches: list[RecallBatch],
+    val_batches: list[RecallBatch],
+    epochs: int = 8,
+    lr: float = 1e-3,
+    ablate_kw: dict | None = None,
+    *,
+    return_curve: bool = False,
+) -> dict:
+    """
+    return_curve=True → dodaje klucz ``curve``: lista
+    {epoch, loss, r@1, r@3, mrr} po każdej epoce
+    (loss = średnia strata treningowa danej epoki; r@1/r@3/mrr = walidacyjne).
+    """
+    ablate_kw = ablate_kw or {}
+    opt = torch.optim.Adam(model.parameters(), lr=lr)
+    curve: list[dict] = []
+    last_avg: dict | None = None
+    for ep in range(epochs):
+        model.train()
+        loss_sum = 0.0
+        n_batches = 0
+        for batch in train_batches:
+            b = batch.ablate(**ablate_kw)
+            opt.zero_grad()
+            tok, _ = model(b.content, b.tracer, b.mask)
+            loss = info_nce_loss(tok, b.query_idx, b.pos_idx, mask=b.mask)
+            loss.backward()
+            opt.step()
+            loss_sum += float(loss.item())
+            n_batches += 1
+        if return_curve:
+            last_avg = _avg_val_metrics(model, val_batches, ablate_kw)
+            curve.append(
+                {
+                    "epoch": ep + 1,
+                    "loss": loss_sum / max(n_batches, 1),
+                    "r@1": last_avg["r@1"],
+                    "r@3": last_avg["r@3"],
+                    "mrr": last_avg["mrr"],
+                }
+            )
+
+    # ostatnia epoka już policzyła walidację powyżej — nie liczyć drugi raz
+    avg = last_avg if last_avg is not None else _avg_val_metrics(model, val_batches, ablate_kw)
+    if return_curve:
+        avg["curve"] = curve
     return avg

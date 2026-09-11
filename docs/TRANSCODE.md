@@ -117,16 +117,14 @@ Notatki badawcze: [`GLYPHS.md`](GLYPHS.md).
 
 ---
 
-## 7. Na przyszłość — metoda 2: hologramy znaków
+## 7. Metoda 2: hologramy znaków (Holo-Φ)
 
-**Status:** tylko zapis koncepcji (2026-09-11). **Nie** wdrażać przed G2 parity toru Φ.
+**Status:** pierwsza próba labowa **FAIL gate** (2026-09-11) — Most > ZERO, ale Softmax-twin ≥ Most.  
+**Założenia w jednym:** [`HOLO_ZALOZENIA.md`](HOLO_ZALOZENIA.md) · wyniki: [`../doswiadczenie/glify/HOLOGRAMY.md`](../doswiadczenie/glify/HOLOGRAMY.md).
 
-Druga metoda warta rozważenia obok transkodu do atomów:
+- litery / kana / kanji jako **fale** \(A e^{i\varphi}\),
+- **słowo** = interferencja Σ,
+- **rdzeń** (np. **女**) + pochodne = wspólna faza + bind `holo:root:…`,
+- kod: `holo_phi.py` · `make_dump_holo.py` · dump `dumps/from_holo`.
 
-- litery / kana (i dalej kanji) jako **hologramy** znaków,
-- **łączenie hologramów** może dawać:
-  1. **słowa** (złożenie sekwencyjne / interferencyjne),
-  2. **nowe znaki pochodne od rdzenia** — np. **onna (女)** jako rdzeń i jego pochodne (rodzina znaków od tego morfematu/kształtu).
-
-To jest inny nośnik niż obecny kontrakt `glyph_unit_v2` (S/E/T + depth), ale ten sam cel: jeden silnik, bogatsza kompozycja pisma.  
-Zapis SE: fact Most_Lorentz „FUTURE metoda-2 hologramy”. Szczegóły empirii / Φ-mapowanie — dopiero po stabilnym G2.
+Ten sam Most / seal / Softmax-twin. Hologramy **nie zastąpiły** potrzeby uszczelnienia+skali z samplingiem — dają inny nośnik kompozycji, nie darmowy PASS.

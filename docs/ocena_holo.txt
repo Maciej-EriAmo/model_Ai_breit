@@ -1,0 +1,96 @@
+## Ocena — Holo-Φ (założenia v0.1)
+
+**Co dobrze:** framing Softmax-twin jako świadka na *tym samym* dumpie Φ (bez ΔE) to poprawna kontrola — bez tego porównanie Softmax vs Most byłoby nieuczciwe (różne wejścia, nie tylko różny mechanizm). Jawne przyznanie FAIL gate zamiast naciągania na PASS też jest w porządku metodologicznie. To jednak nie zwalnia z audytu logiki — a tu jest kilka miejsc, które nie trzymają się kupy albo są niedopowiedziane.
+
+**1. Niespójność liczby seedów między eksperymentem a kryterium sukcesu.**
+Sekcja 8 wymaga „Most > Softmax na ≥4/5 seedów” — ale pierwsza próba ma 3 seedy (0,1,42). Na 3 punktach nie da się w ogóle zweryfikować kryterium napisanego pod 5. To nie jest jeszcze błąd wyniku, ale jest błąd w tym, że dokument stawia gate, którego obecny eksperyment strukturalnie nie może rozstrzygnąć.
+
+**2. Co faktycznie koduje amplituda `A`?**
+Z2 mówi, że *zarówno* `A` jak i `φ` są deterministyczne z hasha etykiety. Nie jest napisane, skąd bierze się rozróżnienie między nimi (inny segment hasha? inna funkcja?). Jeśli `A` to czysty artefakt hasha bez żadnego związku z częstością/saliencją znaku, to `T` (brama do uwagi, podstawa `seal`) jest po prostu losowe per-znak. Wtedy „kara COLD” z Z7 karze coś, co nie niesie żadnej informacji — to trzeba albo zdefiniować (co semantycznie reprezentuje `A`), albo przyznać wprost, że w v0.1 `T` jest placeholderem.
+
+**3. Ablacja rodziny 女 (pkt 8.2) jest bliska tautologii.**
+Rodzina jest ręcznie wstrzyknięta (`φ_root + α·φ_off`). Test „bez wspólnej fazy rodzina traci klaster” udowadnia tylko, że umiesz cofnąć własną konstrukcję — nie że model się czegoś nauczył. Żeby to był realny dowód, potrzebny jest sygnał, którego nie zaszyłeś wprost w fazie (np. jakieś pokrewieństwo semantyczne spoza offsetu), a które model mimo to odkrywa.
+
+**4. Normalizacja `T` niespójna między głębokościami.**
+Dla znaku: `T` z amplitudy znormalizowanej. Dla compoundu: `T` z `|Σ|` względem max **na dumpie**. Nie jest powiedziane, czy baza normalizacji jest wspólna dla obu poziomów, czy liczona osobno per-depth. Jeśli osobno — `T` znaku i `T` compoundu nie są bezpośrednio porównywalne w jednej hierarchii uwagi, co podważa sens `most_seal` działającego na całym grafie naraz.
+
+**5. `blend_holo=0.4` bez sweepu.**
+Wartość „domyślna w pierwszej próbie” bez uzasadnienia ani przeszukania. FAIL/PASS może być bardzo czuły na ten parametr — bez sweepu (np. 0.0/0.2/0.4/0.6/0.8) nie wiadomo, czy FAIL to ograniczenie metody, czy zły wybór hiperparametru.
+
+**6. Skala datasetu vs. czułość metryki.**
+73 atomy / 354 edges to bardzo mały graf pod r@1. Różnice rzędu 0.01–0.02 przy takim N mogą leżeć w rozdzielczości samej metryki (r@1 na małym zbiorze zmienia się skokowo, nie płynnie) — zanim próg +0.02 stanie się twardym gate'em, warto sprawdzić, jaka jest w ogóle ziarnistość r@1 przy 73 atomach.
+
+**7. Brak informacji o zbieżności treningu.**
+16 epok — czy to plateau, czy model jeszcze się uczy w momencie odcięcia? FAIL może wynikać z niedotrenowania, nie z ograniczenia reprezentacji falowej. Bez krzywej uczenia to nierozstrzygalne.
+
+**8. Pominięcie klik `script:*` zmienia topologię, nie tylko reprezentację węzłów.**
+Świadoma decyzja (sek. 4) jest rozsądna dla uniknięcia large-N, ale oznacza, że porównanie Holo vs. tor glifów nie jest już ceteris paribus na poziomie grafu — różni się i reprezentacja węzłów, i gęstość krawędzi. Warto to nazwać wprost jako ograniczenie porównywalności, a nie zostawiać milczące.
+
+**Podsumowanie:** sam FAIL gate wygląda na uczciwie rozpoznany — Most>ZERO wszędzie, SM≥Most, ΔSM średnio ujemne, to się zgadza. Problem leży w tym, co ma uzasadniać kolejną pętlę: kryterium 4/5 seedów nie ma jeszcze danych żeby je ocenić, ablacja rodziny 女 nie odróżni struktury wyuczonej od wstrzykniętej, a `blend_holo` nie jest jeszcze sparametryzowany. Przed pętlą nr 2 (sek. 8) sensowne byłoby: dobicie do min. 5 seedów, mini-sweep `blend_holo`, i przeprojektowanie testu rodziny znaków tak, żeby faktycznie mierzył coś nie zaszytego ręcznie w fazie.
+
+2 audytor:
+Przeczytałem ocenę. **Jest merytorycznie trafna i — co ważniejsze — dobrze rozdziela problem wyniku od problemu metodologii eksperymentu.** 
+
+Moja ocena:
+
+### Ocena ogólna: **8,5/10**
+
+Najmocniejsze są punkty **1, 3, 5 i 7**, bo wskazują rzeczy, które rzeczywiście mogą zmienić interpretację FAIL.
+
+* **Seed 3 vs kryterium 4/5** — bezdyskusyjny błąd proceduralny. Nie można ocenić gate'u 4/5 na trzech seedach. 
+* **Ablacja 女** — bardzo celna uwaga. Jeżeli relacja została ręcznie zakodowana w `φ`, test odzyskiwania tej relacji nie jest niezależnym dowodem uczenia. 
+* **`blend_holo=0.4`** — przed wyciągnięciem wniosku o słabości metody trzeba sprawdzić, czy wynik nie zależy mocno od tego parametru. 
+* **16 epok** — bardzo ważne. Bez train/validation curve nie wiadomo, czy FAIL oznacza ograniczenie architektury, czy po prostu zatrzymanie treningu za wcześnie. 
+
+### Jedną rzecz postawiłbym jeszcze wyżej
+
+**Punkt 2 dotyczący `A` i `T` jest potencjalnie fundamentalny.**
+
+Jeżeli amplituda `A` jest jedynie deterministyczną funkcją hasha etykiety, a nie reprezentuje żadnej właściwości danych, to mechanizm:
+
+`A → T → seal → kara COLD`
+
+może wprowadzać do eksperymentu **sztuczną strukturę sterującą uwagą**. Wtedy nie mamy czystego testu Holo-Φ. 
+
+To powinno być wyjaśnione **przed kolejną serią eksperymentów**, nie po niej.
+
+### Punkt 6 też jest ważniejszy, niż może wyglądać
+
+Przy 73 atomach i metryce r@1 próg `+0.02` może być zbyt precyzyjny względem rozdzielczości pomiaru. 
+
+Tu zrobiłbym prosty test:
+
+1. policzyć dokładną liczbę przypadków r@1,
+2. wyznaczyć minimalny możliwy krok metryki,
+3. dopiero potem ustalać próg sukcesu.
+
+---
+
+## Co bym zrobił przed pętlą nr 2
+
+Nie robiłbym jeszcze dużego eksperymentu. Kolejność:
+
+**P0 — audyt definicji**
+
+* jednoznacznie zdefiniować `A`,
+* jednoznacznie zdefiniować `T`,
+* ustalić wspólną normalizację między depth,
+* sprawdzić, czy `seal` nie dostaje informacji, której nie powinien mieć.
+
+**P1 — kontrola eksperymentalna**
+
+* 5–10 seedów,
+* krzywe treningowe,
+* sprawdzenie ziarnistości r@1.
+
+**P2 — mini-sweep**
+`blend_holo = 0.0, 0.2, 0.4, 0.6, 0.8`.
+
+**P3 — dopiero potem ablacja 女**
+Ale tak zaprojektowana, żeby usunięcie fazy nie było po prostu usunięciem wcześniej ręcznie zakodowanej odpowiedzi.
+
+**P4 — pełny gate.**
+
+I dopiero wtedy można powiedzieć, czy **Most rzeczywiście daje przewagę nad Softmax**, czy tylko obecna konfiguracja eksperymentu ją maskuje.
+
+Najważniejsze: **ta recenzja nie mówi „Holo-Φ jest złe”. Mówi „obecny FAIL jest prawidłowo zgłoszony, ale eksperyment jeszcze nie pozwala powiedzieć, dlaczego wystąpił”.** To jest bardzo dobra recenzja metodologiczna.

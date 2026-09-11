@@ -1,0 +1,300 @@
+{
+  "protocol": "Holo-Φ P2 blend sweep",
+  "seeds": [
+    0,
+    1,
+    17,
+    23,
+    42
+  ],
+  "blends": [
+    0.0,
+    0.2,
+    0.4,
+    0.6,
+    0.8
+  ],
+  "epochs": 16,
+  "n_atoms": 73,
+  "rows": [
+    {
+      "seed": 0,
+      "blend": 0.0,
+      "most_r1": 0.175,
+      "sm_r1": 0.165,
+      "zero_r1": 0.1675,
+      "delta_sm": 0.009999999999999981,
+      "gate_pass": false
+    },
+    {
+      "seed": 1,
+      "blend": 0.0,
+      "most_r1": 0.1425,
+      "sm_r1": 0.1475,
+      "zero_r1": 0.1525,
+      "delta_sm": -0.0050000000000000044,
+      "gate_pass": false
+    },
+    {
+      "seed": 17,
+      "blend": 0.0,
+      "most_r1": 0.155,
+      "sm_r1": 0.135,
+      "zero_r1": 0.1475,
+      "delta_sm": 0.01999999999999999,
+      "gate_pass": false
+    },
+    {
+      "seed": 23,
+      "blend": 0.0,
+      "most_r1": 0.1825,
+      "sm_r1": 0.21,
+      "zero_r1": 0.165,
+      "delta_sm": -0.027499999999999997,
+      "gate_pass": false
+    },
+    {
+      "seed": 42,
+      "blend": 0.0,
+      "most_r1": 0.1375,
+      "sm_r1": 0.125,
+      "zero_r1": 0.12,
+      "delta_sm": 0.012500000000000011,
+      "gate_pass": false
+    },
+    {
+      "seed": 0,
+      "blend": 0.2,
+      "most_r1": 0.18,
+      "sm_r1": 0.18,
+      "zero_r1": 0.145,
+      "delta_sm": 0.0,
+      "gate_pass": false
+    },
+    {
+      "seed": 1,
+      "blend": 0.2,
+      "most_r1": 0.1775,
+      "sm_r1": 0.1525,
+      "zero_r1": 0.165,
+      "delta_sm": 0.024999999999999994,
+      "gate_pass": true
+    },
+    {
+      "seed": 17,
+      "blend": 0.2,
+      "most_r1": 0.1425,
+      "sm_r1": 0.145,
+      "zero_r1": 0.1325,
+      "delta_sm": -0.0025000000000000022,
+      "gate_pass": false
+    },
+    {
+      "seed": 23,
+      "blend": 0.2,
+      "most_r1": 0.1875,
+      "sm_r1": 0.155,
+      "zero_r1": 0.1925,
+      "delta_sm": 0.0325,
+      "gate_pass": true
+    },
+    {
+      "seed": 42,
+      "blend": 0.2,
+      "most_r1": 0.12,
+      "sm_r1": 0.1225,
+      "zero_r1": 0.1025,
+      "delta_sm": -0.0025000000000000022,
+      "gate_pass": false
+    },
+    {
+      "seed": 0,
+      "blend": 0.4,
+      "most_r1": 0.1625,
+      "sm_r1": 0.16,
+      "zero_r1": 0.16,
+      "delta_sm": 0.0025000000000000022,
+      "gate_pass": false
+    },
+    {
+      "seed": 1,
+      "blend": 0.4,
+      "most_r1": 0.1525,
+      "sm_r1": 0.14,
+      "zero_r1": 0.1375,
+      "delta_sm": 0.012499999999999983,
+      "gate_pass": false
+    },
+    {
+      "seed": 17,
+      "blend": 0.4,
+      "most_r1": 0.1325,
+      "sm_r1": 0.155,
+      "zero_r1": 0.1425,
+      "delta_sm": -0.022499999999999992,
+      "gate_pass": false
+    },
+    {
+      "seed": 23,
+      "blend": 0.4,
+      "most_r1": 0.18,
+      "sm_r1": 0.185,
+      "zero_r1": 0.165,
+      "delta_sm": -0.0050000000000000044,
+      "gate_pass": false
+    },
+    {
+      "seed": 42,
+      "blend": 0.4,
+      "most_r1": 0.1125,
+      "sm_r1": 0.115,
+      "zero_r1": 0.1325,
+      "delta_sm": -0.0025000000000000022,
+      "gate_pass": false
+    },
+    {
+      "seed": 0,
+      "blend": 0.6,
+      "most_r1": 0.155,
+      "sm_r1": 0.1275,
+      "zero_r1": 0.155,
+      "delta_sm": 0.027499999999999997,
+      "gate_pass": true
+    },
+    {
+      "seed": 1,
+      "blend": 0.6,
+      "most_r1": 0.1525,
+      "sm_r1": 0.1425,
+      "zero_r1": 0.1275,
+      "delta_sm": 0.010000000000000009,
+      "gate_pass": false
+    },
+    {
+      "seed": 17,
+      "blend": 0.6,
+      "most_r1": 0.135,
+      "sm_r1": 0.155,
+      "zero_r1": 0.1275,
+      "delta_sm": -0.01999999999999999,
+      "gate_pass": false
+    },
+    {
+      "seed": 23,
+      "blend": 0.6,
+      "most_r1": 0.165,
+      "sm_r1": 0.1775,
+      "zero_r1": 0.17,
+      "delta_sm": -0.012499999999999983,
+      "gate_pass": false
+    },
+    {
+      "seed": 42,
+      "blend": 0.6,
+      "most_r1": 0.1025,
+      "sm_r1": 0.11,
+      "zero_r1": 0.1275,
+      "delta_sm": -0.007500000000000007,
+      "gate_pass": false
+    },
+    {
+      "seed": 0,
+      "blend": 0.8,
+      "most_r1": 0.135,
+      "sm_r1": 0.13,
+      "zero_r1": 0.125,
+      "delta_sm": 0.0050000000000000044,
+      "gate_pass": false
+    },
+    {
+      "seed": 1,
+      "blend": 0.8,
+      "most_r1": 0.15,
+      "sm_r1": 0.1,
+      "zero_r1": 0.1,
+      "delta_sm": 0.04999999999999999,
+      "gate_pass": true
+    },
+    {
+      "seed": 17,
+      "blend": 0.8,
+      "most_r1": 0.1325,
+      "sm_r1": 0.095,
+      "zero_r1": 0.12,
+      "delta_sm": 0.037500000000000006,
+      "gate_pass": true
+    },
+    {
+      "seed": 23,
+      "blend": 0.8,
+      "most_r1": 0.1575,
+      "sm_r1": 0.145,
+      "zero_r1": 0.135,
+      "delta_sm": 0.012500000000000011,
+      "gate_pass": false
+    },
+    {
+      "seed": 42,
+      "blend": 0.8,
+      "most_r1": 0.1175,
+      "sm_r1": 0.1125,
+      "zero_r1": 0.1,
+      "delta_sm": 0.0049999999999999906,
+      "gate_pass": false
+    }
+  ],
+  "by_blend": [
+    {
+      "blend": 0.0,
+      "n_pass": 0,
+      "n_seeds": 5,
+      "mean_delta_sm": 0.001999999999999996,
+      "best_delta_sm": 0.01999999999999999,
+      "worst_delta_sm": -0.027499999999999997,
+      "mean_most": 0.1585,
+      "mean_sm": 0.1565
+    },
+    {
+      "blend": 0.2,
+      "n_pass": 2,
+      "n_seeds": 5,
+      "mean_delta_sm": 0.010499999999999999,
+      "best_delta_sm": 0.0325,
+      "worst_delta_sm": -0.0025000000000000022,
+      "mean_most": 0.1615,
+      "mean_sm": 0.151
+    },
+    {
+      "blend": 0.4,
+      "n_pass": 0,
+      "n_seeds": 5,
+      "mean_delta_sm": -0.0030000000000000027,
+      "best_delta_sm": 0.012499999999999983,
+      "worst_delta_sm": -0.022499999999999992,
+      "mean_most": 0.148,
+      "mean_sm": 0.151
+    },
+    {
+      "blend": 0.6,
+      "n_pass": 1,
+      "n_seeds": 5,
+      "mean_delta_sm": -0.0004999999999999949,
+      "best_delta_sm": 0.027499999999999997,
+      "worst_delta_sm": -0.01999999999999999,
+      "mean_most": 0.142,
+      "mean_sm": 0.14250000000000002
+    },
+    {
+      "blend": 0.8,
+      "n_pass": 2,
+      "n_seeds": 5,
+      "mean_delta_sm": 0.022,
+      "best_delta_sm": 0.04999999999999999,
+      "worst_delta_sm": 0.0049999999999999906,
+      "mean_most": 0.1385,
+      "mean_sm": 0.1165
+    }
+  ],
+  "best_blend": 0.8,
+  "verdict": "best blend=0.8 PASS 2/5 meanΔSM=+0.0220; czy FAIL P1 to metoda czy hiperparametr — patrz rozrzut by_blend"
+}

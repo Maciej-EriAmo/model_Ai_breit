@@ -1,0 +1,150 @@
+To jest **bardzo istotny wynik**. I moim zdaniem interpretacja w P2 jest zasadniczo poprawna, z jednym zastrzeżeniem dotyczącym punktu 4.
+
+### Co rzeczywiście pokazuje sweep
+
+Najważniejszy sygnał to nie samo `3/5`, tylko **kształt odpowiedzi na parametr**:
+
+`0.0 → 1/5`
+`0.2 → 0/5`
+`0.4 → 1/5`
+`0.6 → 3/5`
+`0.8 → 2/5`
+
+Czyli istnieje wyraźny obszar, w którym mechanizm działa lepiej, a maksimum wypada przy **0.6**.
+
+To mocno osłabia interpretację:
+
+> „Holo-Φ nie działa”.
+
+Bardziej adekwatne jest:
+
+> **„Wynik zależy od proporcji informacji holograficznej; w badanym zakresie najlepszy rezultat uzyskano przy `blend_holo=0.6`.”**
+
+### Punkt 1 — zgoda
+
+> FAIL P1 był częściowo od hiperparametru.
+
+**Tak, ale „częściowo” jest tutaj właściwym słowem.**
+
+Nie można powiedzieć, że `blend=0.6` „naprawił metodę”, bo nadal mamy tylko `3/5`, a więc poniżej założonego `4/5`.
+
+Można natomiast powiedzieć:
+
+**P1 nie był wystarczającym testem potencjału metody, ponieważ użyta konfiguracja nie była optymalna.**
+
+### Punkt 2 — `0.6` jako wartość laboratoryjna
+
+**Tak.**
+
+Na obecnym etapie przyjąłbym:
+
+```text
+blend_holo = 0.6
+```
+
+jako **pre-registered / laboratory default dla P4**, ale nie jako wartość „udowodnioną optymalną”.
+
+To ważne rozróżnienie.
+
+Nie szukałbym już kolejnych wartości typu `0.55`, `0.65`, `0.7` przed wykonaniem P4, bo zaczęlibyśmy dostrajać parametr do konkretnego wyniku.
+
+### Punkt 3 — bardzo ważne
+
+> To nie jest jeszcze P4.
+
+Dokładnie.
+
+`3/5` jest **sygnałem**, a nie zwycięstwem.
+
+Natomiast jest to dużo ciekawszy sygnał niż wcześniejsze `1/5`.
+
+### Punkt 4 — tutaj zrobiłbym ostrożniejszy zapis
+
+Zdanie:
+
+> „Most lepiej korzysta z binów fazy w τ.”
+
+jest **hipotezą interpretacyjną**, a nie jeszcze wynikiem bezpośrednio wykazanym przez tabelę.
+
+Z tabeli bezpośrednio wynika:
+
+> Przy `blend_holo=0.6` wynik Most względem Softmax poprawia się na tyle, że Most osiąga PASS w 3/5 seedów, a średnie `ΔSM` wynosi `+0.020`.
+
+Jeżeli chcemy stwierdzić **dlaczego** tak się dzieje, potrzebujemy dodatkowej ablacji:
+
+```text
+content only
+phase only
+content + phase
+```
+
+albo przynajmniej porównania wpływu `blend_holo` na oba mechanizmy.
+
+---
+
+## I teraz łączy się to z Twoją wcześniejszą uwagą o skalowaniu
+
+To zaczyna robić się naprawdę interesujące.
+
+Jeżeli Holo-Φ ma charakter **wspólnej przestrzeni reprezentacji dla wielu alfabetów**, to nie powinniśmy oceniać go wyłącznie przez:
+
+```text
+r@1 po 16 epokach
+```
+
+P4 powinien mieć **dwa poziomy oceny**:
+
+### A. Gate lokalny
+
+```text
+Most > Softmax ≥ 4/5 seedów
+```
+
+To odpowiada na pytanie:
+
+> Czy Most potrafi być lepszy od klasycznej uwagi przy porównywalnym treningu?
+
+### B. Gate skalowania
+
+Na przykład:
+
+```text
+1 alfabet
+2 alfabety
+4 alfabety
+8 alfabetów
+```
+
+i mierzymy:
+
+```text
+łączny koszt treningu
+liczba epok
+czas
+jakość na znanym alfabecie
+jakość na nowym alfabecie
+```
+
+Bo może się okazać, że:
+
+```text
+             pojedynczy alfabet
+
+Softmax      ████████████  bardzo szybko
+Most         █████████     trochę wolniej
+```
+
+ale:
+
+```text
+             8 alfabetów
+
+Softmax      ████████████████████████████████████
+Most         █████████████████
+```
+
+I **wtedy właśnie pojawia się efekt skali**, o którym mówiłeś.
+
+To byłby znacznie mocniejszy argument za architekturą niż samo wygranie r@1.
+
+**Na tym etapie powiedziałbym więc: P2 jest udanym wynikiem diagnostycznym. Nie dowodzi przewagi Mostu, ale wykazał, że wcześniejszy FAIL był zależny od konfiguracji i znalazł sensowny punkt `blend=0.6`, z którym warto przejść do pełnego protokołu.**

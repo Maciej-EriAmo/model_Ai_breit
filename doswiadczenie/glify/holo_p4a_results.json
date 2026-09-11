@@ -1,0 +1,96 @@
+{
+  "protocol": "Holo-Φ P4a local gate",
+  "blend_holo": 0.6,
+  "seeds": [
+    0,
+    1,
+    2,
+    7,
+    11,
+    17,
+    23,
+    42
+  ],
+  "epochs": 16,
+  "min_pass_ratio": 0.8,
+  "min_pass_count": 7,
+  "n_pass": 2,
+  "p4a_pass": false,
+  "mean_delta_sm": 0.0040625,
+  "best": {
+    "seed": 0,
+    "most_r1": 0.155,
+    "sm_r1": 0.1275,
+    "zero_r1": 0.155,
+    "delta_sm": 0.027499999999999997,
+    "gate_pass": true
+  },
+  "rows": [
+    {
+      "seed": 0,
+      "most_r1": 0.155,
+      "sm_r1": 0.1275,
+      "zero_r1": 0.155,
+      "delta_sm": 0.027499999999999997,
+      "gate_pass": true
+    },
+    {
+      "seed": 1,
+      "most_r1": 0.1525,
+      "sm_r1": 0.1425,
+      "zero_r1": 0.1275,
+      "delta_sm": 0.010000000000000009,
+      "gate_pass": false
+    },
+    {
+      "seed": 2,
+      "most_r1": 0.1475,
+      "sm_r1": 0.135,
+      "zero_r1": 0.115,
+      "delta_sm": 0.012499999999999983,
+      "gate_pass": false
+    },
+    {
+      "seed": 7,
+      "most_r1": 0.1175,
+      "sm_r1": 0.0975,
+      "zero_r1": 0.1025,
+      "delta_sm": 0.01999999999999999,
+      "gate_pass": true
+    },
+    {
+      "seed": 11,
+      "most_r1": 0.1525,
+      "sm_r1": 0.15,
+      "zero_r1": 0.1675,
+      "delta_sm": 0.0025000000000000022,
+      "gate_pass": false
+    },
+    {
+      "seed": 17,
+      "most_r1": 0.135,
+      "sm_r1": 0.155,
+      "zero_r1": 0.1275,
+      "delta_sm": -0.01999999999999999,
+      "gate_pass": false
+    },
+    {
+      "seed": 23,
+      "most_r1": 0.165,
+      "sm_r1": 0.1775,
+      "zero_r1": 0.17,
+      "delta_sm": -0.012499999999999983,
+      "gate_pass": false
+    },
+    {
+      "seed": 42,
+      "most_r1": 0.1025,
+      "sm_r1": 0.11,
+      "zero_r1": 0.1275,
+      "delta_sm": -0.007500000000000007,
+      "gate_pass": false
+    }
+  ],
+  "verdict": "P4a FAIL: 2/8 (wymagane ≥7/8 = 80%); meanΔSM=+0.0041 best=+0.0275@seed0",
+  "note": "blend=0.6 pre-registered z P2; bez fine-tune. To gate lokalny (P4a), nie gate skalowania alfabetów (P4b)."
+}

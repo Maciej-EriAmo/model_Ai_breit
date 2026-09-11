@@ -267,7 +267,11 @@ def run_seed(
     """
     torch.manual_seed(seed)
     n_atoms = len(load_raw_records(dump))
-    bs = min(16, max(4, n_atoms))
+    # Duże grafy (N≳400): mniejszy batch — uwaga O(N²) na próbkę
+    if n_atoms >= 400:
+        bs = 4
+    else:
+        bs = min(16, max(4, n_atoms))
     g, train, val, val_clean = make_dump_loaders(
         dump,
         n_train=n_train,

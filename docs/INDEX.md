@@ -12,6 +12,8 @@
 | 2 | [`INSTRUKCJA.md`](INSTRUKCJA.md) | **obsługa** — co klikać na co dzień |
 | 3 | [`LEARN.md`](LEARN.md) | ładowanie danych + nauka (`phimost_learn`) |
 | 4 | [`TRANSCODE.md`](TRANSCODE.md) | **produkt** — transkodowanie alfabetów; lat=słowo vs CJK=znak; gate vs Softmax |
+| 4b | [`HOLO_ZALOZENIA.md`](HOLO_ZALOZENIA.md) | **Holo-Φ** — założenia |
+| 4c | [`../doswiadczenie/glify/HOLO_WNIOSKI.md`](../doswiadczenie/glify/HOLO_WNIOSKI.md) | wnioski P0–P2 (blend **0.6**) |
 | 5 | [`GLYPHS.md`](GLYPHS.md) | notatki badawcze G0/G1 (lab) |
 | 6 | [`POROWNANIE_MODELE.md`](POROWNANIE_MODELE.md) | Most vs Transformer/LLM · czemu uczyć się na własnym |
 | 7 | [`PAMIEC_I_KARMIENIE.md`](PAMIEC_I_KARMIENIE.md) | **kanon** pamięci M1/M2/M3 + karmienie `x`/`τ` |
