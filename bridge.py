@@ -16,6 +16,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from most_seal import apply_t_key_seal
 from phi_schema import PhiGraphBatch
 
 
@@ -111,6 +112,7 @@ class BridgeTransformer(nn.Module):
             A = A.masked_fill(
                 torch.eye(N, device=x.device, dtype=torch.bool), 0.0
             )
+            A = apply_t_key_seal(A, tracer)
             if key_pad is not None:
                 A = A.masked_fill(key_pad, 0.0)
             w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)

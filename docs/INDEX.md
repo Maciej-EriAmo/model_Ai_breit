@@ -41,7 +41,7 @@ Hub: [`../doswiadczenie/README.md`](../doswiadczenie/README.md) · checklist: [`
 |-----|---------|------------------|
 | **JoannaM** (kandydat optyczny) | [`../doswiadczenie/joannam/JOANNAM.md`](../doswiadczenie/joannam/JOANNAM.md) | weryfikacja [`WERYFIKACJA.md`](../doswiadczenie/joannam/WERYFIKACJA.md) · forum EN [`FORUM_EN.md`](../doswiadczenie/joannam/FORUM_EN.md) |
 | **DESI / niebo** | [`../doswiadczenie/desi/`](../doswiadczenie/desi/) | `WYNIKI_DESI*.md`, holdout, BH/AGN, [`AUDYT_2026-09-10.md`](../doswiadczenie/desi/AUDYT_2026-09-10.md) |
-| **Glify / transkodowanie** | [`TRANSCODE.md`](TRANSCODE.md) · [`GLYPHS.md`](GLYPHS.md) | [`../doswiadczenie/glify/`](../doswiadczenie/glify/) · [`TRANSCODE.md`](../doswiadczenie/glify/TRANSCODE.md) |
+| **Glify / transkodowanie** | [`TRANSCODE.md`](TRANSCODE.md) · [`GLYPHS.md`](GLYPHS.md) | [`../doswiadczenie/glify/`](../doswiadczenie/glify/) · wnioski [`AUDYT_WNIOSKI.md`](../doswiadczenie/glify/AUDYT_WNIOSKI.md) |
 
 > `historia/` = artefakty faz A–E + n-ciał + learn. Tor nieba i glify → `doswiadczenie/`.
 

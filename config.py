@@ -28,6 +28,12 @@ class PhiMostCanon:
     # bramki sukcesu
     gate_classify_delta: float = 0.03  # Most−SM na ≥2 n
     gate_recall_r1: float = 0.02  # Most−SM r@1
+    # uszczelnienie Most: bramka T na kluczach uwagi (Softmax twin bez tego)
+    # tracer dim3 = T; CLS (T=0) zawsze otwarty jako key
+    t_attn_floor: float = 0.20  # hard mask: T < floor → waga 0 (TOMB / archive)
+    t_attn_cold: float = 0.45  # COLD band: T < cold → kara wykładnicza
+    t_attn_exp_k: float = 12.0  # A *= exp(-k * relu(cold - T))
+    t_attn_seal: bool = True  # wyłączyć tylko do ablacji
     # zakazy
     allow_ema_superposition: bool = False
     # Faza E — product OFF

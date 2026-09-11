@@ -28,17 +28,48 @@ Gate: Δ(Most−SM) r@1 ≥ **+0.02**.
 **Werdykt B (wybór best-seed jak G0):** **PASS** (seed=0).  
 `phimost_learn` → `WERDYKT: PASS`.
 
+## Run C — po audycie / fixach (2026-09-11, epochs 20, char_focus=5)
+
+| seed | Most | SM | ZERO | ΔSM | gate |
+|------|------|----|------|-----|------|
+| 0 | 0.300 | 0.342 | 0.325 | −0.0422 | FAIL |
+| 1 | 0.334 | 0.342 | 0.359 | −0.0078 | FAIL |
+| 42 | 0.317 | 0.327 | 0.322 | −0.0094 | FAIL |
+
+**Werdykt C:** **FAIL** (wszystkie seed; best ΔSM=−0.008). Softmax-twin **powyżej** Mostu.
+
+## Run C′ — ablacja char_focus=0 (ten sam kontrakt v2)
+
+| seed | Most | SM | ZERO | ΔSM | gate |
+|------|------|----|------|-----|------|
+| 0 | 0.325 | 0.325 | 0.317 | +0.0000 | FAIL |
+| 1 | 0.316 | 0.344 | 0.334 | −0.0281 | FAIL |
+| 42 | 0.308 | 0.311 | 0.306 | −0.0031 | FAIL |
+
+**Werdykt C′:** **FAIL** — nie samym `char_focus`. Regresja vs Run B po fixach audytu (span_id / budowa / Softmax framing honesty nie zmieniają loadera Softmax — nadal twin-on-Φ).
+
 ## Interpretacja parity
 
 | Pytanie | Odpowiedź |
 |---------|-----------|
-| Czy Most jest systematycznie kaleką vs Softmax? | **Nie** — na seed 0 wygrywa gate; na 42 lekko powyżej SM |
-| Czy parity jest stabilna na wszystkich seedach? | **Nie** — seed 1: Most **przegrywa** z Softmax (−3.3 pkt) |
-| ZERO vs Most | Blisko siebie → τ pomaga słabo / dump mały |
-| Claim komercyjny „lepsi niż klasyczna NN”? | **Za wcześnie** — PASS jak G0 (1/3 seedów), nie multi-seed |
+| Run B (pre-audit polish) | PASS best-seed0 (+0.022), 1/3 |
+| Po audycie (C/C′) | **FAIL** — Most ≤ Softmax na 0,1,42 |
+| Czy Most jest kaleką? | Na tym małym dumpie **po fixach tak w sensie gate** — Softmax-twin wygrywa lub remisuje |
+| Claim komercyjny | **Nie** — najpierw odzyskać gate (korpus / pary / τ), nie marketing |
 
-**G2 gate lab:** PASS (best-seed), z zastrzeżeniem seed-sensitivity.  
-**Dalej:** bogatszy korpus multi-script, demotion COLD w rankerze, tabela `drop_T` na większym N.
+## Run D — po uszczelnieniu T (`most_seal`, epochs 20)
+
+| seed | Most | SM | ZERO | ΔSM | gate |
+|------|------|----|------|-----|------|
+| 0 | 0.303 | 0.342 | 0.316 | −0.0391 | FAIL |
+| 1 | 0.323 | 0.342 | 0.342 | −0.0187 | FAIL |
+| 42 | 0.306 | 0.327 | 0.325 | −0.0203 | FAIL |
+
+**Werdykt D:** gate ΔSM nadal **FAIL**.  
+**Recall smoke** (q=`lat:M`): `archive/X` spadł z top-2 (G0, +0.81) na **#7 (+0.04)** — bramka działa na przeciek uwagi; embedding content nadal może rankować archive nisko.  
+Kod: `most_seal.py` · test `test_most_seal.py`.
+
+**Dalej:** skala 500–1000 atomów + filtr kandydatów po T w recall; classical Softmax loader.
 
 ## Komendy
 

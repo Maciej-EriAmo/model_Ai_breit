@@ -30,6 +30,8 @@ python make_dump_glyphs.py
 Naprawione: glued lat+CJK, classical≠archive, Softmax framing (twin-on-Φ), photo→v2, char focus.  
 Review scratch: `grok-review-b7ffadea.md`.
 
+**Wnioski / kryteria sukcesu (kanon):** [`AUDYT_WNIOSKI.md`](AUDYT_WNIOSKI.md) — niestabilność seed, przeciek COLD, uszczelnienie `T` jako bloker, skala 500–1000, DESI zawieszone.
+
 ## FUTURE — metoda 2 (nie teraz)
 
 Hologramy liter/kany: składanie hologramów → słowa **lub** znaki pochodne od rdzenia (np. onna/女 + rodzina).  

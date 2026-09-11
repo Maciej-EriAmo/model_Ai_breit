@@ -1,11 +1,11 @@
 # phimost_learn
 
-dump=`dumps\from_glyphs` atoms=27 seed=0
-ΔSM=+0.0219 → **PASS**
+dump=`dumps\from_glyphs` atoms=27 seed=1
+ΔSM=-0.0187 → **FAIL**
 ckpt=`C:\Users\drwis\model Ai\checkpoints\most_glyphs.pt` promote=False
 
 | seed | Most | SM | ZERO | ΔSM | gate |
 |------|------|----|------|-----|------|
-| 0 | 0.331 | 0.309 | 0.308 | +0.0219 | PASS |
-| 1 | 0.316 | 0.348 | 0.331 | -0.0328 | FAIL |
-| 42 | 0.322 | 0.314 | 0.320 | +0.0078 | FAIL |
+| 0 | 0.303 | 0.342 | 0.316 | -0.0391 | FAIL |
+| 1 | 0.323 | 0.342 | 0.342 | -0.0187 | FAIL |
+| 42 | 0.306 | 0.327 | 0.325 | -0.0203 | FAIL |
