@@ -14,6 +14,8 @@
 | 4 | [`TRANSCODE.md`](TRANSCODE.md) | **produkt** — transkodowanie alfabetów; lat=słowo vs CJK=znak; gate vs Softmax |
 | 4b | [`HOLO_ZALOZENIA.md`](HOLO_ZALOZENIA.md) | **Holo-Φ** — założenia |
 | 4c | [`../doswiadczenie/glify/HOLO_WNIOSKI.md`](../doswiadczenie/glify/HOLO_WNIOSKI.md) | wnioski P0–P2 (blend **0.6**) |
+| 4d | [`HOLO_P5_TOR_DESI.md`](HOLO_P5_TOR_DESI.md) | **projekt P5** — τ z Unihan (stroke/radical) wzorem DESI, po P4a FAIL |
+| 4e | [`HOLO_P5_PLAN_IMPLEMENTACJI.md`](HOLO_P5_PLAN_IMPLEMENTACJI.md) | plan implementacji + testów P5 (kod jeszcze nie napisany) |
 | 5 | [`GLYPHS.md`](GLYPHS.md) | notatki badawcze G0/G1 (lab) |
 | 6 | [`POROWNANIE_MODELE.md`](POROWNANIE_MODELE.md) | Most vs Transformer/LLM · czemu uczyć się na własnym |
 | 7 | [`PAMIEC_I_KARMIENIE.md`](PAMIEC_I_KARMIENIE.md) | **kanon** pamięci M1/M2/M3 + karmienie `x`/`τ` |
