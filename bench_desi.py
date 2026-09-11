@@ -21,7 +21,7 @@ from config import CANON, assert_canon_model_kwargs
 from image_batch import ImageBatch, load_desi_train_val
 
 ROOT = Path(__file__).resolve().parent
-HISTORIA = ROOT / "historia"
+DOSWIADCZENIE_DESI = ROOT / "doswiadczenie" / "desi"
 
 
 def train_eval_image(
@@ -196,12 +196,12 @@ def main() -> int:
         "",
         "Most<SM nie znaczy „tracer zbędny” — Softmax nie formuje mostu.",
     ]
-    HISTORIA.mkdir(parents=True, exist_ok=True)
-    out_md = HISTORIA / (
+    DOSWIADCZENIE_DESI.mkdir(parents=True, exist_ok=True)
+    out_md = DOSWIADCZENIE_DESI / (
         "WYNIKI_DESI_DEMO.md" if args.demo_only else "WYNIKI_DESI.md"
     )
     out_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    (HISTORIA / "desi_last.json").write_text(
+    (DOSWIADCZENIE_DESI / "desi_last.json").write_text(
         json.dumps(
             {
                 "softmax": r_sm,

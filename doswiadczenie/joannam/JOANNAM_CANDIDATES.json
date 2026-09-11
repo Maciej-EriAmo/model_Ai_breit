@@ -1,0 +1,77 @@
+{
+  "n_scored": 117,
+  "threshold": 0.85,
+  "top": [
+    {
+      "file": "desi_grid_004_ra120.0_dec5.0_s128.fits",
+      "p_cluster": 0.9803788661956787,
+      "T_mean": 0.5578957796096802,
+      "dE": 0.48415249586105347,
+      "pred": 1
+    },
+    {
+      "file": "desi_new_field_01_ra142.5_dec6.5_s128.fits",
+      "p_cluster": 0.9701834917068481,
+      "T_mean": 0.5908902883529663,
+      "dE": 0.5545850396156311,
+      "pred": 1
+    },
+    {
+      "file": "desi_field_ah_ra188.0_dec-10.0_s128.fits",
+      "p_cluster": 0.8525723814964294,
+      "T_mean": 0.5898675322532654,
+      "dE": 0.5764057636260986,
+      "pred": 1
+    }
+  ],
+  "top5": [
+    {
+      "file": "desi_grid_004_ra120.0_dec5.0_s128.fits",
+      "p_cluster": 0.9803788661956787,
+      "T_mean": 0.5578957796096802,
+      "dE": 0.48415249586105347,
+      "pred": 1
+    },
+    {
+      "file": "desi_new_field_01_ra142.5_dec6.5_s128.fits",
+      "p_cluster": 0.9701834917068481,
+      "T_mean": 0.5908902883529663,
+      "dE": 0.5545850396156311,
+      "pred": 1
+    },
+    {
+      "file": "desi_field_ah_ra188.0_dec-10.0_s128.fits",
+      "p_cluster": 0.8525723814964294,
+      "T_mean": 0.5898675322532654,
+      "dE": 0.5764057636260986,
+      "pred": 1
+    },
+    {
+      "file": "desi_new_field_03_ra167.5_dec14.5_s128.fits",
+      "p_cluster": 0.8467613458633423,
+      "T_mean": 0.5813454389572144,
+      "dE": 0.47437193989753723,
+      "pred": 1
+    },
+    {
+      "file": "desi_field_d_ra5.0_dec15.0_s128.fits",
+      "p_cluster": 0.280128538608551,
+      "T_mean": 0.5879183411598206,
+      "dE": 0.47717785835266113,
+      "pred": 0
+    }
+  ],
+  "best_candidate": {
+    "file": "desi_grid_004_ra120.0_dec5.0_s128.fits",
+    "p_cluster": 0.9803788661956787,
+    "T_mean": 0.5578957796096802,
+    "dE": 0.48415249586105347,
+    "pred": 1
+  },
+  "joannam_ready": true,
+  "note": "NOT confirmed BH/discovery. Optical Legacy score only. If user accepts a candidate, propose name JoannaM.",
+  "accepted_name": "JoannaM",
+  "accepted_file": "desi_grid_004_ra120.0_dec5.0_s128.fits",
+  "dedicated_to": "Joanna (żona Mazura)",
+  "accepted_date": "2026-09-10"
+}

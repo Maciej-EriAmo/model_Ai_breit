@@ -22,65 +22,11 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy import ndimage
 
+from transcode.phi_build import bind, glyph_T, state_for_T
+from transcode.scripts import detect_script_char, script_prefix
+
 ROOT = Path(__file__).resolve().parent
 DEFAULT_OUT = ROOT / "dumps" / "from_photo"
-
-
-# --- wspólne z G0 (stan / T) -------------------------------------------------
-
-def state_for_T(T: float) -> str:
-    if T >= 0.75:
-        return "HOT"
-    if T >= 0.45:
-        return "WARM"
-    if T >= 0.2:
-        return "COLD"
-    return "TOMB"
-
-
-def glyph_T(i: int, n: int, focus: int) -> float:
-    dist = abs(i - focus)
-    if dist == 0:
-        return 0.95
-    if dist == 1:
-        return 0.70
-    if dist == 2:
-        return 0.48
-    return 0.28
-
-
-def bind(edges: list, a: str, b: str, name: str) -> None:
-    edges.append({"kind": "bind", "src": a, "dst": b, "name": name})
-    edges.append({"kind": "bind", "src": b, "dst": a, "name": name})
-
-
-# --- skrypt / etykiety -------------------------------------------------------
-
-_HIRA_RE = re.compile(r"[\u3040-\u309F]")
-_KATA_RE = re.compile(r"[\u30A0-\u30FF]")
-_KANJI_RE = re.compile(r"[\u4E00-\u9FFF]")
-_LAT_RE = re.compile(r"[A-Za-z0-9À-ÿ]")
-
-
-def detect_script_char(ch: str) -> str:
-    if _HIRA_RE.match(ch):
-        return "hira"
-    if _KATA_RE.match(ch):
-        return "kata"
-    if _KANJI_RE.match(ch):
-        return "kanji"
-    if _LAT_RE.match(ch):
-        return "lat"
-    return "sym"
-
-
-def script_prefix(script: str, ch: str | None, idx: int) -> tuple[str, str]:
-    """Zwraca (id_prefix_script, S). Znak z --text zawsze dyktuje skrypt glifu."""
-    if ch is None or ch == "":
-        sc = "sym" if script == "auto" else script
-        return sc, f"{sc}:#{idx}"
-    sc = detect_script_char(ch)
-    return sc, f"{sc}:{ch}"
 
 
 # --- segmentacja -------------------------------------------------------------

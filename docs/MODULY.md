@@ -22,7 +22,10 @@ Root: `C:\Users\drwis\model Ai`
 | `make_dump_textfile.py` | budowa dumpa `dumps/textfile_phi` |
 | `make_dump_glyphs.py` | PR-G0: lat+hira → `dumps/from_glyphs` |
 | `glyph_transcribe.py` | PR-G1: PNG/JPEG → PhiJSON (`dumps/from_photo`) |
-| `desi_cutouts.py` / `image_batch.py` | szkic DESI/patchy (tor boczny, nie alfabet) |
+| `transcode/` | **transkodowanie alfabetów** → Φ (`glyph_unit_v2`) |
+| `test_transcode_contract.py` | kontrakt lat=słowo / CJK=znak + classical tokens |
+| `desi_cutouts.py` / `image_batch.py` | DESI/patchy → wyniki w `doswiadczenie/desi/` (nie alfabet) |
+| `hunt_joannam.py` | skan kandydatów → `doswiadczenie/joannam/` |
 | `phi_dump.py` | loader PhiJSON |
 | `dump_recall.py` | recall z bind na dumpie |
 

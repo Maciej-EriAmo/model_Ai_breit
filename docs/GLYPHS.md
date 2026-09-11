@@ -10,7 +10,10 @@
 
 ## 1. Teza (jednym akapitem)
 
-Zamiast uczyć modelu na **bitmapie** znaku (OCR / CNN / „transformer jak dla Chin = uczą QR”), transkrybujemy zdjęcie lub tekst na **atomy przestrzeni Φ** \(A=(S,E,T,\mathrm{state})\) i uczymy Most Lorentza ze **stanu atomu**. Druga oś litery to temperatura **hot/cold** (`T`): mówi *kiedy* / *czy wpuścić do okna uwagi*, nie *gdzie jest piksel*. Ten sam kontrakt ma być **uniwersalny dla dowolnego alfabetu** (łacina, hiragana, kanji, znaki narodowe, …) — zmienia się segmentacja i słownik `S`, nie silnik ani tor nauki.
+Zamiast uczyć modelu na **bitmapie** znaku (OCR / CNN / „transformer jak dla Chin = uczą QR”), transkrybujemy zdjęcie lub tekst na **atomy przestrzeni Φ** \(A=(S,E,T,\mathrm{state})\) i uczymy Most Lorentza ze **stanu atomu**. Druga oś litery to temperatura **hot/cold** (`T`): mówi *kiedy* / *czy wpuścić do okna uwagi*, nie *gdzie jest piksel*. Ten sam kontrakt ma być **uniwersalny dla dowolnego alfabetu** — zmienia się segmentacja, słownik `S` i **jądro semantyczne** (łacina = **słowo**, CJK/kana = **znak**), nie silnik.
+
+**Kanon produktu + gate vs klasyczna tokenizacja:** [`TRANSCODE.md`](TRANSCODE.md).  
+Klasyczna metoda (litery + następstwo → Softmax) zostaje świadkiem — nowa nie może być kaleką.
 
 Powiązanie z kanonem Mostu: wejście Bridge to para **`(x[t], T[t])`**, nie samo `x[t]`. Softmax chodzi po osi tożsamości/kolejności; Most adresuje po osi `T` (\(\Delta E\) z tracera). Bez niezerowego \(\Delta E\) most degeneruje (kontrola ZERO).
 
@@ -111,7 +114,7 @@ Warstwy pamięci (nie mieszać): M1 wagi · M2 dump Φ · M3 Holon `Most_Lorentz
 | **42** | **0.259** | 0.231 | 0.227 | **+0.028** | **PASS** |
 
 **Werdykt G0: PASS** (seed 42). Ckpt: `checkpoints/most_glyphs.pt`.  
-Szczegóły + recall: [`../historia/WYNIKI_GLYPHS.md`](../historia/WYNIKI_GLYPHS.md).
+Szczegóły + recall: [`../doswiadczenie/glify/WYNIKI_GLYPHS.md`](../doswiadczenie/glify/WYNIKI_GLYPHS.md).
 
 ### Obserwacje do paper / dyskusji
 
@@ -127,7 +130,7 @@ Szczegóły + recall: [`../historia/WYNIKI_GLYPHS.md`](../historia/WYNIKI_GLYPHS
 |----|--------|-----------|
 | **G0** | syntetyczny dump + learn | **DONE PASS** |
 | **G1** | `glyph_transcribe.py`: zdjęcie → PhiJSON | **DONE** (demo **lat-only**; wczesny PASS na mixed PNG = nieważny — patrz audyt) |
-| **G2** | multi-script bench, ablacje `drop_T` / ZERO, mniej archive w top-k | ≥2 skrypty, gate stabilniejszy |
+| **G2** | parity Softmax\|Most\|ZERO na `glyph_unit_v2` | **PASS best-seed** (seed0 +0.022; 1/3) — [`../doswiadczenie/glify/WYNIKI_GLYPHS_G2.md`](../doswiadczenie/glify/WYNIKI_GLYPHS_G2.md) |
 | **G3** | Luneta Store → dump (nie screen) | adapter atomów UI |
 | **D\*** | DESI / niebo jako *osobny* test geometrii obiektów | po G1–G2; nie mylić z alfabetem |
 
@@ -149,7 +152,7 @@ Szkice poboczne (nie kanon alfabetu): `desi_cutouts.py`, `image_batch.py`, `benc
 
 > We treat written characters as thermal atoms in an information space Φ, not as pixel grids. Each glyph carries identity \((S,E)\) and a temperature \(T\) (hot/cold) that gates entry into a Lorentz-bridge attention window. A Lorentz-locked transformer (Most) is trained on Φ-graphs against Softmax and zero-tracer controls. On a synthetic Latin+hiragana atom dump (PR-G0), Most passed the recall gate (Δr@1 ≈ +2.8 pp, seed 42). The intended application is a script-agnostic pipeline: image → atoms → learn from atom state, covering Latin, kana, kanji, and other orthographies under one contract.
 
-Gdy będzie paper: przenieść §1–5 + tabele z `historia/WYNIKI_GLYPHS.md`; dodać reprodukcję komend z §4.
+Gdy będzie paper: przenieść §1–5 + tabele z `doswiadczenie/glify/WYNIKI_GLYPHS.md`; dodać reprodukcję komend z §4.
 
 ---
 
@@ -165,12 +168,13 @@ Gdy będzie paper: przenieść §1–5 + tabele z `historia/WYNIKI_GLYPHS.md`; d
 | `dumps/from_glyphs/` | M2 (G0) |
 | `dumps/from_photo/` | M2 (G1 demo/transkrypcja) |
 | `ZdjęcieW/demo/demo_lat.png` | demo G1 (tylko łacina) |
-| `historia/AUDYT_2026-09-10.md` | audyt + lista fixów B1–M8 |
+| `doswiadczenie/desi/AUDYT_2026-09-10.md` | audyt + lista fixów B1–M8 |
 | `checkpoints/most_glyphs.pt` | M1 (G0) |
 | `checkpoints/most_glyphs_photo.pt` | M1 (G1, jeśli trenowano) |
-| `historia/WYNIKI_GLYPHS.md` | wynik empiryczny G0 |
-| `historia/WYNIKI_GLYPHS_G1.md` | wynik / smoke G1 |
-| `historia/LABNOTE_GLYPHS_2026-09-10.md` | wpis dziennika lab |
+| `doswiadczenie/glify/WYNIKI_GLYPHS.md` | wynik empiryczny G0 |
+| `doswiadczenie/glify/WYNIKI_GLYPHS_G1.md` | wynik / smoke G1 |
+| `doswiadczenie/glify/LABNOTE_GLYPHS_2026-09-10.md` | wpis dziennika lab |
+| `doswiadczenie/README.md` | hub doświadczeń (glify ≠ DESI) |
 | `phimost_learn.py` | tor nauki (+ alias ckpt `glyphs`) |
 
 ---

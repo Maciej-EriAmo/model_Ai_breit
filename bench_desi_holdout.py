@@ -23,7 +23,7 @@ from image_batch import (
 )
 
 ROOT = Path(__file__).resolve().parent
-HISTORIA = ROOT / "historia"
+DOSWIADCZENIE_DESI = ROOT / "doswiadczenie" / "desi"
 CKPT_DIR = ROOT / "checkpoints"
 
 
@@ -246,10 +246,10 @@ def main() -> int:
             f"{'✓' if r['ok'] else '✗'} | {r['p_cluster']:.2f} | {r['dE']:.3f} |"
         )
 
-    HISTORIA.mkdir(parents=True, exist_ok=True)
-    out = HISTORIA / "WYNIKI_DESI_HOLDOUT.md"
+    DOSWIADCZENIE_DESI.mkdir(parents=True, exist_ok=True)
+    out = DOSWIADCZENIE_DESI / "WYNIKI_DESI_HOLDOUT.md"
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    (HISTORIA / "desi_holdout_last.json").write_text(
+    (DOSWIADCZENIE_DESI / "desi_holdout_last.json").write_text(
         json.dumps(
             {
                 "val": {"sm": r_sm_val, "most": r_most_val, "zero": r_z_val},

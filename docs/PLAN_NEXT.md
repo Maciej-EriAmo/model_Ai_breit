@@ -89,7 +89,7 @@ Dzień: `python phimost_day.py`.
 ## Tor glify / alfabety (od 2026-09-10)
 
 **Teza:** zdjęcie → atomy → nauka ze stanu `(S,E,T)`; uniwersalny alfabet.  
-**Notatki (dla potomności):** [`GLYPHS.md`](GLYPHS.md) · labnote [`../historia/LABNOTE_GLYPHS_2026-09-10.md`](../historia/LABNOTE_GLYPHS_2026-09-10.md)
+**Notatki (dla potomności):** [`GLYPHS.md`](GLYPHS.md) · labnote [`../doswiadczenie/glify/LABNOTE_GLYPHS_2026-09-10.md`](../doswiadczenie/glify/LABNOTE_GLYPHS_2026-09-10.md) · hub [`../doswiadczenie/README.md`](../doswiadczenie/README.md)
 
 | PR | Status | Treść |
 |----|--------|--------|

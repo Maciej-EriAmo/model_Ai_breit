@@ -25,7 +25,7 @@ from image_batch import cutout_to_tokens
 ROOT = Path(__file__).resolve().parent
 DEMO = ROOT / "ZdjęcieW" / "demo"
 CKPT = ROOT / "checkpoints" / "most_desi_color.pt"
-HISTORIA = ROOT / "historia"
+DOSWIADCZENIE_DESI = ROOT / "doswiadczenie" / "desi"
 
 
 def _ensure_npz(fits_path: Path, labels_map: dict) -> Path:
@@ -159,10 +159,10 @@ def main() -> int:
             f"(n={len(ctrl)})",
         ]
 
-    HISTORIA.mkdir(parents=True, exist_ok=True)
-    out = HISTORIA / "WYNIKI_BH_AGN_SCORE.md"
+    DOSWIADCZENIE_DESI.mkdir(parents=True, exist_ok=True)
+    out = DOSWIADCZENIE_DESI / "WYNIKI_BH_AGN_SCORE.md"
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    (HISTORIA / "bh_agn_score.json").write_text(
+    (DOSWIADCZENIE_DESI / "bh_agn_score.json").write_text(
         json.dumps(rows, indent=2), encoding="utf-8"
     )
     for line in lines:

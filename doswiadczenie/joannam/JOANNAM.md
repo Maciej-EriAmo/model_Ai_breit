@@ -31,4 +31,6 @@ Dalsza weryfikacja: katalogi SDSS/DESI, spektroskopia, cross-match X-ray/radio.
 ## Cytowanie wewnętrzne
 
 Komora SE `Most_Lorentz`: fact JoannaM.  
-Kandydaci: `historia/JOANNAM_CANDIDATES.json`.
+Kandydaci: `doswiadczenie/joannam/JOANNAM_CANDIDATES.json`.  
+Weryfikacja: [`WERYFIKACJA.md`](WERYFIKACJA.md) · post forum: [`FORUM_EN.md`](FORUM_EN.md).  
+Hub doświadczenia: [`../README.md`](../README.md).

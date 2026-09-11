@@ -1,7 +1,9 @@
-# Historia — artefakty faz PhiMost
+# Historia — artefakty faz PhiMost (silnik)
 
-Zamknięte wyniki empiryczne (A–E + n-ciał), logi konsoli i wykresy.  
-**Nie są wymagane do runtime** — to dowody PASS i materiał naukowy.
+Zamknięte wyniki empiryczne **A–E + n-ciał + learn**, logi konsoli i wykresy.  
+**Nie są wymagane do runtime** — to dowody PASS i materiał naukowy kanonu.
+
+> **Doświadczenia terenowe / tory boczne** (DESI, JoannaM, glify) → [`../doswiadczenie/`](../doswiadczenie/).
 
 | Plik | Faza |
 |------|------|
@@ -10,14 +12,11 @@ Zamknięte wyniki empiryczne (A–E + n-ciał), logi konsoli i wykresy.
 | `WYNIKI_FAZA_D.md` + `phi_most_faza_d.png` | D — dump offline |
 | `WYNIKI_FAZA_E.md` | E — live/gen/λ guards |
 | `WYNIKI_NBODY.md` + `phi_most_nbody.png` | solar / 3 ciała |
-| `WYNIKI_GLYPHS.md` | glify → atomy (PR-G0 PASS) |
-| `WYNIKI_GLYPHS_G1.md` | zdjęcie → atomy (PR-G1 PASS) |
-| `LABNOTE_GLYPHS_2026-09-10.md` | dziennik: decyzje, Luneta, G0/G1 |
-| `WYNIKI_DESI.md` / `desi_last.json` | szkic toru nieba (nie kanon alfabetu) |
+| `WYNIKI_LEARN.md` / `learn_last.json` | CLI `phimost_learn` |
 | `wyniki_*.txt` | surowe logi konsoli |
 | `dumps/_test_export_e/` | testowy eksport Fazy E |
-| `Code_Generated_Image.png` | szkic / ilustracja |
 
-Benchy zapisują tu ponownie przy re-run (`bench_*.py` → `historia/`).
+Benchy faz zapisują tu ponownie przy re-run (`bench_phi` / `bench_recall` / `bench_dump` / `bench_nbody` / …).  
+Benchy nieba → `doswiadczenie/desi/`.
 
-Skrót żywy: [`../docs/WYNIKI.md`](../docs/WYNIKI.md) · plan dalej: [`../docs/PLAN_NEXT.md`](../docs/PLAN_NEXT.md).
+Skrót żywy: [`../docs/WYNIKI.md`](../docs/WYNIKI.md) · hub doświadczenia: [`../doswiadczenie/README.md`](../doswiadczenie/README.md).

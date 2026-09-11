@@ -2,7 +2,7 @@
 
 **Root:** `C:\Users\drwis\model Ai`  
 **Komora SE:** `Most_Lorentz` (Holon / Karmin_Ae)  
-**Ostatnia aktualizacja docs:** 2026-09-10
+**Ostatnia aktualizacja docs:** 2026-09-11 (`TRANSCODE` / `glyph_unit_v2`)
 
 ## Czytaj w tej kolejności
 
@@ -11,15 +11,16 @@
 | 1 | [`../README.md`](../README.md) | start, teza, komendy |
 | 2 | [`INSTRUKCJA.md`](INSTRUKCJA.md) | **obsługa** — co klikać na co dzień |
 | 3 | [`LEARN.md`](LEARN.md) | ładowanie danych + nauka (`phimost_learn`) |
-| 4 | [`GLYPHS.md`](GLYPHS.md) | **nowy tor** — glify/alfabety → atomy → Most (notatki badawcze) |
-| 5 | [`POROWNANIE_MODELE.md`](POROWNANIE_MODELE.md) | Most vs Transformer/LLM · czemu uczyć się na własnym |
-| 6 | [`PAMIEC_I_KARMIENIE.md`](PAMIEC_I_KARMIENIE.md) | **kanon** pamięci M1/M2/M3 + karmienie `x`/`τ` |
-| 7 | [`../config.py`](../config.py) | hiperparametry empiryczne (kod) |
-| 8 | [`AUDYT.md`](AUDYT.md) | luki, zgodność z wynikami |
-| 9 | [`WYNIKI.md`](WYNIKI.md) | skrót tabel PASS/FAIL |
-| 10 | [`MODULY.md`](MODULY.md) | mapa plików `.py` |
-| 11 | [`STATUS.md`](STATUS.md) / [`PLAN_NEXT.md`](PLAN_NEXT.md) | stan + plan |
-| 12 | [`../plan.txt`](../plan.txt) | plan faz A–E + decyzje |
+| 4 | [`TRANSCODE.md`](TRANSCODE.md) | **produkt** — transkodowanie alfabetów; lat=słowo vs CJK=znak; gate vs Softmax |
+| 5 | [`GLYPHS.md`](GLYPHS.md) | notatki badawcze G0/G1 (lab) |
+| 6 | [`POROWNANIE_MODELE.md`](POROWNANIE_MODELE.md) | Most vs Transformer/LLM · czemu uczyć się na własnym |
+| 7 | [`PAMIEC_I_KARMIENIE.md`](PAMIEC_I_KARMIENIE.md) | **kanon** pamięci M1/M2/M3 + karmienie `x`/`τ` |
+| 8 | [`../config.py`](../config.py) | hiperparametry empiryczne (kod) |
+| 9 | [`AUDYT.md`](AUDYT.md) | luki, zgodność z wynikami |
+| 10 | [`WYNIKI.md`](WYNIKI.md) | skrót tabel PASS/FAIL |
+| 11 | [`MODULY.md`](MODULY.md) | mapa plików `.py` |
+| 12 | [`STATUS.md`](STATUS.md) / [`PLAN_NEXT.md`](PLAN_NEXT.md) | stan + plan |
+| 13 | [`../plan.txt`](../plan.txt) | plan faz A–E + decyzje |
 
 ## Fazy (szczegóły)
 
@@ -30,7 +31,19 @@
 | D | [`FAZA_D.md`](FAZA_D.md) | [`../historia/WYNIKI_FAZA_D.md`](../historia/WYNIKI_FAZA_D.md) |
 | E | [`FAZA_E.md`](FAZA_E.md) | [`../historia/WYNIKI_FAZA_E.md`](../historia/WYNIKI_FAZA_E.md) |
 | Fizyka | — | [`../historia/WYNIKI_NBODY.md`](../historia/WYNIKI_NBODY.md) |
-| **Glify G0–G1** | [`GLYPHS.md`](GLYPHS.md) | [`../historia/WYNIKI_GLYPHS.md`](../historia/WYNIKI_GLYPHS.md) · [`../historia/WYNIKI_GLYPHS_G1.md`](../historia/WYNIKI_GLYPHS_G1.md) · labnote [`../historia/LABNOTE_GLYPHS_2026-09-10.md`](../historia/LABNOTE_GLYPHS_2026-09-10.md) |
+| **Glify G0–G1** | [`GLYPHS.md`](GLYPHS.md) | [`../doswiadczenie/glify/WYNIKI_GLYPHS.md`](../doswiadczenie/glify/WYNIKI_GLYPHS.md) · [`../doswiadczenie/glify/WYNIKI_GLYPHS_G1.md`](../doswiadczenie/glify/WYNIKI_GLYPHS_G1.md) · labnote [`../doswiadczenie/glify/LABNOTE_GLYPHS_2026-09-10.md`](../doswiadczenie/glify/LABNOTE_GLYPHS_2026-09-10.md) |
+
+## Doświadczenie (osobny katalog)
+
+Hub: [`../doswiadczenie/README.md`](../doswiadczenie/README.md) · checklist: [`../doswiadczenie/CHECKLIST.md`](../doswiadczenie/CHECKLIST.md)
+
+| Tor | Wejście | Wyniki / notatki |
+|-----|---------|------------------|
+| **JoannaM** (kandydat optyczny) | [`../doswiadczenie/joannam/JOANNAM.md`](../doswiadczenie/joannam/JOANNAM.md) | weryfikacja [`WERYFIKACJA.md`](../doswiadczenie/joannam/WERYFIKACJA.md) · forum EN [`FORUM_EN.md`](../doswiadczenie/joannam/FORUM_EN.md) |
+| **DESI / niebo** | [`../doswiadczenie/desi/`](../doswiadczenie/desi/) | `WYNIKI_DESI*.md`, holdout, BH/AGN, [`AUDYT_2026-09-10.md`](../doswiadczenie/desi/AUDYT_2026-09-10.md) |
+| **Glify / transkodowanie** | [`TRANSCODE.md`](TRANSCODE.md) · [`GLYPHS.md`](GLYPHS.md) | [`../doswiadczenie/glify/`](../doswiadczenie/glify/) · [`TRANSCODE.md`](../doswiadczenie/glify/TRANSCODE.md) |
+
+> `historia/` = artefakty faz A–E + n-ciał + learn. Tor nieba i glify → `doswiadczenie/`.
 
 ## Case study „plik ≠ płaski”
 

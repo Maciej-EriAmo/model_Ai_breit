@@ -29,7 +29,7 @@
 - `docs/GLYPHS.md` — metoda + teza + empiria (kanwa paper)
 - `ZdjęcieW/GLYPH_ATOMS.md` — kontrakt
 - `make_dump_glyphs.py`, `dumps/from_glyphs/`, `checkpoints/most_glyphs.pt`
-- `historia/WYNIKI_GLYPHS.md`
+- `doswiadczenie/glify/WYNIKI_GLYPHS.md`
 - Szkice DESI: `desi_cutouts.py`, `image_batch.py`, `bench_desi.py` (FAIL gate — za mało / za łatwe contentem)
 
 ## PR-G1 (ten sam dzień)
@@ -37,7 +37,7 @@
 - [x] `glyph_transcribe.py` — CC + linie + T(fokus) + `--text` → PhiJSON  
 - [x] Demo `ZdjęcieW/demo_glyphs.png` → `dumps/from_photo` (9 glifów)  
 - [x] Learn PASS seed0 ΔSM=+0.044 · `most_glyphs_photo.pt`  
-- [x] Notatki: `historia/WYNIKI_GLYPHS_G1.md`, update `docs/GLYPHS.md`
+- [x] Notatki: `doswiadczenie/glify/WYNIKI_GLYPHS_G1.md`, update `docs/GLYPHS.md`
 
 ## Otwarte na G2+
 

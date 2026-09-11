@@ -19,7 +19,7 @@ from image_batch import cutout_to_tokens
 ROOT = Path(__file__).resolve().parent
 DEMO = ROOT / "ZdjęcieW" / "demo"
 CKPT = ROOT / "checkpoints" / "most_desi_color.pt"
-OUT = ROOT / "historia" / "JOANNAM_CANDIDATES.json"
+OUT = ROOT / "doswiadczenie" / "joannam" / "JOANNAM_CANDIDATES.json"
 
 SKIP_SUB = (
     "_bh_",
