@@ -1,0 +1,107 @@
+{
+  "protocol": "Holo-Phi P5.1 control (unihan stroke tracer, holdout radical)",
+  "holdout_radical": 85,
+  "train_radicals": [
+    9,
+    38,
+    75,
+    86
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    7,
+    11,
+    17,
+    23,
+    42
+  ],
+  "epochs": 60,
+  "n_pass": 1,
+  "verdict": "P5.1 FAIL: 1/8 (Most vs ZERO na holdout)",
+  "rows": [
+    {
+      "seed": 0,
+      "most_r1": 0.004999999888241291,
+      "sm_r1": 0.014999999664723873,
+      "zero_r1": 0.014999999664723873,
+      "delta_zero": -0.009999999776482582,
+      "delta_sm": -0.009999999776482582,
+      "gate_pass": false,
+      "most_train_r1_sanity": 1.0
+    },
+    {
+      "seed": 1,
+      "most_r1": 0.019999999552965164,
+      "sm_r1": 0.019999999552965164,
+      "zero_r1": 0.009999999776482582,
+      "delta_zero": 0.009999999776482582,
+      "delta_sm": 0.0,
+      "gate_pass": false,
+      "most_train_r1_sanity": 1.0
+    },
+    {
+      "seed": 2,
+      "most_r1": 0.009999999776482582,
+      "sm_r1": 0.014999999664723873,
+      "zero_r1": 0.014999999664723873,
+      "delta_zero": -0.004999999888241291,
+      "delta_sm": -0.004999999888241291,
+      "gate_pass": false,
+      "most_train_r1_sanity": 1.0
+    },
+    {
+      "seed": 7,
+      "most_r1": 0.004999999888241291,
+      "sm_r1": 0.009999999776482582,
+      "zero_r1": 0.004999999888241291,
+      "delta_zero": 0.0,
+      "delta_sm": -0.004999999888241291,
+      "gate_pass": false,
+      "most_train_r1_sanity": 1.0
+    },
+    {
+      "seed": 11,
+      "most_r1": 0.004999999888241291,
+      "sm_r1": 0.004999999888241291,
+      "zero_r1": 0.0,
+      "delta_zero": 0.004999999888241291,
+      "delta_sm": 0.0,
+      "gate_pass": false,
+      "most_train_r1_sanity": 1.0
+    },
+    {
+      "seed": 17,
+      "most_r1": 0.02500000037252903,
+      "sm_r1": 0.02500000037252903,
+      "zero_r1": 0.004999999888241291,
+      "delta_zero": 0.02000000048428774,
+      "delta_sm": 0.0,
+      "gate_pass": true,
+      "most_train_r1_sanity": 1.0
+    },
+    {
+      "seed": 23,
+      "most_r1": 0.019999999552965164,
+      "sm_r1": 0.02500000037252903,
+      "zero_r1": 0.03999999910593033,
+      "delta_zero": -0.019999999552965164,
+      "delta_sm": -0.005000000819563866,
+      "gate_pass": false,
+      "most_train_r1_sanity": 1.0
+    },
+    {
+      "seed": 42,
+      "most_r1": 0.019999999552965164,
+      "sm_r1": 0.03500000014901161,
+      "zero_r1": 0.04500000178813934,
+      "delta_zero": -0.02500000223517418,
+      "delta_sm": -0.015000000596046448,
+      "gate_pass": false,
+      "most_train_r1_sanity": 1.0
+    }
+  ],
+  "mean_delta_zero": -0.0031250001629814506,
+  "mean_delta_sm": -0.005000000121071935
+}
