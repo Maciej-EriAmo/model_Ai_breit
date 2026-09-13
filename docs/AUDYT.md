@@ -57,7 +57,31 @@ Zob. `historia/WYNIKI_NBODY.md` — **PASS 2/2 (mocny)**:
 
 | zadanie | Softmax | Most | ZERO | Most−SM |
 |---------|---------|------|------|---------|
-| solar (star/rocky/giant) | 0.400 | **0.606** | 0.408 | **+20.6 pkt** |
-| three-body (Verlet, rank masy) | 0.523 | **0.923** | 0.506 | **+40.0 pkt** |
+| solar (star/rocky/giant) | 0.3563 | **0.6208** | 0.3667 | **+26.5 pkt** |
+| three-body (Verlet, rank masy) | 0.5229 | **0.7417** | 0.5062 | **+21.9 pkt** |
 
 Content bez masy/hierarchii (te osie tylko w tracerze) — inaczej Softmax „oszukuje”.
+
+*Liczby zweryfikowane 2026-09-13 (poprzednia wersja tej tabeli, +20.6/+40.0 pkt,
+nie zgadzała się z `historia/WYNIKI_NBODY.md` — rozjazd sprzed audytu seala,
+patrz sekcja „Audyt seal (2026-09-13)” niżej). Zgodność z `historia/WYNIKI_NBODY.md`
+potwierdzona bit-do-bitu po naprawie.*
+
+## Audyt seal (2026-09-13)
+
+`most_seal.apply_t_key_seal` (bramka T hard-mask/COLD, dodana commitem `bad5bda`
+pod eksperymenty Holo-glify) była wpięta bezwarunkowo w `bridge.py`/`recall_model.py`
+przez globalny default `CANON.t_attn_seal=True` — bez świadomości, że:
+
+- `nbody_data.py` pakuje w slot T (index 3) **energię Kepler**, nie świeżość
+  pamięci (HOT/WARM/COLD/TOMB) — seal ją błędnie maskował jako "archiwum/TOMB",
+  psując `three-body` (Most spadał do 0.275 vs SM 0.523, z PASS +40pkt na **FAIL** −25pkt).
+- `bench_phi.py` (Faza B) przy `n_dim<4` w ogóle nie ma kanału T — hardcoded
+  `t_dim=3` w seal rzucał `IndexError`, blokując uruchomienie całego benchu.
+
+**Fix:** `apply_t_key_seal` no-opuje gdy tracer jest węższy niż `t_dim` (crash fix);
+`BridgeTransformer`/`PhiBridgeEncoder` dostały opt-out `t_seal: bool | None = None`
+(domyślnie `None` = zachowanie z `CANON`, bez zmian dla Holo/kanonicznych benchy);
+`bench_nbody.py` i `bench_phi.py` (zamknięte, audytowane przed powstaniem seala)
+jawnie ustawiają `t_seal=False`. Zweryfikowano: 17/17 testów zielone,
+`historia/WYNIKI_NBODY.md` po naprawie bit-identyczny z wersją już w git.

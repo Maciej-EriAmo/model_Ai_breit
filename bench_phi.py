@@ -67,6 +67,9 @@ def main():
         )
         r_sm = train_eval(sm, tr, va, zero_tracer=False)
 
+        # t_seal=False: ten bench (Faza B, zamknięty przed powstaniem seala)
+        # ma T liści (depth=2) po normalizacji batchowej blisko progu COLD=0.45
+        # — seal je przygasza i psuje zamknięty, audytowany wynik (zob. AUDYT.md).
         torch.manual_seed(42)
         most = BridgeTransformer(
             input_dim=d_x,
@@ -74,6 +77,7 @@ def main():
             n_classes=4,
             num_layers=2,
             coupling="softplus",
+            t_seal=False,
         )
         r_most = train_eval(most, tr, va, zero_tracer=False)
 
@@ -84,6 +88,7 @@ def main():
             n_classes=4,
             num_layers=2,
             coupling="softplus",
+            t_seal=False,
         )
         r_zero = train_eval(most0, tr, va, zero_tracer=True)
 

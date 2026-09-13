@@ -93,6 +93,10 @@ def run_kind(kind: str) -> dict:
     )
     r_sm = train_eval_nbody(sm, train, val)
 
+    # t_seal=False: tracer[...,3] tu koduje znormalizowaną energię Kepler
+    # (patrz nbody_data.py), nie T/świeżość Karmazyn (HOT/WARM/COLD/TOMB) —
+    # bramka most_seal.apply_t_key_seal zakłada tę drugą semantykę i przy
+    # tej pierwszej łamie fizyczny bench (zob. docs/AUDYT.md, seal audit).
     torch.manual_seed(42)
     most = BridgeTransformer(
         input_dim=d_x,
@@ -102,6 +106,7 @@ def run_kind(kind: str) -> dict:
         dim_tracer=n_dim,
         num_layers=CANON.num_layers,
         coupling=CANON.coupling,
+        t_seal=False,
     )
     r_most = train_eval_nbody(most, train, val)
 
@@ -114,6 +119,7 @@ def run_kind(kind: str) -> dict:
         dim_tracer=n_dim,
         num_layers=CANON.num_layers,
         coupling=CANON.coupling,
+        t_seal=False,
     )
     r_zero = train_eval_nbody(most0, train, val, zero_tracer=True)
 

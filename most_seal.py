@@ -40,6 +40,10 @@ def apply_t_key_seal(
     if exp_k is None:
         exp_k = float(CANON.t_attn_exp_k)
 
+    if tracer.shape[-1] <= t_dim:
+        # brak kanału T w tym tracerze (np. n_dim<=3, tylko depth) — nic do uszczelnienia
+        return A
+
     T = tracer[..., t_dim]  # [B, N]
     T_key = T.unsqueeze(1).unsqueeze(2)  # [B,1,1,N]
 

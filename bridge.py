@@ -32,12 +32,14 @@ class BridgeTransformer(nn.Module):
         dim_tracer: int = 6,
         num_layers: int = 2,
         coupling: str = "softplus",
+        t_seal: bool | None = None,
     ):
         super().__init__()
         self.h, self.dh = h, d // h
         self.dim_tracer = dim_tracer
         self.num_layers = num_layers
         self.coupling = coupling
+        self.t_seal = t_seal
         self.embed = nn.Linear(input_dim, d)
         self.cls = nn.Parameter(torch.zeros(1, 1, d))
         self.layers = nn.ModuleList(
@@ -112,7 +114,7 @@ class BridgeTransformer(nn.Module):
             A = A.masked_fill(
                 torch.eye(N, device=x.device, dtype=torch.bool), 0.0
             )
-            A = apply_t_key_seal(A, tracer)
+            A = apply_t_key_seal(A, tracer, enabled=self.t_seal)
             if key_pad is not None:
                 A = A.masked_fill(key_pad, 0.0)
             w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
