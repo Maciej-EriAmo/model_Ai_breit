@@ -68,8 +68,16 @@ atom.value["members"] (ustawiane przez compose()), więc nie potrzebuje
 osobnych klas drzewa jak stare MorphAtom/LinguisticBubble — sam Store
 JEST drzewem.
 
-Otwarte: SYMBOLIC_ONEHOT (twardy baseline, każdy morfem = własny wymiar)
-nadal nie zaimplementowany — TODO.
+SYMBOLIC_ONEHOT (twardy baseline): zaimplementowany. W przeciwieństwie do
+SYMBOLIC (gdzie kolizja slotów jest CELOWA — pokazuje słabość baseline'u)
+i HOLOGRAM (gdzie slot dzieli się na 2 wymiary Re/Im), ONEHOT adresuje
+wymiar BEZPOŚREDNIO przez `slot` (0..FEATURE_DIM-1, pełne 64, nie N_SLOTS)
+i wymaga, żeby wołający nadał każdej odrębnej wartości WŁASNY dedykowany
+slot — wtedy kolizja jest strukturalnie niemożliwa (nie tylko unikana przez
+konwencję). Sprawdzone empirycznie (_run_onehot_baseline): r@1 = 1.0 zawsze,
+niezależnie od fazy (ONEHOT jej nie używa) — górna granica retrievalu na
+tym pipeline, punkt odniesienia dla SYMBOLIC (r@1=0.33, słaby baseline) i
+HOLOGRAM (r@1 zależny od separacji faz, patrz wyżej).
 """
 
 from __future__ import annotations
@@ -98,8 +106,9 @@ DEFAULT_VEC_DIM = 2048           # musi się zgadzać z VEC_DIM w karmazyn_subst
 class AtomEncoding(Enum):
     HOLOGRAM = "hologram"         # nakładanie A*e^(i*phi) na cechy — Re I Im
     SYMBOLIC = "symbolic"         # tylko Re=amplitude, Im=0 zawsze — słaby baseline
-    SYMBOLIC_ONEHOT = "onehot"    # TODO: nie zaimplementowany — każdy odrębny
-                                   # morfem = własny dedykowany wymiar (twardy baseline)
+    SYMBOLIC_ONEHOT = "onehot"    # każdy odrębny morfem = własny dedykowany
+                                   # wymiar (0..FEATURE_DIM-1) — twardy baseline,
+                                   # wołający musi nadać różnym wartościom różne sloty
 
 
 @dataclass
@@ -149,11 +158,38 @@ def _overlay_symbolic(features: list[FeatureOverlay]) -> np.ndarray:
     return out
 
 
+def _check_slots_onehot(features: list[FeatureOverlay]) -> None:
+    for f in features:
+        if not (0 <= f.slot < FEATURE_DIM):
+            raise ValueError(
+                f"slot {f.slot} poza zakresem FEATURE_DIM={FEATURE_DIM} "
+                f"(SYMBOLIC_ONEHOT adresuje wymiary bezpośrednio — brak fazy, "
+                f"więc brak podziału na Re/Im jak w hologram/symbolic)"
+            )
+
+
+def _overlay_onehot(features: list[FeatureOverlay]) -> np.ndarray:
+    """Twardy baseline: `slot` adresuje wymiar BEZPOŚREDNIO (0..FEATURE_DIM-1,
+    pełne 64 — nie N_SLOTS=32 jak hologram/symbolic, bo tu nie ma fazy do
+    zmieszczenia obok amplitude). Kod wymusza tylko zakres, NIE unikalność
+    między niezależnymi wywołaniami — to odpowiedzialność wołającego przy
+    budowie zbioru ablacji: każda odrębna wartość musi dostać własny slot,
+    inaczej to już nie jest 'twardy' baseline tylko SYMBOLIC pod inną nazwą
+    (patrz _run_onehot_baseline dla poprawnego użycia)."""
+    _check_slots_onehot(features)
+    out = np.zeros(FEATURE_DIM, dtype=float)
+    for f in features:
+        out[f.slot] += f.amplitude
+    return out
+
+
 def feature_vector(features: list[FeatureOverlay], encoding: AtomEncoding) -> np.ndarray:
     if encoding is AtomEncoding.HOLOGRAM:
         return _overlay_hologram(features)
     if encoding is AtomEncoding.SYMBOLIC:
         return _overlay_symbolic(features)
+    if encoding is AtomEncoding.SYMBOLIC_ONEHOT:
+        return _overlay_onehot(features)
     raise NotImplementedError(f"{encoding} jeszcze niezaimplementowany")
 
 
@@ -509,6 +545,41 @@ def _run_r1(tryb: AtomEncoding, prefiksy_faza: dict) -> float:
     return trafienia / len(prefiksy_faza)
 
 
+def _run_onehot_baseline() -> float:
+    """Twardy baseline: w przeciwieństwie do _run_r1 (gdzie wszystkie
+    prefiksy CELOWO dzielą slot=1), tu każdy prefiks dostaje WŁASNY slot —
+    kolizja jest strukturalnie niemożliwa. Oczekiwane r@1=1.0 zawsze,
+    niezależnie od fazy (ONEHOT jej nie używa) — górna granica retrievalu
+    na tym pipeline, nie dowód przewagi żadnej reprezentacji."""
+    import karmazyn_substrate as sub
+
+    store = sub.Store()
+    lingua = LinguaLayer(store, dim=sub.VEC_DIM)
+
+    rdzen = lingua.make_morpheme(
+        "pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.SYMBOLIC_ONEHOT
+    )
+    prefiksy_slot = {"na-": 1, "prze-": 2, "wy-": 3}
+    prefiks_atoms = {
+        n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, 0.0, slot)],
+                                 AtomEncoding.SYMBOLIC_ONEHOT)
+        for n, slot in prefiksy_slot.items()
+    }
+    candidates = list(prefiks_atoms.values())
+
+    trafienia = 0
+    for nazwa, prefiks in prefiks_atoms.items():
+        slowo = lingua.compose(f"{nazwa}pisać_onehot", [prefiks, rdzen], kind="word")
+        odzyskany = lingua.unbind_position(slowo, position=1)
+        ranking = lingua.nearest_morpheme(odzyskany, candidates, top_k=3)
+        top1 = ranking[0][1].E
+        ok = (top1 == nazwa)
+        trafienia += ok
+        print(f"    {nazwa}pisać(onehot) -> top1={top1!r} sim={ranking[0][0]:+.3f} "
+              f"{'OK' if ok else 'BLAD'}")
+    return trafienia / len(prefiksy_slot)
+
+
 def _demo_retrieval():
     print("=== SYMBOLIC (Im=0 zawsze — oczekiwane: r@1 = przypadek, ZAWSZE) ===")
     r_sym = _run_r1(AtomEncoding.SYMBOLIC,
@@ -525,10 +596,15 @@ def _demo_retrieval():
                           {"na-": 0.0, "prze-": 2 * math.pi / 3, "wy-": 4 * math.pi / 3})
     print(f"  r@1 hologram (fazy rozstawione) = {r_holo_far:.3f}\n")
 
+    print("=== SYMBOLIC_ONEHOT (twardy baseline — każdy prefiks własny slot) ===")
+    r_onehot = _run_onehot_baseline()
+    print(f"  r@1 onehot = {r_onehot:.3f}\n")
+
     print("PODSUMOWANIE:", {
         "symbolic": r_sym,
         "hologram_faz_blisko": r_holo_close,
         "hologram_faz_rozstawione": r_holo_far,
+        "onehot_hard_baseline": r_onehot,
     })
 
     print("\n=== to_phi_atoms smoke (rodzina pisać -> PhiJSON) ===")

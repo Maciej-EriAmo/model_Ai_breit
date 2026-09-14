@@ -67,13 +67,48 @@ def test_hologram_distinguishes_same_amplitude_by_phase() -> None:
     assert all(abs(complex(re, im)) <= 0.8 + 1e-9 for re, im in slot1)
 
 
-def test_onehot_not_implemented_yet() -> None:
+def test_onehot_dedicated_dims_no_collision() -> None:
+    """Twardy baseline: slot adresuje wymiar BEZPOŚREDNIO (nie 2*slot jak
+    hologram/symbolic) — dwie różne wartości na różnych slotach lądują na
+    rozłącznych, jednowymiarowych pozycjach, bez śladu jedna u drugiej."""
+    a = feature_vector([FeatureOverlay("a", 0.8, 0.0, 0)], AtomEncoding.SYMBOLIC_ONEHOT)
+    b = feature_vector([FeatureOverlay("b", 0.8, 0.0, 1)], AtomEncoding.SYMBOLIC_ONEHOT)
+    assert a[0] == 0.8 and a[1] == 0.0
+    assert b[1] == 0.8 and b[0] == 0.0
+    assert np.count_nonzero(a) == 1 and np.count_nonzero(b) == 1
+
+
+def test_onehot_uses_full_feature_dim_range() -> None:
+    """Bez fazy do zmieszczenia obok amplitude, onehot ma do dyspozycji
+    pełne FEATURE_DIM=64 sloty, nie tylko N_SLOTS=32 jak hologram/symbolic."""
+    v = feature_vector([FeatureOverlay("last", 1.0, 0.0, FEATURE_DIM - 1)], AtomEncoding.SYMBOLIC_ONEHOT)
+    assert v[FEATURE_DIM - 1] == 1.0
     try:
-        feature_vector([], AtomEncoding.SYMBOLIC_ONEHOT)
-    except NotImplementedError:
+        feature_vector([FeatureOverlay("oob", 1.0, 0.0, FEATURE_DIM)], AtomEncoding.SYMBOLIC_ONEHOT)
+    except ValueError:
         pass
     else:
-        raise AssertionError("SYMBOLIC_ONEHOT powinien być jeszcze NotImplementedError")
+        raise AssertionError("slot >= FEATURE_DIM powinien rzucić ValueError dla onehot")
+
+
+def test_onehot_hard_baseline_perfect_retrieval() -> None:
+    """Gdy każdy prefiks dostaje własny dedykowany slot (nie współdzielony
+    jak w _run_r1), retrieval jest bezstratny niezależnie od fazy — górna
+    granica r@1=1.0, punkt odniesienia dla słabego symbolic (r@1=0.33)."""
+    lingua = _fresh_lingua()
+    rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.SYMBOLIC_ONEHOT)
+    prefiksy_slot = {"na-": 1, "prze-": 2, "wy-": 3}
+    prefiksy = {
+        n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, 0.0, slot)], AtomEncoding.SYMBOLIC_ONEHOT)
+        for n, slot in prefiksy_slot.items()
+    }
+    candidates = list(prefiksy.values())
+
+    for nazwa, prefiks in prefiksy.items():
+        slowo = lingua.compose(f"{nazwa}pisać_onehot", [prefiks, rdzen], kind="word")
+        odzyskany = lingua.unbind_position(slowo, position=1)
+        top1 = lingua.nearest_morpheme(odzyskany, candidates, top_k=1)[0][1]
+        assert top1.E == nazwa, f"onehot powinien być bezstratny, dostał top1={top1.E!r} dla {nazwa!r}"
 
 
 def test_slot_out_of_range_raises() -> None:
