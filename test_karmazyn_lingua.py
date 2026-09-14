@@ -1,7 +1,12 @@
 """
-Testy karmazyn_lingua: MorphAtom hologram vs symbolic, LinguisticBubble
-(HRR bind rekurencyjny n+1), most PhiJSON do reszty repo (to_phi_atoms +
-phi_dump), i (gdy dostępny) prawdziwy substrat KarmazynOS.
+Testy karmazyn_lingua: overlay hologram vs symbolic, LinguaLayer nad
+prawdziwym Store (bind pozycyjny n+1, unbind, idempotencja), most PhiJSON
+do reszty repo (to_phi_atoms + phi_dump).
+
+Przepisane pod API v4 (LinguaLayer nad realnym karmazyn_substrate.Store —
+nie ma już osobnych klas MorphAtom/LinguisticBubble ani opcjonalnego
+connect_real_substrate: ta warstwa zawsze zakłada, że karmazyn_substrate/
+karmazyn_hrr są zainstalowane, patrz nagłówek karmazyn_lingua.py).
 
 Styl jak test_holo_AT.py / test_transcode_contract.py: gołe funkcje test_*
 z assert, bez frameworka.
@@ -11,42 +16,60 @@ from __future__ import annotations
 
 import math
 
+import numpy as np
+
 from karmazyn_lingua import (
+    FEATURE_DIM,
     AtomEncoding,
     FeatureOverlay,
-    LinguisticBubble,
-    MorphAtom,
-    connect_real_substrate,
+    LinguaLayer,
+    feature_vector,
     przyklad_pisac_rodzina,
-    przyklad_pisac_rodzina_bubbles,
     to_phi_atoms,
 )
 from phi_dump import load_atoms_jsonl, load_edges_jsonl  # noqa: F401 (kontrakt sanity poniżej)
 
 
-# --- 1. MorphAtom: hologram odróżnia to, czego symbolic nie może ------------
+def _fresh_lingua() -> LinguaLayer:
+    import karmazyn_substrate as sub
+
+    store = sub.Store()
+    return LinguaLayer(store, dim=sub.VEC_DIM)
+
+
+# --- 1. feature_vector(): hologram odróżnia to, czego symbolic nie może ----
 
 def test_symbolic_shared_slot_indistinguishable() -> None:
-    """Docstring modułu to zapowiada wprost: trzy prefiksy o tej samej
-    amplitude na wspólnym slocie muszą kolapsować do jednej wartości pod
-    symbolic — to słaby baseline, nie przewaga hologramu."""
-    wyniki = przyklad_pisac_rodzina(AtomEncoding.SYMBOLIC)
-    slot1 = {round(v[1], 6) for v in wyniki.values()}
-    assert len(slot1) == 1, f"symbolic powinien zlewać slot1, dostał {slot1}"
+    """Trzy prefiksy o tej samej amplitude na wspólnym slocie (slot=1,
+    czyli wymiary [2,3]=Re,Im) muszą kolapsować do jednej wartości pod
+    symbolic (Im zawsze 0) — to słaby baseline, nie przewaga hologramu."""
+    feats = {
+        "na-": FeatureOverlay("a_na", 0.8, math.pi / 4, 1),
+        "prze-": FeatureOverlay("a_prze", 0.8, math.pi / 3, 1),
+        "wy-": FeatureOverlay("a_wy", 0.8, math.pi / 6, 1),
+    }
+    slot1 = {round(feature_vector([f], AtomEncoding.SYMBOLIC)[2], 6) for f in feats.values()}
+    assert len(slot1) == 1, f"symbolic powinien zlewać slot1 (Re), dostał {slot1}"
 
 
 def test_hologram_distinguishes_same_amplitude_by_phase() -> None:
-    wyniki = przyklad_pisac_rodzina(AtomEncoding.HOLOGRAM)
-    slot1 = [round(v[1], 6) for v in wyniki.values()]
-    assert len(set(slot1)) == len(slot1), f"hologram powinien rozróżnić fazy, dostał {slot1}"
-    # amplitude=0.8 dla wszystkich trzech -> |slot1| <= 0.8 (część rzeczywista cosinusa)
-    assert all(abs(x) <= 0.8 + 1e-9 for x in slot1)
+    feats = {
+        "na-": FeatureOverlay("a_na", 0.8, math.pi / 4, 1),
+        "prze-": FeatureOverlay("a_prze", 0.8, math.pi / 3, 1),
+        "wy-": FeatureOverlay("a_wy", 0.8, math.pi / 6, 1),
+    }
+    slot1 = {
+        (round(v[2], 6), round(v[3], 6))
+        for v in (feature_vector([f], AtomEncoding.HOLOGRAM) for f in feats.values())
+    }
+    assert len(slot1) == 3, f"hologram (Re,Im) powinien rozróżnić trzy fazy, dostał {slot1}"
+    # amplitude=0.8 dla wszystkich trzech -> |Re+iIm| <= 0.8
+    assert all(abs(complex(re, im)) <= 0.8 + 1e-9 for re, im in slot1)
 
 
 def test_onehot_not_implemented_yet() -> None:
-    atom = MorphAtom(identity="x", encoding=AtomEncoding.SYMBOLIC_ONEHOT)
     try:
-        atom.feature_vector()
+        feature_vector([], AtomEncoding.SYMBOLIC_ONEHOT)
     except NotImplementedError:
         pass
     else:
@@ -54,131 +77,102 @@ def test_onehot_not_implemented_yet() -> None:
 
 
 def test_slot_out_of_range_raises() -> None:
-    bad = MorphAtom(
-        identity="zle",
-        base_features=[FeatureOverlay("x", amplitude=1.0, phase=0.0, slot=999)],
-    )
+    bad = [FeatureOverlay("x", amplitude=1.0, phase=0.0, slot=999)]
     try:
-        bad.feature_vector()
+        feature_vector(bad, AtomEncoding.HOLOGRAM)
     except ValueError:
         pass
     else:
-        raise AssertionError("slot poza FEATURE_DIM powinien rzucić ValueError")
+        raise AssertionError("slot poza N_SLOTS powinien rzucić ValueError")
 
 
-# --- 2. LinguisticBubble: bez substratu (fallback) vs recursion n+1 ---------
+# --- 2. LinguaLayer nad realnym Store: bind pozycyjny, nie suma ------------
 
-def test_bubble_without_substrate_uses_sum_fallback() -> None:
-    a = MorphAtom(identity="a", base_features=[FeatureOverlay("f", 1.0, 0.0, 0)])
-    b = MorphAtom(identity="b", base_features=[FeatureOverlay("g", 1.0, 0.0, 1)])
-    bub = LinguisticBubble(label="ab", members=[a, b])
-    v = bub.as_atom_vector(dim=64)
-    assert v[0] == 1.0 and v[1] == 1.0
+def test_compose_uses_positional_bind_not_plain_sum() -> None:
+    """Kolejność argumentów compose() zmienia wynik (bind(P^i, .) zależy od
+    pozycji) — czysta suma elementwise dałaby ten sam wektor niezależnie od
+    kolejności. To odróżnia prawdziwy HRR bind od fallbacku bez HRR."""
+    lingua = _fresh_lingua()
+    a = lingua.make_morpheme("a", [FeatureOverlay("fa", 1.0, 0.3, 0)], AtomEncoding.HOLOGRAM)
+    b = lingua.make_morpheme("b", [FeatureOverlay("fb", 1.0, 1.1, 1)], AtomEncoding.HOLOGRAM)
 
+    ab = lingua.compose("ab", [a, b], kind="word")
+    ba = lingua.compose("ba", [b, a], kind="word")
 
-class _FakeSubstrate:
-    """Minimalny double zgodny z SubstrateProtocol — sprawdza że
-    LinguisticBubble woła hrr_bind (nie sumę) gdy substrate jest podpięty."""
+    fv_ab = np.asarray(ab.vector[:FEATURE_DIM], dtype=float)
+    fv_ba = np.asarray(ba.vector[:FEATURE_DIM], dtype=float)
+    naive_sum = np.asarray(a.vector[:FEATURE_DIM], dtype=float) + np.asarray(b.vector[:FEATURE_DIM], dtype=float)
 
-    def __init__(self) -> None:
-        self.bind_calls = 0
-        self.atoms: dict[str, dict] = {}
-        self.bubbles: dict[str, list[str]] = {}
-
-    def create_atom(self, id, S, E, T, **kwargs):
-        self.atoms[id] = {"S": S, "E": E, "T": T, **kwargs}
-        return id
-
-    def get_atom(self, id):
-        return self.atoms.get(id)
-
-    def create_bubble(self, label, atom_ids=None):
-        self.bubbles[label] = list(atom_ids or [])
-        return label
-
-    def hrr_bind(self, a, b):
-        self.bind_calls += 1
-        # placeholder non-commutative marker: concat-truncate, żeby test
-        # odróżnił to od sumy elementwise (fallback).
-        return [x + 1000.0 * y for x, y in zip(a, b)]
-
-    def hrr_query(self, composite, probe):
-        return 1.0
+    assert not np.allclose(fv_ab, fv_ba), "kolejność powinna wpływać na wynik (bind pozycyjny, nie suma)"
+    assert not np.allclose(fv_ab, naive_sum), "compose() nie powinien być zwykłą sumą, gdy HRR jest dostępny"
 
 
-def test_bubble_with_substrate_calls_hrr_bind_not_sum() -> None:
-    fake = _FakeSubstrate()
-    a = MorphAtom(identity="a", base_features=[FeatureOverlay("f", 1.0, 0.0, 0)])
-    b = MorphAtom(identity="b", base_features=[FeatureOverlay("g", 1.0, 0.0, 1)])
-    bub = LinguisticBubble(label="ab", members=[a, b], substrate=fake)
-    v = bub.as_atom_vector(dim=64)
-    assert fake.bind_calls == 1
-    # fallback sumy dałby v[1] == 1.0; hrr_bind fake daje 1000x-marker
-    assert v[1] != 1.0
+def test_unbind_position_zero_raises() -> None:
+    """P^0 jest elementem identycznościowym splotu — unbind(...,P^0) nic
+    nie separuje, więc position musi być >=1 (patrz nagłówek modułu)."""
+    lingua, slowa = przyklad_pisac_rodzina(AtomEncoding.HOLOGRAM)
+    try:
+        lingua.unbind_position(slowa[0], position=0)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("position=0 powinno rzucić ValueError")
 
 
-def test_recursion_n_plus_1_word_into_phrase() -> None:
-    """Bubble wyższego poziomu (fraza) przyjmuje inny Bubble (słowo) jako
-    członka — dokładnie rekurencja obiecana w docstringu modułu."""
-    fake = _FakeSubstrate()
-    rdzen = MorphAtom(identity="pisa", base_features=[FeatureOverlay("r", 1.0, 0.0, 0)])
-    prefiks = MorphAtom(identity="na-", base_features=[FeatureOverlay("p", 0.8, 0.1, 1)])
-    slowo = LinguisticBubble(label="napisać", members=[prefiks, rdzen], substrate=fake)
-    inny_rdzen = MorphAtom(identity="list", base_features=[FeatureOverlay("r2", 1.0, 0.0, 2)])
-    fraza = LinguisticBubble(label="napisać list", members=[slowo, inny_rdzen], substrate=fake)
+def test_unbind_position_recovers_correct_morpheme() -> None:
+    """r@1 = 1.0 dla faz rozstawionych 0/120/240 stopni — dokładnie wynik
+    opisany (i zweryfikowany empirycznie) w nagłówku karmazyn_lingua.py."""
+    lingua = _fresh_lingua()
+    fazy = {"na-": 0.0, "prze-": 2 * math.pi / 3, "wy-": 4 * math.pi / 3}
+    rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
+    prefiksy = {
+        n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, ph, 1)], AtomEncoding.HOLOGRAM)
+        for n, ph in fazy.items()
+    }
+    candidates = list(prefiksy.values())
 
-    v = fraza.as_atom_vector(dim=64)
-    assert len(v) == 64
-    # dwa bindy: wewnątrz słowa + fraza<->rdzeń listu
-    assert fake.bind_calls == 2
-
-
-# --- 3. RealSubstrateAdapter / connect_real_substrate (łagodna degradacja) -
-
-def test_connect_real_substrate_graceful_or_working() -> None:
-    """Nie zakładamy, że KarmazynOs jest zainstalowany na maszynie CI —
-    None jest poprawnym wynikiem. Jeśli substrat JEST dostępny (jak na tej
-    maszynie deweloperskiej), sprawdzamy, że realny bind faktycznie
-    zwraca wektor D o tej samej długości (nie NotImplementedError)."""
-    adapter = connect_real_substrate()
-    if adapter is None:
-        return
-    a = [1.0, 0.0, 0.0, 0.0]
-    b = [0.0, 1.0, 0.0, 0.0]
-    out = adapter.hrr_bind(a, b)
-    assert len(out) == len(a)
-    q = adapter.hrr_query(out, out)
-    assert q > 0.99, f"self-similarity powinna być ~1.0, dostał {q}"
+    for nazwa, prefiks in prefiksy.items():
+        slowo = lingua.compose(f"{nazwa}pisać", [prefiks, rdzen], kind="word")
+        odzyskany = lingua.unbind_position(slowo, position=1)
+        top1 = lingua.nearest_morpheme(odzyskany, candidates, top_k=1)[0][1]
+        assert top1.E == nazwa, f"{nazwa}pisać: oczekiwano top1={nazwa!r}, dostał {top1.E!r}"
 
 
-def test_persist_roundtrip_when_substrate_available() -> None:
-    adapter = connect_real_substrate()
-    if adapter is None:
-        return
-    bubbles = przyklad_pisac_rodzina_bubbles(AtomEncoding.HOLOGRAM, substrate=adapter)
-    label = bubbles[0].persist(dim=64)
-    assert label == bubbles[0].label
-    stored = adapter.get_atom(f"{bubbles[0].label}/{bubbles[0].members[0].identity}/0")
-    assert stored is not None
+def test_get_or_create_idempotent() -> None:
+    """Ten sam morfem/atom użyty ponownie jest tworzony RAZ i wykorzystany
+    ponownie (get_or_create), nie duplikowany w Store."""
+    lingua = _fresh_lingua()
+    a1 = lingua.make_morpheme("dup", [FeatureOverlay("f", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
+    a2 = lingua.make_morpheme("dup", [FeatureOverlay("f", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
+    assert a1.id == a2.id
+    assert np.array_equal(a1.vector, a2.vector)
 
 
-# --- 4. Most bridge: to_phi_atoms -> kontrakt PhiJSON tego repo ------------
+def test_composite_atoms_are_persisted_in_store() -> None:
+    """compose() rejestruje złożenie jako nowy atom w tym samym realnym
+    Store, nie tylko w pamięci Pythona — sprawdzalne przez store.get_atom."""
+    lingua, slowa = przyklad_pisac_rodzina(AtomEncoding.HOLOGRAM)
+    for slowo in slowa:
+        assert lingua.store.has_atom(slowo.id)
+        assert lingua.store.get_atom(slowo.id).id == slowo.id
+
+
+# --- 3. Most bridge: to_phi_atoms -> kontrakt PhiJSON tego repo ------------
 
 def test_to_phi_atoms_shape_and_recursion_depth() -> None:
-    bubbles = przyklad_pisac_rodzina_bubbles(AtomEncoding.HOLOGRAM)
-    atoms, edges, meta = to_phi_atoms(bubbles)
+    lingua, slowa = przyklad_pisac_rodzina(AtomEncoding.HOLOGRAM)
+    atoms, edges, meta = to_phi_atoms(lingua, slowa)
 
     ids = [a["id"] for a in atoms]
     assert len(ids) == len(set(ids)), "id atomów muszą być unikalne"
     assert {"corpus", "lingua_page"} <= set(ids)
 
     # page depth=0, bubble(słowo) depth=1, morfem depth=2
-    by_id = {a["id"]: a for a in atoms}
     words = [a for a in atoms if a["S"].startswith("lingua:bubble:")]
     assert len(words) == 3
     assert all(w["depth"] == 1 for w in words)
-    morphs = [a for a in atoms if a["S"].startswith("lingua:hologram:")]
-    assert len(morphs) == 6  # 3 słowa x (prefiks + rdzeń)
+    morphs = [a for a in atoms if a["S"].startswith("lingua:morpheme:")]
+    assert len(morphs) == 6  # 3 słowa x (prefiks + rdzeń), rdzeń dzielony ale liczony per-parent
     assert all(m["depth"] == 2 for m in morphs)
 
     # każdy atom poza korzeniami (corpus, page) ma dokładnie jedną krawędź parent
@@ -193,8 +187,8 @@ def test_to_phi_atoms_all_required_keys_present() -> None:
     """phi_dump.load_atoms_jsonl / load_edges_jsonl czytają te dokładne
     klucze — sprawdzamy kontrakt wprost, żeby przyszła zmiana pól w
     to_phi_atoms nie zepsuła loadera cicho."""
-    bubbles = przyklad_pisac_rodzina_bubbles(AtomEncoding.SYMBOLIC)
-    atoms, edges, _meta = to_phi_atoms(bubbles)
+    lingua, slowa = przyklad_pisac_rodzina(AtomEncoding.SYMBOLIC)
+    atoms, edges, _meta = to_phi_atoms(lingua, slowa)
     required_atom_keys = {"id", "S", "E", "T", "state", "bubble", "depth", "payload", "mazur_tracer"}
     for a in atoms:
         assert required_atom_keys <= set(a.keys()), a
@@ -209,10 +203,10 @@ def test_to_phi_atoms_roundtrips_through_phi_dump(tmp_path) -> None:
     import json
 
     from bubblefs_import import export_graph_as_dump  # noqa: F401 (nieużywane bezpośrednio; sanity import)
-    from phi_dump import load_dump, graph_to_content_tracer
+    from phi_dump import graph_to_content_tracer, load_dump
 
-    bubbles = przyklad_pisac_rodzina_bubbles(AtomEncoding.HOLOGRAM)
-    atoms, edges, meta = to_phi_atoms(bubbles)
+    lingua, slowa = przyklad_pisac_rodzina(AtomEncoding.HOLOGRAM)
+    atoms, edges, meta = to_phi_atoms(lingua, slowa)
 
     out = tmp_path / "from_lingua_test"
     out.mkdir()

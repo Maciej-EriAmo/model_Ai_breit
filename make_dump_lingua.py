@@ -12,7 +12,7 @@ import argparse
 import json
 from pathlib import Path
 
-from karmazyn_lingua import AtomEncoding, przyklad_pisac_rodzina_bubbles, to_phi_atoms
+from karmazyn_lingua import AtomEncoding, przyklad_pisac_rodzina, to_phi_atoms
 
 ROOT = Path(__file__).resolve().parent
 DUMP = ROOT / "dumps" / "from_lingua"
@@ -20,8 +20,8 @@ DUMP = ROOT / "dumps" / "from_lingua"
 
 def write_dump(out: Path, *, encoding: AtomEncoding = AtomEncoding.HOLOGRAM) -> tuple[int, int, dict]:
     out.mkdir(parents=True, exist_ok=True)
-    bubbles = przyklad_pisac_rodzina_bubbles(encoding)
-    atoms, edges, meta = to_phi_atoms(bubbles)
+    lingua, slowa = przyklad_pisac_rodzina(encoding)
+    atoms, edges, meta = to_phi_atoms(lingua, slowa)
     with (out / "atoms.jsonl").open("w", encoding="utf-8") as f:
         for a in atoms:
             f.write(json.dumps(a, ensure_ascii=False) + "\n")
