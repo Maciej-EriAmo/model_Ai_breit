@@ -1,0 +1,193 @@
+{
+  "protocol": "Lingua P1 — czy Most uczy się recall na karmazyn_lingua, zależność od encoding",
+  "seeds": [
+    0,
+    1,
+    17,
+    23,
+    42
+  ],
+  "encodings": [
+    "hologram",
+    "symbolic",
+    "onehot"
+  ],
+  "epochs": 16,
+  "rows": [
+    {
+      "seed": 0,
+      "most_r1": 0.21454545974731445,
+      "sm_r1": 0.21818182349205018,
+      "zero_r1": 0.2218181872367859,
+      "delta_sm": -0.003636363744735721,
+      "gate_pass": false,
+      "encoding": "hologram"
+    },
+    {
+      "seed": 1,
+      "most_r1": 0.298181825876236,
+      "sm_r1": 0.29818182706832885,
+      "zero_r1": 0.29818182706832885,
+      "delta_sm": -1.19209286886246e-09,
+      "gate_pass": false,
+      "encoding": "hologram"
+    },
+    {
+      "seed": 17,
+      "most_r1": 0.24000000715255737,
+      "sm_r1": 0.2436363708972931,
+      "zero_r1": 0.2436363708972931,
+      "delta_sm": -0.003636363744735721,
+      "gate_pass": false,
+      "encoding": "hologram"
+    },
+    {
+      "seed": 23,
+      "most_r1": 0.2290909159183502,
+      "sm_r1": 0.24000000715255737,
+      "zero_r1": 0.23636364340782165,
+      "delta_sm": -0.010909091234207163,
+      "gate_pass": false,
+      "encoding": "hologram"
+    },
+    {
+      "seed": 42,
+      "most_r1": 0.2436363708972931,
+      "sm_r1": 0.24000000715255737,
+      "zero_r1": 0.23636364340782165,
+      "delta_sm": 0.003636363744735721,
+      "gate_pass": false,
+      "encoding": "hologram"
+    },
+    {
+      "seed": 0,
+      "most_r1": 0.21454545974731445,
+      "sm_r1": 0.21818182349205018,
+      "zero_r1": 0.2218181872367859,
+      "delta_sm": -0.003636363744735721,
+      "gate_pass": false,
+      "encoding": "symbolic"
+    },
+    {
+      "seed": 1,
+      "most_r1": 0.29454546213150024,
+      "sm_r1": 0.29818182706832885,
+      "zero_r1": 0.29818182706832885,
+      "delta_sm": -0.0036363649368286177,
+      "gate_pass": false,
+      "encoding": "symbolic"
+    },
+    {
+      "seed": 17,
+      "most_r1": 0.23272727966308593,
+      "sm_r1": 0.2436363708972931,
+      "zero_r1": 0.2436363708972931,
+      "delta_sm": -0.010909091234207163,
+      "gate_pass": false,
+      "encoding": "symbolic"
+    },
+    {
+      "seed": 23,
+      "most_r1": 0.2290909159183502,
+      "sm_r1": 0.24000000715255737,
+      "zero_r1": 0.23636364340782165,
+      "delta_sm": -0.010909091234207163,
+      "gate_pass": false,
+      "encoding": "symbolic"
+    },
+    {
+      "seed": 42,
+      "most_r1": 0.2436363708972931,
+      "sm_r1": 0.24000000715255737,
+      "zero_r1": 0.23636364340782165,
+      "delta_sm": 0.003636363744735721,
+      "gate_pass": false,
+      "encoding": "symbolic"
+    },
+    {
+      "seed": 0,
+      "most_r1": 0.2218181872367859,
+      "sm_r1": 0.21818182349205018,
+      "zero_r1": 0.2218181872367859,
+      "delta_sm": 0.003636363744735721,
+      "gate_pass": false,
+      "encoding": "onehot"
+    },
+    {
+      "seed": 1,
+      "most_r1": 0.2836363708972931,
+      "sm_r1": 0.29818182706832885,
+      "zero_r1": 0.29818182706832885,
+      "delta_sm": -0.014545456171035753,
+      "gate_pass": false,
+      "encoding": "onehot"
+    },
+    {
+      "seed": 17,
+      "most_r1": 0.22545455217361451,
+      "sm_r1": 0.2436363708972931,
+      "zero_r1": 0.2436363708972931,
+      "delta_sm": -0.018181818723678578,
+      "gate_pass": false,
+      "encoding": "onehot"
+    },
+    {
+      "seed": 23,
+      "most_r1": 0.2290909159183502,
+      "sm_r1": 0.24000000715255737,
+      "zero_r1": 0.23636364340782165,
+      "delta_sm": -0.010909091234207163,
+      "gate_pass": false,
+      "encoding": "onehot"
+    },
+    {
+      "seed": 42,
+      "most_r1": 0.2472727346420288,
+      "sm_r1": 0.24000000715255737,
+      "zero_r1": 0.23636364340782165,
+      "delta_sm": 0.007272727489471442,
+      "gate_pass": false,
+      "encoding": "onehot"
+    }
+  ],
+  "by_encoding": [
+    {
+      "encoding": "hologram",
+      "n_atoms": 11,
+      "n_pass": 0,
+      "n_seeds": 5,
+      "mean_delta_sm": -0.0029090912342071506,
+      "best_delta_sm": 0.003636363744735721,
+      "worst_delta_sm": -0.010909091234207163,
+      "mean_most": 0.24509091591835022,
+      "mean_sm": 0.24800000715255738,
+      "mean_zero": 0.24727273440361022
+    },
+    {
+      "encoding": "symbolic",
+      "n_atoms": 11,
+      "n_pass": 0,
+      "n_seeds": 5,
+      "mean_delta_sm": -0.005090909481048589,
+      "best_delta_sm": 0.003636363744735721,
+      "worst_delta_sm": -0.010909091234207163,
+      "mean_most": 0.24290909767150878,
+      "mean_sm": 0.24800000715255738,
+      "mean_zero": 0.24727273440361022
+    },
+    {
+      "encoding": "onehot",
+      "n_atoms": 11,
+      "n_pass": 0,
+      "n_seeds": 5,
+      "mean_delta_sm": -0.006545454978942866,
+      "best_delta_sm": 0.007272727489471442,
+      "worst_delta_sm": -0.018181818723678578,
+      "mean_most": 0.2414545521736145,
+      "mean_sm": 0.24800000715255738,
+      "mean_zero": 0.24727273440361022
+    }
+  ],
+  "best_encoding": "hologram",
+  "verdict": "best encoding=hologram PASS 0/5 meanΔSM=-0.0029; gate = Most r@1 - Softmax r@1 >= CANON.gate_recall_r1 (0.02)"
+}

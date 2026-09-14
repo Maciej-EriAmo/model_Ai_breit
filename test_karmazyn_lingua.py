@@ -154,11 +154,8 @@ def test_unbind_position_zero_raises() -> None:
         raise AssertionError("position=0 powinno rzucić ValueError")
 
 
-def test_unbind_position_recovers_correct_morpheme() -> None:
-    """r@1 = 1.0 dla faz rozstawionych 0/120/240 stopni — dokładnie wynik
-    opisany (i zweryfikowany empirycznie) w nagłówku karmazyn_lingua.py."""
+def _r1_for_phases(fazy: dict[str, float], *, label: str) -> float:
     lingua = _fresh_lingua()
-    fazy = {"na-": 0.0, "prze-": 2 * math.pi / 3, "wy-": 4 * math.pi / 3}
     rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
     prefiksy = {
         n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, ph, 1)], AtomEncoding.HOLOGRAM)
@@ -166,11 +163,31 @@ def test_unbind_position_recovers_correct_morpheme() -> None:
     }
     candidates = list(prefiksy.values())
 
+    trafienia = 0
     for nazwa, prefiks in prefiksy.items():
-        slowo = lingua.compose(f"{nazwa}pisać", [prefiks, rdzen], kind="word")
+        slowo = lingua.compose(f"{nazwa}{label}", [prefiks, rdzen], kind="word")
         odzyskany = lingua.unbind_position(slowo, position=1)
         top1 = lingua.nearest_morpheme(odzyskany, candidates, top_k=1)[0][1]
-        assert top1.E == nazwa, f"{nazwa}pisać: oczekiwano top1={nazwa!r}, dostał {top1.E!r}"
+        trafienia += top1.E == nazwa
+    return trafienia / len(fazy)
+
+
+def test_unbind_position_recovers_correct_morpheme_far_phases() -> None:
+    """r@1 = 1.0 dla faz rozstawionych 0/120/240 stopni — dokładnie wynik
+    opisany (i zweryfikowany empirycznie) w nagłówku karmazyn_lingua.py."""
+    fazy = {"na-": 0.0, "prze-": 2 * math.pi / 3, "wy-": 4 * math.pi / 3}
+    assert _r1_for_phases(fazy, label="pisac_far") == 1.0
+
+
+def test_unbind_position_subtracts_known_interference_close_phases() -> None:
+    """Regresja na poprawkę z lingua_probe_mlp.py: dla faz stłoczonych
+    30°-60° goły unbind+nearest_morpheme dawał r@1=0.33 (poziom przypadku),
+    bo mieszał w wynik interferencję od WSPÓLNEGO rdzenia. unbind_position
+    teraz odejmuje ten znany, dokładny wkład zanim odwiąże pozycję 1 —
+    r@1 musi wrócić do 1.0, tak jak dla faz rozstawionych (sygnał był
+    zawsze odzyskiwalny, tylko zła metoda go traciła)."""
+    fazy = {"na-": math.pi / 4, "prze-": math.pi / 3, "wy-": math.pi / 6}
+    assert _r1_for_phases(fazy, label="pisac_close") == 1.0
 
 
 def test_get_or_create_idempotent() -> None:

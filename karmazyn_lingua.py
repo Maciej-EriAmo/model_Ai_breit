@@ -35,20 +35,35 @@ z dowodem, nie tylko z wnioskiem:
      w płaszczyźnie 2D, nie tylko długością na jednej osi. FEATURE_DIM=64
      realnych wymiarów => N_SLOTS=32 kanałów cech (2 wymiary/slot).
 
-WYNIK PO OBU POPRAWKACH (patrz _demo_retrieval, uruchomione naprawdę):
+WYNIK (patrz _demo_retrieval, uruchomione naprawdę; historia poprawek
+w doswiadczenie/glify/LINGUA_PROBE_MLP.md — zostawiona, bo pokazuje JAK
+się do tego doszło, nie tylko dokąd):
   - SYMBOLIC (Im zawsze 0, brak fazy): r@1 = 0.33 zawsze, niezależnie od
-    separacji faz — bo dla symbolic te warianty SĄ identycznymi wektorami,
-    to nie kwestia szumu, tylko reprezentacja nie ma gdzie zakodować różnicy.
-  - HOLOGRAM, fazy stłoczone w 30°-60° (near/prze-/wy z pierwszej wersji
-    demo): r@1 = 0.33 — reprezentacja MA zdolność rozróżniania (wartości
-    similarity już się różnią), ale separacja faz jest za mała względem
-    szumu z bind/bundle przy D=64.
-  - HOLOGRAM, fazy rozstawione 0°/120°/240°: r@1 = 1.0 — pełna, poprawna
-    separacja.
+    separacji faz ANI metody dekodowania (sprawdzone też trenowanym MLP,
+    mean_acc=0.35) — bo dla symbolic te warianty SĄ identycznymi
+    wektorami. To jest twardy sufit informacyjny (informacja zniszczona
+    na etapie kodowania), nie problem dekodera.
+  - HOLOGRAM, fazy stłoczone w 30°-60°: r@1 = 1.0. Po drodze: pierwsza
+    wersja unbind_position() (goły unbind + nearest_morpheme do
+    prototypu) dawała tu r@1=0.33 — wyglądało jak "sygnał za słaby
+    względem szumu". Trenowany MLP (lingua_probe_mlp.py) pokazał, że to
+    nieprawda: dostawał 0.72, więc sygnał BYŁ tam, tylko źle dekodowany.
+    Przyczyna: unbind_position dekodował SUROWY composite.vector, co
+    miesza w wynik interferencję od KAŻDEGO innego bound-termu (tu:
+    wspólnego rdzenia). Poprawka: compose() zna wszystkich swoich
+    sąsiadów (metadata['v']['members']), więc unbind_position ODEJMUJE
+    NAJPIERW ich dokładny, znany wkład (bind/bundle są liniowe, więc to
+    ścisłe kasowanie, nie przybliżenie) — r@1 wraca do 1.0, LEPIEJ niż
+    trenowany MLP, bo znajomość struktury bija uczenie z zaszumionych
+    próbek. Patrz LinguaLayer.unbind_position i _composite_member_ids.
+  - HOLOGRAM, fazy rozstawione 0°/120°/240°: r@1 = 1.0 (bez zmian —
+    interferencja z rdzenia była tu i tak zdominowana przez separację faz).
   Wniosek: "hologram MOŻE nieść informację o fazie" i "hologram FAKTYCZNIE
-  poprawia retrieval w tym zadaniu" to dwa różne twierdzenia — drugie
-  zależy od separacji wartości i wymiarowości, nie jest automatyczne.
-  To jest dokładnie ten sam typ pytania, które P3/P4a zadały Holo-Phi.
+  poprawia retrieval w tym zadaniu" to dwa różne twierdzenia, ale trzecie,
+  ukryte w środku, to "dekoder MOŻE gubić informację, którą reprezentacja
+  faktycznie niesie" — r@1 mierzy metodę dekodowania tak samo jak samą
+  reprezentację, i łatwo pomylić jedno z drugim. To jest dokładnie ten sam
+  typ pytania, które P3/P4a zadały Holo-Phi.
 
 Podział pracy (bez zmian koncepcyjnie):
   ATOM   = morfem/glif LUB złożone słowo/fraza (nierozróżnialne na poziomie
@@ -64,9 +79,9 @@ kanonu PhiJSON tego repo (te same klucze co holo_phi.build_holo_graph /
 transcode.phi_build), więc wpina się w istniejący pipeline
 `make_dump_*.py -> dumps/... -> phimost_learn.py` bez zmiany silnika Most.
 CLI: `make_dump_lingua.py`. Chodzi po realnym Store rekurencyjnie przez
-atom.value["members"] (ustawiane przez compose()), więc nie potrzebuje
-osobnych klas drzewa jak stare MorphAtom/LinguisticBubble — sam Store
-JEST drzewem.
+atom.metadata['v']['members'] (ustawiane przez compose(), patrz
+_composite_member_ids), więc nie potrzebuje osobnych klas drzewa jak
+stare MorphAtom/LinguisticBubble — sam Store JEST drzewem.
 
 SYMBOLIC_ONEHOT (twardy baseline): zaimplementowany. W przeciwieństwie do
 SYMBOLIC (gdzie kolizja slotów jest CELOWA — pokazuje słabość baseline'u)
@@ -212,6 +227,21 @@ def _splice(feature_vec: np.ndarray, content_vec: Optional[np.ndarray],
     return np.concatenate([np.asarray(feature_vec, dtype=float), tail])
 
 
+def _composite_member_ids(atom) -> Optional[list[str]]:
+    """Odczytuje listę id składników złożenia zapisaną przez
+    compose(..., value={...}). Store NIE eksponuje tego jako atom.value
+    (tego atrybutu po prostu nie ma na karmazyn_atom.Atom) — kwarg
+    `value=` z create_atom ląduje pod atom.metadata['v'] (sprawdzone
+    empirycznie na realnym Store). Współdzielone przez unbind_position()
+    (odejmowanie znanych interferentów) i to_phi_atoms() (chodzenie po
+    drzewie), żeby nie duplikować tej samej wiedzy o kontrakcie Store."""
+    meta = getattr(atom, "metadata", None)
+    val = meta.get("v") if isinstance(meta, dict) else None
+    if isinstance(val, dict) and "members" in val:
+        return list(val["members"])
+    return None
+
+
 class LinguaLayer:
     """Warstwa lingwistyczna nad realnym Store (karmazyn_substrate.Store
     albo dowolnym magazynem zgodnym z AtomStore z karmazyn_atomstore.py).
@@ -301,9 +331,28 @@ class LinguaLayer:
         return composite
 
     def unbind_position(self, composite, position: int) -> np.ndarray:
-        """Odzyskaj przybliżony wektor cech z pozycji `position` złożenia.
-        position numerowana OD 1, zgodnie z compose() (position=1 to
-        pierwszy element listy member_atoms przekazanej do compose)."""
+        """Odzyskaj wektor cech z pozycji `position` złożenia. position
+        numerowana OD 1, zgodnie z compose() (position=1 to pierwszy
+        element listy member_atoms przekazanej do compose).
+
+        POPRAWKA (znaleziona przez lingua_probe_mlp.py — trenowany MLP
+        dostawał r@1=0.72 tam, gdzie goły unbind+nearest_morpheme dostawał
+        0.33 dla tych samych danych, czyli sygnał BYŁ odzyskiwalny, tylko
+        nie tą metodą): compose() zna WSZYSTKICH swoich sąsiadów (zapisani
+        w atom.metadata['v']['members'], patrz _composite_member_ids) —
+        zamiast unbindować surowy composite.vector wprost (co miesza w
+        wynik interferencję od KAŻDEGO innego bound-termu), odejmujemy
+        NAJPIERW dokładny, znany wkład każdego sąsiada:
+        bind(P^i, sąsiad_i.vector) dla i != position. Bind/bundle są
+        liniowe, więc to dokładnie kasuje interferencję międzyterminową
+        (nie jest to przybliżenie) — zostaje tylko "samo-szum" z tego, że
+        P^position nie jest idealnie unitarny (stąd sim≈0.707, nie 1.0,
+        nawet przy D=2048, patrz karmazyn_hrr.py). Empirycznie: r@1 dla
+        hologram_close (fazy 30°-60°) skacze z 0.33 (bez tej poprawki) do
+        1.0 (z nią) — patrz doswiadczenie/glify/LINGUA_PROBE_MLP.md.
+        Gdy `composite` nie jest złożeniem compose() (brak metadanych
+        members — np. gołe make_morpheme) — fallback: zwykły unbind na
+        surowym wektorze, jak poprzednio."""
         if self._pos_hrr is None:
             raise NotImplementedError("brak karmazyn_hrr — unbind_position niedostępny")
         if position < 1:
@@ -312,6 +361,18 @@ class LinguaLayer:
                 "i unbind(..., P^0) nie separuje niczego (patrz nagłówek pliku)"
             )
         fv = np.asarray(composite.vector[:FEATURE_DIM], dtype=float)
+
+        member_ids = _composite_member_ids(composite)
+        if member_ids:
+            for i, mid in enumerate(member_ids, start=1):
+                if i == position:
+                    continue
+                sibling = self.store.get_atom(mid)
+                if sibling is None or sibling.vector is None:
+                    continue
+                sibling_fv = np.asarray(sibling.vector[:FEATURE_DIM], dtype=float)
+                fv = fv - _hrr.bind(self._pos_hrr.P_power(i), sibling_fv)
+
         return _hrr.unbind(fv, self._pos_hrr.P_power(position))
 
     def nearest_morpheme(self, query_fv: np.ndarray, candidates: Sequence[Any],
@@ -347,11 +408,15 @@ def przyklad_pisac_rodzina(
     encoding: AtomEncoding = AtomEncoding.HOLOGRAM,
 ) -> tuple["LinguaLayer", list[Any]]:
     """pisać / napisać / przepisać / wypisać jako compose(prefiks, rdzeń)
-    na realnym Store. Rdzeń zajmuje slot 0. Wszystkie trzy prefiksy CELOWO
-    dzielą slot 1 i mają tę samą amplitude=0.8 (różni je tylko faza) —
-    wymusza pytanie wprost: czy faza rozróżnia prefiksy, skoro amplitude
-    nie może. Zwraca (lingua, [słowo_na, słowo_prze, słowo_wy]) — lingua
-    trzeba zwrócić razem ze słowami, bo store/atomy żyją w niej."""
+    na realnym Store. Rdzeń zajmuje slot 0. Pod HOLOGRAM/SYMBOLIC wszystkie
+    trzy prefiksy CELOWO dzielą slot 1 i mają tę samą amplitude=0.8 (różni
+    je tylko faza) — wymusza pytanie wprost: czy faza rozróżnia prefiksy,
+    skoro amplitude nie może. Pod SYMBOLIC_ONEHOT to pytanie nie ma sensu
+    (onehot ignoruje fazę), więc tam każdy prefiks dostaje WŁASNY slot
+    (1,2,3) — współdzielony slot dałby trzy identyczne wektory, czyli
+    fałszywy 'twardy baseline'. Zwraca (lingua, [słowo_na, słowo_prze,
+    słowo_wy]) — lingua trzeba zwrócić razem ze słowami, bo store/atomy
+    żyją w niej."""
     import karmazyn_substrate as sub
 
     store = sub.Store()
@@ -361,11 +426,18 @@ def przyklad_pisac_rodzina(
         "pisa", [FeatureOverlay("rdzen_pisac", amplitude=1.0, phase=0.0, slot=0)], encoding
     )
 
-    prefiksy = {
-        "na-": FeatureOverlay("aspekt_na", amplitude=0.8, phase=math.pi / 4, slot=1),
-        "prze-": FeatureOverlay("aspekt_prze", amplitude=0.8, phase=math.pi / 3, slot=1),
-        "wy-": FeatureOverlay("aspekt_wy", amplitude=0.8, phase=math.pi / 6, slot=1),
-    }
+    if encoding is AtomEncoding.SYMBOLIC_ONEHOT:
+        prefiksy = {
+            "na-": FeatureOverlay("aspekt_na", amplitude=0.8, phase=0.0, slot=1),
+            "prze-": FeatureOverlay("aspekt_prze", amplitude=0.8, phase=0.0, slot=2),
+            "wy-": FeatureOverlay("aspekt_wy", amplitude=0.8, phase=0.0, slot=3),
+        }
+    else:
+        prefiksy = {
+            "na-": FeatureOverlay("aspekt_na", amplitude=0.8, phase=math.pi / 4, slot=1),
+            "prze-": FeatureOverlay("aspekt_prze", amplitude=0.8, phase=math.pi / 3, slot=1),
+            "wy-": FeatureOverlay("aspekt_wy", amplitude=0.8, phase=math.pi / 6, slot=1),
+        }
 
     slowa: list[Any] = []
     for nazwa, feat in prefiksy.items():
@@ -387,9 +459,10 @@ def przyklad_pisac_rodzina(
 # ta sama konwencja co holo_phi §2b (energy_to_T), nie hash.
 #
 # W przeciwieństwie do starej wersji (MorphAtom/LinguisticBubble jako
-# osobne dataclassy) to chodzi PO REALNYM STORE: drzewo odczytujemy z
-# atom.value["members"] (ustawianego przez LinguaLayer.compose) — Store
-# sam JEST strukturą, nie trzeba jej duplikować w Pythonie.
+# osobne dataclassy) to chodzi PO REALNYM STORE: drzewo odczytujemy przez
+# _composite_member_ids (atom.metadata['v']['members'], ustawiane przez
+# LinguaLayer.compose) — Store sam JEST strukturą, nie trzeba jej
+# duplikować w Pythonie.
 
 from holo_phi import energy_to_T  # noqa: E402  (import na dole: unika cyklu przy `python -m holo_phi`)
 from transcode.phi_build import state_for_T  # noqa: E402
@@ -403,16 +476,10 @@ def _atom_energy(atom) -> float:
     return float(np.linalg.norm(fv))
 
 
-def _atom_children(atom) -> Optional[list[str]]:
-    """Odczytuje drzewo złożenia zapisane przez compose(..., value={...}).
-    Store NIE eksponuje tego jako atom.value (tego atrybutu po prostu nie
-    ma na karmazyn_atom.Atom) — kwarg `value=` z create_atom ląduje pod
-    atom.metadata['v'] (sprawdzone empirycznie na realnym Store)."""
-    meta = getattr(atom, "metadata", None)
-    val = meta.get("v") if isinstance(meta, dict) else None
-    if isinstance(val, dict) and "members" in val:
-        return list(val["members"])
-    return None
+# Alias lokalny: to_phi_atoms chodzi po TYM SAMYM drzewie, które
+# unbind_position() czyta do odejmowania znanych interferentów — jedna
+# definicja (_composite_member_ids, przed class LinguaLayer) dla obu.
+_atom_children = _composite_member_ids
 
 
 def to_phi_atoms(

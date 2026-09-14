@@ -1,0 +1,159 @@
+{
+  "protocol": "Lingua MLP probe — trenowany klasyfikator vs analityczny HRR unbind",
+  "seeds": [
+    0,
+    1,
+    17,
+    23,
+    42
+  ],
+  "conditions": [
+    "symbolic",
+    "hologram_close",
+    "hologram_far",
+    "onehot"
+  ],
+  "epochs": 60,
+  "noise": 0.08,
+  "n_per_class_train": 80,
+  "n_per_class_val": 20,
+  "chance_level": 0.3333333333333333,
+  "rows": [
+    {
+      "condition": "symbolic",
+      "seed": 0,
+      "acc": 0.38333332538604736
+    },
+    {
+      "condition": "symbolic",
+      "seed": 1,
+      "acc": 0.3166666626930237
+    },
+    {
+      "condition": "symbolic",
+      "seed": 17,
+      "acc": 0.38333332538604736
+    },
+    {
+      "condition": "symbolic",
+      "seed": 23,
+      "acc": 0.3333333432674408
+    },
+    {
+      "condition": "symbolic",
+      "seed": 42,
+      "acc": 0.3499999940395355
+    },
+    {
+      "condition": "hologram_close",
+      "seed": 0,
+      "acc": 0.7333333492279053
+    },
+    {
+      "condition": "hologram_close",
+      "seed": 1,
+      "acc": 0.75
+    },
+    {
+      "condition": "hologram_close",
+      "seed": 17,
+      "acc": 0.7833333611488342
+    },
+    {
+      "condition": "hologram_close",
+      "seed": 23,
+      "acc": 0.6833333373069763
+    },
+    {
+      "condition": "hologram_close",
+      "seed": 42,
+      "acc": 0.6499999761581421
+    },
+    {
+      "condition": "hologram_far",
+      "seed": 0,
+      "acc": 1.0
+    },
+    {
+      "condition": "hologram_far",
+      "seed": 1,
+      "acc": 1.0
+    },
+    {
+      "condition": "hologram_far",
+      "seed": 17,
+      "acc": 1.0
+    },
+    {
+      "condition": "hologram_far",
+      "seed": 23,
+      "acc": 1.0
+    },
+    {
+      "condition": "hologram_far",
+      "seed": 42,
+      "acc": 1.0
+    },
+    {
+      "condition": "onehot",
+      "seed": 0,
+      "acc": 1.0
+    },
+    {
+      "condition": "onehot",
+      "seed": 1,
+      "acc": 1.0
+    },
+    {
+      "condition": "onehot",
+      "seed": 17,
+      "acc": 1.0
+    },
+    {
+      "condition": "onehot",
+      "seed": 23,
+      "acc": 1.0
+    },
+    {
+      "condition": "onehot",
+      "seed": 42,
+      "acc": 1.0
+    }
+  ],
+  "by_condition": [
+    {
+      "condition": "symbolic",
+      "mean_acc": 0.3533333301544189,
+      "min_acc": 0.3166666626930237,
+      "max_acc": 0.38333332538604736,
+      "above_chance": 0.01999999682108561
+    },
+    {
+      "condition": "hologram_close",
+      "mean_acc": 0.7200000047683716,
+      "min_acc": 0.6499999761581421,
+      "max_acc": 0.7833333611488342,
+      "above_chance": 0.38666667143503824
+    },
+    {
+      "condition": "hologram_far",
+      "mean_acc": 1.0,
+      "min_acc": 1.0,
+      "max_acc": 1.0,
+      "above_chance": 0.6666666666666667
+    },
+    {
+      "condition": "onehot",
+      "mean_acc": 1.0,
+      "min_acc": 1.0,
+      "max_acc": 1.0,
+      "above_chance": 0.6666666666666667
+    }
+  ],
+  "analytic_reference": {
+    "symbolic": 0.333,
+    "hologram_close": 0.333,
+    "hologram_far": 1.0,
+    "onehot": 1.0
+  }
+}

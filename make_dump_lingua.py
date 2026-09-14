@@ -51,7 +51,7 @@ def write_dump(out: Path, *, encoding: AtomEncoding = AtomEncoding.HOLOGRAM) -> 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", type=Path, default=DUMP)
-    ap.add_argument("--encoding", choices=["hologram", "symbolic"], default="hologram")
+    ap.add_argument("--encoding", choices=["hologram", "symbolic", "onehot"], default="hologram")
     args = ap.parse_args()
     write_dump(args.out, encoding=AtomEncoding(args.encoding))
     return 0
