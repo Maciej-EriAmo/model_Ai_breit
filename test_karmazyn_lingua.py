@@ -521,6 +521,76 @@ def test_glyph_extractor_retrieval_recovers_base_and_mark_axes() -> None:
     assert trafienia_mark == n, f"akcent: r@1={trafienia_mark/n:.3f} (oczekiwano 1.0)"
 
 
+# --- 7. observe_with_confidence: ruchomy obserwator (jitter -> stabilność) -
+
+def test_observe_with_confidence_stable_for_reliable_retrieval() -> None:
+    """Fazy rozstawione 0°/120°/240° (margines decyzji duży, patrz sekcja 5
+    raportu) — dopasowanie musi przeżyć jitter bez zmiany zdania:
+    confidence=1.0 dla wszystkich trzech słów, obserwator zawsze trafia
+    właściwy prefiks nawet pod poruszeniem punktu widzenia."""
+    fazy = {"na-": 0.0, "prze-": 2 * math.pi / 3, "wy-": 4 * math.pi / 3}
+    lingua = _fresh_lingua()
+    rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
+    prefiksy = {n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, ph, 1)], AtomEncoding.HOLOGRAM)
+                for n, ph in fazy.items()}
+    candidates = list(prefiksy.values())
+    rng = np.random.default_rng(42)
+
+    for nazwa, prefiks in prefiksy.items():
+        slowo = lingua.compose(f"{nazwa}far_conf", [prefiks, rdzen], kind="word")
+        fv = lingua.unbind_position(slowo, position=1)
+        wynik = lingua.observe_with_confidence(fv, candidates, n_jitter=30, jitter_fraction=0.5, rng=rng)
+        assert wynik["winner"].E == nazwa
+        assert wynik["confidence"] == 1.0, f"{nazwa}: confidence={wynik['confidence']}"
+
+
+def test_observe_with_confidence_unstable_for_ambiguous_retrieval() -> None:
+    """Fazy stłoczone 30°-60° + blind=True (ta sama degeneracja co
+    test_unbind_position_blind_loses_signal_for_close_phases, r@1=0.333) —
+    margines decyzji jest mały, więc jitter MUSI odsłonić niepewność:
+    confidence wyraźnie poniżej 1.0, i różna dla różnych słów (w
+    przeciwieństwie do sztywnego 1.0/1.0/1.0 przypadku stabilnego) —
+    obserwator wykrywa niepewność BEZ znajomości poprawnej odpowiedzi."""
+    fazy = {"na-": math.pi / 4, "prze-": math.pi / 3, "wy-": math.pi / 6}
+    lingua = _fresh_lingua()
+    rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
+    prefiksy = {n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, ph, 1)], AtomEncoding.HOLOGRAM)
+                for n, ph in fazy.items()}
+    candidates = list(prefiksy.values())
+    rng = np.random.default_rng(42)
+
+    confidences = []
+    for nazwa, prefiks in prefiksy.items():
+        slowo = lingua.compose(f"{nazwa}close_conf", [prefiks, rdzen], kind="word")
+        fv = lingua.unbind_position(slowo, position=1, blind=True)
+        wynik = lingua.observe_with_confidence(fv, candidates, n_jitter=30, jitter_fraction=0.5, rng=rng)
+        confidences.append(wynik["confidence"])
+
+    assert all(c < 1.0 for c in confidences), f"blind na fazach bliskich powinien być niepewny, dostał {confidences}"
+    assert len(set(confidences)) > 1, "trzy różne słowa nie powinny dać identycznej (sztywnej) pewności"
+    assert min(confidences) < 0.6, f"co najmniej jedno słowo powinno być WYRAŹNIE niepewne, dostał {confidences}"
+
+
+def test_observe_with_confidence_empty_candidates_raises() -> None:
+    lingua = _fresh_lingua()
+    a = lingua.make_morpheme("x", [FeatureOverlay("f", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
+    try:
+        lingua.observe_with_confidence(np.asarray(a.vector[:FEATURE_DIM], dtype=float), [])
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("pusta lista kandydatów powinna rzucić ValueError")
+
+
+def test_observe_with_confidence_votes_sum_to_n_jitter() -> None:
+    """Sanity kontraktu: suma głosów w wyniku musi być dokładnie n_jitter —
+    każda próba jitterowana głosuje raz, ani więcej, ani mniej."""
+    lingua, slowa = przyklad_pisac_rodzina(AtomEncoding.HOLOGRAM)
+    fv = np.asarray(slowa[0].vector[:FEATURE_DIM], dtype=float)
+    wynik = lingua.observe_with_confidence(fv, slowa, n_jitter=17, rng=np.random.default_rng(1))
+    assert sum(wynik["votes"].values()) == 17
+
+
 if __name__ == "__main__":
     import sys
     import tempfile

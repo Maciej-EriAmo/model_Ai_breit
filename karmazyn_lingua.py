@@ -487,6 +487,60 @@ class LinguaLayer:
             raise NotImplementedError("Ten store nie ma resonance() (brak HRR)")
         return self.store.resonance(name_or_vector, k=k, threshold=threshold)
 
+    def observe_with_confidence(self, query_fv: np.ndarray, candidates: Sequence[Any],
+                                 *, n_jitter: int = 20, jitter_fraction: float = 0.5,
+                                 rng: Optional[np.random.Generator] = None) -> dict:
+        """Metafora rozszerzona (sekcja 7 raportu hologram-znaki): obserwator
+        PORUSZA SIĘ (paralaksa), światło stoi — test STABILNOŚCI dopasowania,
+        nie tożsamości. Dokłada się `n_jitter` razy mały szum do `query_fv`,
+        za każdym razem robi się nearest_morpheme, i głosuje: `confidence` =
+        ułamek prób, które zgodziły się z większością. Prawdziwe dopasowanie
+        (duży margines do drugiego kandydata) trzyma kształt pod drobnym
+        poruszeniem punktu widzenia; przypadkowe/zdegenerowane dopasowanie
+        (mały margines, np. hologram z blind=True na fazach stłoczonych —
+        patrz test_unbind_position_blind_loses_signal_for_close_phases) się
+        rozjeżdża. Obserwator wykrywa to BEZ znajomości ground truth, z
+        samej stabilności głosów.
+
+        POPRAWKA znaleziona przez odpalenie testu NA teście (patrz raport):
+        pierwsza wersja używała stałego, BEZWZGLĘDNEGO jitter_sigma=0.05 —
+        wynik: confidence=0.9-1.0 NAWET dla błędnych dopasowań, bo szum był
+        za mały wobec marginesu decyzji ("ruch" nigdy nie miał szans niczego
+        przewrócić, metryka kłamała pewnością). Naprawa: szum skalowany
+        WZGLĘDEM normy `query_fv` (`jitter_fraction` jako ułamek, domyślnie
+        0.5) — per-wymiarowe odchylenie standardowe dobrane tak, żeby
+        oczekiwana norma wektora szumu wynosiła `jitter_fraction * ||query_fv||`
+        (dla wektora gaussowskiego o D niezależnych wymiarach i odchyleniu
+        sigma na wymiar, oczekiwana norma ≈ sigma*sqrt(D))."""
+        if not candidates:
+            raise ValueError("observe_with_confidence wymaga niepustej listy kandydatów")
+        if n_jitter < 1:
+            raise ValueError("n_jitter musi być >= 1")
+        if rng is None:
+            rng = np.random.default_rng()
+
+        query_fv = np.asarray(query_fv, dtype=float)
+        norm = float(np.linalg.norm(query_fv))
+        sigma = (jitter_fraction * norm / math.sqrt(len(query_fv))) if norm > 0 else 0.0
+
+        votes: dict[str, int] = {}
+        atom_by_id: dict[str, Any] = {}
+        for _ in range(n_jitter):
+            noisy = query_fv + rng.normal(0.0, sigma, size=query_fv.shape)
+            _sim, atom = self.nearest_morpheme(noisy, candidates, top_k=1)[0]
+            votes[atom.id] = votes.get(atom.id, 0) + 1
+            atom_by_id[atom.id] = atom
+
+        winner_id = max(votes, key=votes.get)
+        winner = atom_by_id[winner_id]
+        return {
+            "winner": winner,
+            "confidence": votes[winner_id] / n_jitter,
+            "votes": {atom_by_id[aid].E: count for aid, count in votes.items()},
+            "n_jitter": n_jitter,
+            "jitter_fraction": jitter_fraction,
+        }
+
 
 class Projector:
     """Metafora: LinguaLayer.unbind_position() dziś to bierny projektor —
