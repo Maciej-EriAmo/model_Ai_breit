@@ -710,32 +710,28 @@ def test_rooted_composite_survives_gc_and_stays_retrievable() -> None:
         assert top1.E == n, f"{n}: retrieval powinien działać też po ostygnięciu do TOMB, dostał {top1.E!r}"
 
 
-def test_unrooted_family_silently_loses_oracle_correction_after_gc() -> None:
-    """ZNALEZIONE PRZEZ TEN TEST, nie przez czytanie kodu: korekta 'oracle'
-    w unbind_position (odejmowanie znanego wkładu sąsiadów, patrz
-    test_unbind_position_subtracts_known_interference_close_phases) ma
-    UKRYTĄ zależność od tego, że sąsiedzi WCIĄŻ ISTNIEJĄ w Store —
-    `if sibling is None: continue` po cichu POMIJA odjęcie, gdy sąsiad
-    został zebrany przez reach-GC. Wołający dalej prosi o oracle
-    (blind=False, domyślne), dostaje jednak dokładnie wynik poziomu BLIND
-    (r@1 spada z 1.0 do 0.333 na fazach stłoczonych) — BEZ ŻADNEGO
-    wyjątku ani ostrzeżenia. To odpowiedź na pytanie z sekcji 11.3
-    ('możliwe, że atom ostygnie i zostanie zebrany, zanim ktoś spróbuje go
-    odzyskać') w NAJGORSZEJ możliwej formie: nie awaria, tylko CICHA
-    degradacja jakości — dokładnie to, czego projekt unika gdzie indziej
-    (patrz jawne NotImplementedError przy braku HRR, sekcja 8 raportu)."""
+def test_unrooted_family_raises_when_oracle_siblings_were_reaped() -> None:
+    """Regresja na poprawkę 2 w unbind_position (naprawiona po tym, jak ten
+    test — w swojej wcześniejszej wersji — ZNALAZŁ przez uruchomienie, nie
+    czytanie kodu, że korekta 'oracle' cicho degradowała się do poziomu
+    blind, gdy reach-GC zebrał sąsiadów: wołający prosił o blind=False,
+    dostawał wynik jakości blind=True bez żadnego ostrzeżenia). Teraz
+    unbind_position(blind=False) na złożeniu, którego sąsiad zniknął ze
+    Store, musi jawnie odmówić (RuntimeError) zamiast cicho zwrócić
+    mylnie pewny siebie, zdegradowany wynik — a blind=True (który nigdy
+    nie sięga po sąsiadów) musi dalej działać bez przeszkód."""
     import karmazyn_substrate as sub
     fazy = {"na-": math.pi / 4, "prze-": math.pi / 3, "wy-": math.pi / 6}
     lingua = _fresh_lingua()
     rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
     prefiksy = {n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, ph, 1)], AtomEncoding.HOLOGRAM)
                 for n, ph in fazy.items()}
-    candidates = list(prefiksy.values())
-    slowa = {n: lingua.compose(f"{n}pisac_gc_silent", [p, rdzen], kind="word")  # bubble_root=False domyślne
+    slowa = {n: lingua.compose(f"{n}pisac_gc_raise", [p, rdzen], kind="word")  # bubble_root=False domyślne
              for n, p in prefiksy.items()}
 
     trafienia_przed = sum(
-        lingua.nearest_morpheme(lingua.unbind_position(s, position=1), candidates, top_k=1)[0][1].E == n
+        lingua.nearest_morpheme(lingua.unbind_position(s, position=1),
+                                 list(prefiksy.values()), top_k=1)[0][1].E == n
         for n, s in slowa.items()
     )
     assert trafienia_przed == 3, "przed GC oracle powinien działać idealnie (r@1=1.0), jak w sekcji 5 raportu"
@@ -744,15 +740,19 @@ def test_unrooted_family_silently_loses_oracle_correction_after_gc() -> None:
         lingua.store.tick()
     assert not lingua.store.has_atom(rdzen.id), "test zakłada, że sąsiedzi FAKTYCZNIE zostali zebrani"
 
-    trafienia_po = sum(
-        lingua.nearest_morpheme(lingua.unbind_position(s, position=1, blind=False), candidates, top_k=1)[0][1].E == n
-        for n, s in slowa.items()
-    )
-    assert trafienia_po == 1, (
-        f"po GC sąsiadów, oracle=False powinien cicho spaść do poziomu blind (r@1=1/3), "
-        f"dostał {trafienia_po}/3 — jeśli to teraz 3/3, ktoś naprawił unbind_position, "
-        f"żeby wykrywał brakujących sąsiadów (dobrze!), zaktualizuj ten test"
-    )
+    for n, slowo in slowa.items():
+        try:
+            lingua.unbind_position(slowo, position=1, blind=False)
+        except RuntimeError:
+            pass
+        else:
+            raise AssertionError(
+                f"{n}: unbind_position(blind=False) powinien rzucić RuntimeError, "
+                f"gdy sąsiad zniknął ze Store, nie cicho zdegradować wynik"
+            )
+        # blind=True nigdy nie sięga po sąsiadów — musi działać bez przeszkód
+        fv_blind = lingua.unbind_position(slowo, position=1, blind=True)
+        assert fv_blind.shape == (FEATURE_DIM,)
 
 
 if __name__ == "__main__":

@@ -443,7 +443,21 @@ class LinguaLayer:
         ślepo). Gdy `composite` nie jest złożeniem compose() (brak
         metadanych members — np. gołe make_morpheme), oracle i tak nie ma
         czego odjąć, więc `blind=False` daje ten sam wynik co `blind=True`
-        (dawny fallback, teraz jawny, nie przypadkowy)."""
+        (dawny fallback, teraz jawny, nie przypadkowy).
+
+        POPRAWKA 2 (znaleziona przez test trwałości atomów w czasie —
+        test_unrooted_family_raises_when_oracle_siblings_were_reaped):
+        gdy `composite` MA metadane members (oracle byłby w zasadzie
+        dostępny), ale KONKRETNY sąsiad zniknął ze Store (np. reach-GC po
+        ostygnięciu, patrz Store.tick()), stara wersja po cichu POMIJAŁA
+        odjęcie tego sąsiada — wołający prosił o `blind=False`, dostawał
+        jednak wynik jakości `blind=True` (r@1 potrafi spaść z 1.0 do
+        poziomu przypadku) BEZ żadnego ostrzeżenia. To dokładnie ten typ
+        cichej degradacji, którego reszta tego modułu unika (patrz
+        NotImplementedError przy braku HRR) — teraz RZUCA RuntimeError
+        zamiast zgadywać częściową korektę, która wyglądałaby na pewną
+        siebie, a byłaby cicho błędna. Jeśli akceptujesz retrieval bez
+        korekty strukturalnej, poproś o to WPROST przez `blind=True`."""
         if self._pos_hrr is None:
             raise NotImplementedError("brak karmazyn_hrr — unbind_position niedostępny")
         if position < 1:
@@ -460,7 +474,14 @@ class LinguaLayer:
                     continue
                 sibling = self.store.get_atom(mid)
                 if sibling is None or sibling.vector is None:
-                    continue
+                    raise RuntimeError(
+                        f"unbind_position(blind=False) dla {composite.id!r}: sąsiad "
+                        f"{mid!r} (pozycja {i}) zniknął ze Store (reach-GC po "
+                        f"ostygnięciu?) — korekta oracle nie może być zastosowana "
+                        f"CZĘŚCIOWO, bo dałaby cichy, mylnie pewny siebie błędny "
+                        f"wynik zamiast jawnej odmowy. Użyj blind=True świadomie, "
+                        f"jeśli akceptujesz retrieval bez korekty strukturalnej."
+                    )
                 sibling_fv = np.asarray(sibling.vector[:FEATURE_DIM], dtype=float)
                 fv = fv - _hrr.bind(self._pos_hrr.P_power(i), sibling_fv)
 
@@ -596,7 +617,11 @@ class Projector:
             for blind in blind_modes:
                 try:
                     fv = self.lingua.unbind_position(composite, position=pos, blind=blind)
-                except (NotImplementedError, ValueError):
+                except (NotImplementedError, ValueError, RuntimeError):
+                    # RuntimeError: sąsiad wymagany przez ten (pos, blind=False)
+                    # zniknął ze Store (reach-GC, patrz unbind_position poprawka
+                    # 2) — jedna próba pada, ale scan() ma inne kombinacje do
+                    # ocenienia (np. blind=True nie potrzebuje sąsiadów wcale).
                     continue
                 ranking = self.lingua.nearest_morpheme(fv, candidates, top_k=top_k)
                 if ranking:
