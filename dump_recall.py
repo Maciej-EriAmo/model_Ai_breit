@@ -90,22 +90,22 @@ def bind_pairs_same_depth(g: PhiGraph) -> list[tuple[int, int]]:
     ]
 
 
-def graph_to_tensors(
-    g: PhiGraph,
-    topics: list[str] | None = None,  # legacy unused — content ≠ topic prototype
-    d_x: int = 8,
-    n_dim: int = 6,
-    noise_scale: float = 0.0,
-    *,
-    blend_holo_proto: float = 0.0,
-    holo_bins: int = 6,
+def _graph_clean_tensors(
+    g: PhiGraph, d_x: int, n_dim: int, *, blend_holo_proto: float = 0.0, holo_bins: int = 6,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-    """Content z S/E/payload (`atom_content_vec`).
+    """Część atom_content_vec/atom_tracer_vec NIEZALEŻNA od noise_scale —
+    S/E/payload/depth/T/state/mazur_tracer każdego atomu są statyczne
+    (własność grafu, nie batcha), więc liczymy je RAZ, zamiast przeliczać
+    hash_embed (SHA256 + nowy torch.Generator na wywołanie) dla KAŻDEGO
+    atomu przy KAŻDYM elemencie KAŻDEGO batcha.
 
-    `blend_holo_proto`: domieszka prototypu klastra z `mazur_tracer` (hologram).
-    Jak topic w Fazie C — semantyka bańki/holo w x; geometria nadal w τ.
-    """
-    _ = topics
+    ZNALEZIONE PRZEZ POMIAR (nie inspekcję): przy grafie 286 atomów
+    make_dump_loaders(n_train=80, n_val=25, batch_size=16) robiło
+    (80+25+1)*16*286 ≈ 485k wywołań atom_content_vec/atom_tracer_vec —
+    43s samego budowania loaderów, podczas gdy przy grafie Lingua P1
+    (11 atomów) ten sam wzorzec był niezauważalny (~1.6s). Skalowało się
+    z rozmiarem grafu razy liczba batchy, a mogło być O(graf) RAZ plus
+    O(batch) tanich dopisań szumu."""
     N = len(g.atoms)
     content = torch.zeros(N, d_x)
     tracer = torch.zeros(N, n_dim)
@@ -132,13 +132,49 @@ def graph_to_tensors(
             w = float(blend_holo_proto)
             vec = (1.0 - w) * vec + w * proto
             vec = vec / vec.norm().clamp_min(1e-6)
-        if noise_scale > 0:
-            vec = vec + noise_scale * torch.randn(d_x)
-            vec = vec / vec.norm().clamp_min(1e-6)
         content[i] = vec
         tracer[i] = atom_tracer_vec(aa, n_dim)
         depths[i] = float(a.depth)
         states[i] = int(a.state)
+    return content, tracer, depths, states
+
+
+def graph_to_tensors(
+    g: PhiGraph,
+    topics: list[str] | None = None,  # legacy unused — content ≠ topic prototype
+    d_x: int = 8,
+    n_dim: int = 6,
+    noise_scale: float = 0.0,
+    *,
+    blend_holo_proto: float = 0.0,
+    holo_bins: int = 6,
+    _clean: tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor] | None = None,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Content z S/E/payload (`atom_content_vec`).
+
+    `blend_holo_proto`: domieszka prototypu klastra z `mazur_tracer` (hologram).
+    Jak topic w Fazie C — semantyka bańki/holo w x; geometria nadal w τ.
+
+    `_clean`: opcjonalny wynik `_graph_clean_tensors` policzony wcześniej
+    przez wołającego (patrz make_recall_from_graph) — pozwala pominąć
+    przeliczanie hash_embed dla całego grafu przy każdym wywołaniu, gdy
+    graf się nie zmienił między wywołaniami (tylko noise_scale różni
+    kolejne wywołania). Bit-identyczne wyniki względem starej wersji:
+    to jedyne miejsce w tej funkcji, które dotyka GLOBALNEGO RNG
+    (torch.randn), a kolejność/liczba tych wywołań (jeden torch.randn(d_x)
+    na atom, gdy noise_scale>0) jest nietknięta."""
+    _ = topics
+    if _clean is not None:
+        content, tracer, depths, states = _clean
+    else:
+        content, tracer, depths, states = _graph_clean_tensors(
+            g, d_x, n_dim, blend_holo_proto=blend_holo_proto, holo_bins=holo_bins
+        )
+    if noise_scale > 0:
+        content = content.clone()
+        for i in range(content.shape[0]):
+            vec = content[i] + noise_scale * torch.randn(d_x)
+            content[i] = vec / vec.norm().clamp_min(1e-6)
     return content, tracer, depths, states
 
 
@@ -156,21 +192,31 @@ def make_recall_from_graph(
     t_jitter: float = 0.05,
     blend_holo_proto: float = 0.0,
     restrict_same_prefix: bool = False,
+    _clean: tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor] | None = None,
+    _pairs: tuple[list, list, list] | None = None,
 ) -> RecallBatch:
     """
     pair_mode:
       same_depth — tylko bind same-depth (domyślnie)
       all — wszystkie bindy
       mixed — 50/50 same-depth / cross-depth (gdy są); daje Mostowi ΔE
-    """
+
+    `_clean`/`_pairs`: opcjonalne wyniki `_graph_clean_tensors`/
+    `bind_pairs_*` policzone wcześniej przez wołającego (patrz
+    make_dump_loaders) — `g` nie zmienia się między kolejnymi wywołaniami
+    tej funkcji dla jednego dumpa (raz na próbkę train/val), więc bez tego
+    hash_embed i skan krawędzi liczyłyby się od nowa PRZY KAŻDEJ próbce."""
     rng = random.Random(seed)
-    pairs_sd = bind_pairs_same_depth(g)
-    pairs_all = bind_pairs_idx(g)
-    pairs_xd = [
-        (a, b)
-        for a, b in pairs_all
-        if g.atoms[a].depth != g.atoms[b].depth
-    ]
+    if _pairs is not None:
+        pairs_sd, pairs_all, pairs_xd = _pairs
+    else:
+        pairs_sd = bind_pairs_same_depth(g)
+        pairs_all = bind_pairs_idx(g)
+        pairs_xd = [
+            (a, b)
+            for a, b in pairs_all
+            if g.atoms[a].depth != g.atoms[b].depth
+        ]
     if pair_mode == "all":
         pairs = pairs_all
     elif pair_mode == "mixed":
@@ -195,6 +241,21 @@ def make_recall_from_graph(
     # clean batch (seed=0,b=0): zero noise; train: domyślnie łagodniejszy szum
     default_noise = 0.08
 
+    # g/blend_holo_proto są STAŁE dla całego batcha — hash_embed (SHA256 +
+    # nowy torch.Generator na wywołanie) dla wszystkich atomów liczymy RAZ
+    # tutaj, zamiast przy KAŻDYM z `batch_size` wywołań graph_to_tensors
+    # (patrz _graph_clean_tensors — to był dominujący koszt przy większych
+    # grafach: zmierzone 43s dla 286 atomów, niezauważalne dla 11), chyba
+    # że wołający (make_dump_loaders) już to policzył dla CAŁEGO dumpa.
+    if _clean is None:
+        _clean = _graph_clean_tensors(g, d_x, n_dim, blend_holo_proto=blend_holo_proto)
+
+    # topic_ids.get(top) nie zależy od b — ta sama wartość na atom, dla
+    # każdego batcha; policzona raz jako wiersz zamiast N pojedynczych
+    # zapisów `topics_t[b, i] = ...` (element-po-elemencie) w KAŻDEJ
+    # iteracji b.
+    topics_row = torch.tensor([topic_ids.get(top, 0) for top in topics], dtype=torch.long)
+
     for b in range(batch_size):
         if noise_scale is not None:
             ns = float(noise_scale)
@@ -206,17 +267,22 @@ def make_recall_from_graph(
             d_x=d_x,
             n_dim=n_dim,
             noise_scale=ns,
-            blend_holo_proto=blend_holo_proto,
+            _clean=_clean,
         )
         if ns > 0 and t_jitter > 0 and n_dim > 3:
+            # t bywa teraz WSPÓLNYM tensorem z _clean (dzielonym między
+            # wszystkie iteracje b) — bez .clone() ten in-place zapis
+            # zanieczyściłby cache i przeciekł do KOLEJNYCH iteracji b
+            # (znalezione przez porównanie z wynikiem sprzed tej poprawki,
+            # patrz commit).
+            t = t.clone()
             t[:, 3] = (t[:, 3] + t_jitter * torch.randn(N0)).clamp(0, 1)
         content[b, :N0] = c
         tracer[b, :N0] = t
         depths[b, :N0] = d
         states[b, :N0] = s
         mask[b, :N0] = 1.0
-        for i, top in enumerate(topics):
-            topics_t[b, i] = topic_ids.get(top, 0)
+        topics_t[b, :N0] = topics_row
         if pair_mode == "mixed" and pairs_xd and rng.random() < 0.5:
             qi, pi = pairs_xd[rng.randrange(len(pairs_xd))]
         else:
@@ -268,6 +334,16 @@ def make_dump_loaders(
     g = warm_without_payload(g)
     topics = [str(r.get("topic", r.get("id", "x"))) for r in rows]
     N = len(g.atoms)
+
+    # g nie zmienia się między n_train+n_val+1 próbkami tego samego dumpa —
+    # hash_embed (przez _clean) i skan krawędzi bind (przez _pairs) liczymy
+    # RAZ tutaj zamiast przy KAŻDEJ próbce (patrz make_recall_from_graph).
+    _clean = _graph_clean_tensors(g, d_x, n_dim, blend_holo_proto=blend_holo_proto)
+    _pairs_sd = bind_pairs_same_depth(g)
+    _pairs_all = bind_pairs_idx(g)
+    _pairs_xd = [(a, b) for a, b in _pairs_all if g.atoms[a].depth != g.atoms[b].depth]
+    _pairs = (_pairs_sd, _pairs_all, _pairs_xd)
+
     train = [
         make_recall_from_graph(
             g,
@@ -281,6 +357,8 @@ def make_dump_loaders(
             noise_scale=noise_scale,
             blend_holo_proto=blend_holo_proto,
             restrict_same_prefix=restrict_same_prefix,
+            _clean=_clean,
+            _pairs=_pairs,
         )
         for i in range(n_train)
     ]
@@ -297,6 +375,8 @@ def make_dump_loaders(
             noise_scale=noise_scale,
             blend_holo_proto=blend_holo_proto,
             restrict_same_prefix=restrict_same_prefix,
+            _clean=_clean,
+            _pairs=_pairs,
         )
         for i in range(n_val)
     ]
@@ -313,5 +393,7 @@ def make_dump_loaders(
         t_jitter=0.0,
         blend_holo_proto=blend_holo_proto,
         restrict_same_prefix=restrict_same_prefix,
+        _clean=_clean,
+        _pairs=_pairs,
     )
     return g, train, val, val_clean
