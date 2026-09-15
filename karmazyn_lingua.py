@@ -330,7 +330,7 @@ class LinguaLayer:
                                   root=bubble_root)
         return composite
 
-    def unbind_position(self, composite, position: int) -> np.ndarray:
+    def unbind_position(self, composite, position: int, blind: bool = False) -> np.ndarray:
         """Odzyskaj wektor cech z pozycji `position` złożenia. position
         numerowana OD 1, zgodnie z compose() (position=1 to pierwszy
         element listy member_atoms przekazanej do compose).
@@ -350,9 +350,19 @@ class LinguaLayer:
         nawet przy D=2048, patrz karmazyn_hrr.py). Empirycznie: r@1 dla
         hologram_close (fazy 30°-60°) skacze z 0.33 (bez tej poprawki) do
         1.0 (z nią) — patrz doswiadczenie/glify/LINGUA_PROBE_MLP.md.
-        Gdy `composite` nie jest złożeniem compose() (brak metadanych
-        members — np. gołe make_morpheme) — fallback: zwykły unbind na
-        surowym wektorze, jak poprzednio."""
+
+        `blind=True` WYŁĄCZA tę poprawkę: nawet gdy `composite` MA
+        metadane members (czyli oracle byłby dostępny), pomija odejmowanie
+        znanych sąsiadów i unbinduje surowy composite.vector wprost — tak
+        jak w pierwszej wersji tej funkcji, sprzed poprawki. Cel: kontrolowana
+        ablacja (ten sam composite, oracle vs blind) do sprawdzenia, czy
+        retrieval przeżywa BEZ znajomości struktury złożenia z góry (pytanie
+        z NASTĘPNY KROK w notatkach projektu — Projector.scan zgaduje
+        POZYCJĘ, ale nadal na oracle; to tu sprawdza REPREZENTACJĘ na
+        ślepo). Gdy `composite` nie jest złożeniem compose() (brak
+        metadanych members — np. gołe make_morpheme), oracle i tak nie ma
+        czego odjąć, więc `blind=False` daje ten sam wynik co `blind=True`
+        (dawny fallback, teraz jawny, nie przypadkowy)."""
         if self._pos_hrr is None:
             raise NotImplementedError("brak karmazyn_hrr — unbind_position niedostępny")
         if position < 1:
@@ -362,7 +372,7 @@ class LinguaLayer:
             )
         fv = np.asarray(composite.vector[:FEATURE_DIM], dtype=float)
 
-        member_ids = _composite_member_ids(composite)
+        member_ids = None if blind else _composite_member_ids(composite)
         if member_ids:
             for i, mid in enumerate(member_ids, start=1):
                 if i == position:
@@ -395,6 +405,81 @@ class LinguaLayer:
         if not hasattr(self.store, "resonance"):
             raise NotImplementedError("Ten store nie ma resonance() (brak HRR)")
         return self.store.resonance(name_or_vector, k=k, threshold=threshold)
+
+
+class Projector:
+    """Metafora: LinguaLayer.unbind_position() dziś to bierny projektor —
+    świeci JEDNĄ, z góry podaną wiązką P^position, bo wywołujący już wie,
+    gdzie szukać. Projector.scan() robi to, czego brakuje — a teraz w
+    DWÓCH wymiarach naraz:
+
+      GDZIE patrzeć: kolejne wiązki referencyjne P^1, P^2, ... (positions).
+      JAK patrzeć: z korektą o znanych sąsiadów (oracle) czy bez niej
+        (blind, patrz unbind_position) — blind_modes.
+
+    Dla każdej pary (pozycja, tryb) obserwator (nearest_morpheme) ocenia
+    jakość rekonstrukcji, a scan() zwraca wszystkie próby posortowane po
+    similarity — [0] to najsilniejszy, najbardziej spójny widok. To domyka
+    pętlę "nieznany sygnał na wejściu -> rozpoznany fragment" bez
+    wcześniejszej wiedzy WYWOŁUJĄCEGO ani o pozycji, ani o tym, czy warto
+    ufać korekcie strukturalnej.
+
+    Uczciwie: sama korekta 'oracle' nadal wymaga, żeby `composite` MIAŁ
+    metadane members (compose() je zapisuje, patrz _composite_member_ids)
+    — scan() z blind_modes=(False, True) nie odpowiada na 'czy stać nas
+    bez ZNAJOMOŚCI struktury w ogóle' (gdy metadanych nie ma, oracle i tak
+    nie zadziała, patrz unbind_position), tylko na 'czy WARTO z niej
+    skorzystać, skoro jest dostępna' — obserwator może np. wykryć, że dwa
+    widoki dają bardzo różną siłę sygnału (duża przepaść similarity), co
+    samo w sobie jest sygnałem, czy dana rekonstrukcja jest wiarygodna."""
+
+    def __init__(self, lingua: LinguaLayer):
+        self.lingua = lingua
+
+    def scan(self, composite, candidates: Sequence[Any],
+              positions: Optional[Sequence[int]] = None,
+              blind_modes: Sequence[bool] = (False,),
+              top_k: int = 1) -> list[tuple[int, bool, float, Any]]:
+        """Próbuje unbind_position(composite, pos, blind=b) dla KAŻDEJ pary
+        (pos, b) z iloczynu `positions` x `blind_modes`. `positions`
+        domyślnie: 1..len(members) odczytane z metadanych złożenia (patrz
+        _composite_member_ids), 1..3 gdy brak metadanych. `blind_modes`
+        domyślnie tylko (False,) — czyli zachowanie identyczne jak przed
+        dodaniem osi trybu; podaj (False, True) albo (True,), żeby
+        obserwator próbował też/tylko widoku bez korekty strukturalnej.
+        Dla każdej próby bierze najlepsze dopasowanie z `candidates`
+        (nearest_morpheme) i zwraca [(position, blind, similarity, atom),
+        ...] posortowane malejąco po similarity — [0] to najlepszy strzał
+        projektora, uwzględniający zarówno GDZIE jak i JAK patrzył."""
+        if positions is None:
+            member_ids = _composite_member_ids(composite)
+            n = len(member_ids) if member_ids else 3
+            positions = range(1, n + 1)
+
+        results: list[tuple[int, bool, float, Any]] = []
+        for pos in positions:
+            for blind in blind_modes:
+                try:
+                    fv = self.lingua.unbind_position(composite, position=pos, blind=blind)
+                except (NotImplementedError, ValueError):
+                    continue
+                ranking = self.lingua.nearest_morpheme(fv, candidates, top_k=top_k)
+                if ranking:
+                    sim, atom = ranking[0]
+                    results.append((pos, blind, sim, atom))
+        results.sort(key=lambda r: -r[2])
+        return results
+
+    def best(self, composite, candidates: Sequence[Any],
+              positions: Optional[Sequence[int]] = None,
+              blind_modes: Sequence[bool] = (False,),
+              ) -> Optional[tuple[int, bool, float, Any]]:
+        """Wygodny skrót: sam wynik [0] ze scan(), albo None gdy nic się
+        nie dało odzyskać (np. composite bez cech w żadnej próbowanej
+        parze pozycja/tryb)."""
+        results = self.scan(composite, candidates, positions=positions,
+                             blind_modes=blind_modes)
+        return results[0] if results else None
 
 
 # ---------------------------------------------------------------------------
@@ -584,9 +669,16 @@ def to_phi_atoms(
 # + karmazyn_hrr.py dla pełnej ścieżki bind/bundle/unbind.
 # ---------------------------------------------------------------------------
 
-def _run_r1(tryb: AtomEncoding, prefiksy_faza: dict) -> float:
+def _run_r1(tryb: AtomEncoding, prefiksy_faza: dict, blind: bool = False,
+            _verbose: bool = True) -> float:
     """Buduje na-/prze-/wy-pisać z podanymi fazami prefiksów, próbuje
-    odzyskać, KTÓRY prefiks był na pozycji 1, zwraca r@1."""
+    odzyskać, KTÓRY prefiks był na pozycji 1, zwraca r@1.
+
+    `blind=True` woła unbind_position(..., blind=True) — dekoder NIE zna
+    struktury złożenia (nie odejmuje znanego wkładu rdzenia), więc mierzy
+    to samo pytanie co pierwsza, "zepsuta" wersja unbind_position() z
+    nagłówka pliku, ale teraz jako świadomy wybór do ablacji, nie
+    przypadkowy fallback."""
     import karmazyn_substrate as sub
 
     store = sub.Store()
@@ -602,13 +694,14 @@ def _run_r1(tryb: AtomEncoding, prefiksy_faza: dict) -> float:
     trafienia = 0
     for nazwa, prefiks in prefiks_atoms.items():
         slowo = lingua.compose(f"{nazwa}pisać", [prefiks, rdzen], kind="word")
-        odzyskany = lingua.unbind_position(slowo, position=1)   # prefiks = 1. element
+        odzyskany = lingua.unbind_position(slowo, position=1, blind=blind)   # prefiks = 1. element
         ranking = lingua.nearest_morpheme(odzyskany, candidates, top_k=3)
         top1 = ranking[0][1].E
         ok = (top1 == nazwa)
         trafienia += ok
-        print(f"    {nazwa}pisać -> top1={top1!r} sim={ranking[0][0]:+.3f} "
-              f"{'OK' if ok else 'BLAD'}")
+        if _verbose:
+            print(f"    {nazwa}pisać -> top1={top1!r} sim={ranking[0][0]:+.3f} "
+                  f"{'OK' if ok else 'BLAD'}")
     return trafienia / len(prefiksy_faza)
 
 
@@ -647,6 +740,138 @@ def _run_onehot_baseline() -> float:
     return trafienia / len(prefiksy_slot)
 
 
+def _run_projector_scan() -> None:
+    """Smoke test Projector.scan(): buduje na-/prze-/wy-pisać (fazy blisko
+    siebie, ten sam trudny przypadek co hologram_faz_blisko w _run_r1),
+    ale w przeciwieństwie do _run_r1 NIE MÓWI scan()-owi, że prefiks jest
+    na pozycji 1 — scan próbuje pozycji 1 i 2 sam, na puli kandydatów
+    złożonej z PREFIKSÓW i RDZENIA razem (żeby sprawdzić, że projektor nie
+    tylko trafia właściwy morfem, ale i właściwą pozycję)."""
+    import karmazyn_substrate as sub
+
+    store = sub.Store()
+    lingua = LinguaLayer(store, dim=sub.VEC_DIM)
+    projector = Projector(lingua)
+
+    rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)],
+                                  AtomEncoding.HOLOGRAM)
+    prefiksy_faza = {"na-": math.pi / 4, "prze-": math.pi / 3, "wy-": math.pi / 6}
+    prefiks_atoms = {
+        n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, ph, 1)], AtomEncoding.HOLOGRAM)
+        for n, ph in prefiksy_faza.items()
+    }
+    candidates = list(prefiks_atoms.values()) + [rdzen]
+
+    trafienia_pozycja = 0
+    trafienia_morfem = 0
+    for nazwa, prefiks in prefiks_atoms.items():
+        slowo = lingua.compose(f"{nazwa}pisać_scan", [prefiks, rdzen], kind="word")
+        pos, blind, sim, atom = projector.best(slowo, candidates, positions=(1, 2))
+        ok_pos = (pos == 1)
+        ok_morfem = (atom.E == nazwa)
+        trafienia_pozycja += ok_pos
+        trafienia_morfem += ok_morfem
+        print(f"    {nazwa}pisać_scan -> best pos={pos} top1={atom.E!r} sim={sim:+.3f} "
+              f"{'OK' if ok_pos and ok_morfem else 'BLAD'}")
+    n = len(prefiksy_faza)
+    print(f"  Projector.scan: pozycja r@1={trafienia_pozycja/n:.3f}, "
+          f"morfem r@1={trafienia_morfem/n:.3f}\n")
+
+
+def _run_observer_search() -> None:
+    """Obserwator szuka najlepszego widoku na NAJTRUDNIEJSZYM przypadku z
+    ablacji (hologram, fazy stłoczone 30°-60° — tam _run_blind_ablation
+    pokazał, że unbind_position(position=1, blind=True) SAMO pada do r@1
+    przypadku=0.333, bo traci korektę strukturalną). Dwa pytania:
+
+    (A) Czy samo PRZESZUKANIE POZYCJI na ślepo (blind_modes=(True,), bez
+        oracle w ogóle) ratuje cokolwiek względem stałej pozycji=1 blind?
+        Zgadywanie 'gdzie' nie naprawia utraty 'jak' — spodziewane: nadal
+        słabo, to inna oś.
+    (B) Gdy obserwator ma OBIE opcje na stole (blind_modes=(False, True)),
+        czy sam, bez podpowiedzi, wybiera oracle — i o ile mocniejszy jest
+        ten widok (przepaść similarity oracle vs blind na tej samej
+        pozycji), skoro to jedyny sygnał, jaki obserwator ma do dyspozycji
+        przy realnym 'nie wiem które jest prawdziwe'."""
+    import karmazyn_substrate as sub
+
+    store = sub.Store()
+    lingua = LinguaLayer(store, dim=sub.VEC_DIM)
+    projector = Projector(lingua)
+
+    rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)],
+                                  AtomEncoding.HOLOGRAM)
+    prefiksy_faza = {"na-": math.pi / 4, "prze-": math.pi / 3, "wy-": math.pi / 6}
+    prefiks_atoms = {
+        n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, ph, 1)], AtomEncoding.HOLOGRAM)
+        for n, ph in prefiksy_faza.items()
+    }
+    candidates = list(prefiks_atoms.values())
+
+    trafienia_blind_only = 0
+    trafienia_mixed = 0
+    gaps = []
+    for nazwa, prefiks in prefiks_atoms.items():
+        slowo = lingua.compose(f"{nazwa}pisać_obs", [prefiks, rdzen], kind="word")
+
+        # (A) tylko blind, ale przeszukuje obie pozycje
+        pos_b, _, sim_b, atom_b = projector.best(slowo, candidates, positions=(1, 2),
+                                                   blind_modes=(True,))
+        ok_b = (atom_b.E == nazwa)
+        trafienia_blind_only += ok_b
+
+        # (B) oba tryby na stole naraz — obserwator wybiera sam
+        wszystkie = projector.scan(slowo, candidates, positions=(1, 2),
+                                    blind_modes=(False, True))
+        pos_m, blind_m, sim_m, atom_m = wszystkie[0]
+        ok_m = (atom_m.E == nazwa) and not blind_m
+        trafienia_mixed += ok_m
+        # przepaść: najlepszy oracle-widok vs najlepszy blind-widok
+        best_oracle = max((r for r in wszystkie if not r[1]), key=lambda r: r[2], default=None)
+        best_blind = max((r for r in wszystkie if r[1]), key=lambda r: r[2], default=None)
+        if best_oracle and best_blind:
+            gap = best_oracle[2] - best_blind[2]
+            gaps.append(gap)
+            print(f"    {nazwa}pisać_obs -> (A) blind-only best pos={pos_b} "
+                  f"top1={atom_b.E!r} sim={sim_b:+.3f} {'OK' if ok_b else 'BLAD'} | "
+                  f"(B) mixed wybrał blind={blind_m} pos={pos_m} top1={atom_m.E!r} "
+                  f"sim={sim_m:+.3f} {'OK' if ok_m else 'BLAD'} | "
+                  f"przepasc(oracle-blind)={gap:+.3f}")
+
+    n = len(prefiksy_faza)
+    print(f"  (A) blind-only (przeszukane obie pozycje): r@1={trafienia_blind_only/n:.3f}")
+    print(f"  (B) mixed (oracle+blind na stole, obserwator wybiera): r@1={trafienia_mixed/n:.3f}")
+    if gaps:
+        print(f"  srednia przepasc similarity oracle-vs-blind na tej samej pozycji: "
+              f"{sum(gaps)/len(gaps):+.3f}\n")
+
+
+def _run_blind_ablation() -> dict:
+    """Kontrolowana ablacja oracle vs blind na TYCH SAMYCH trzech
+    scenariuszach co reszta _demo_retrieval (symbolic, hologram fazy
+    blisko, hologram fazy rozstawione) — jedyna zmienna to blind=True/False
+    w unbind_position, wszystko inne (dane, fazy, słowa) identyczne.
+    Odpowiada wprost na pytanie z NASTĘPNY KROK: czy retrieval przeżywa,
+    gdy dekoder nie zna struktury złożenia z góry (nie odejmuje znanego
+    wkładu rdzenia), czy to oracle (nie reprezentacja) robił robotę."""
+    scenariusze = {
+        "symbolic": (AtomEncoding.SYMBOLIC,
+                     {"na-": math.pi / 4, "prze-": math.pi / 3, "wy-": math.pi / 6}),
+        "hologram_faz_blisko": (AtomEncoding.HOLOGRAM,
+                                 {"na-": math.pi / 4, "prze-": math.pi / 3, "wy-": math.pi / 6}),
+        "hologram_faz_rozstawione": (AtomEncoding.HOLOGRAM,
+                                      {"na-": 0.0, "prze-": 2 * math.pi / 3, "wy-": 4 * math.pi / 3}),
+    }
+    wyniki: dict = {}
+    for nazwa, (tryb, fazy) in scenariusze.items():
+        r_oracle = _run_r1(tryb, fazy, blind=False, _verbose=False)
+        r_blind = _run_r1(tryb, fazy, blind=True, _verbose=False)
+        wyniki[nazwa] = {"oracle": r_oracle, "blind": r_blind}
+        print(f"    {nazwa:28s} oracle r@1={r_oracle:.3f}  blind r@1={r_blind:.3f}  "
+              f"{'ROZNICA' if r_oracle != r_blind else 'bez zmian'}")
+    return wyniki
+
+
 def _demo_retrieval():
     print("=== SYMBOLIC (Im=0 zawsze — oczekiwane: r@1 = przypadek, ZAWSZE) ===")
     r_sym = _run_r1(AtomEncoding.SYMBOLIC,
@@ -673,6 +898,15 @@ def _demo_retrieval():
         "hologram_faz_rozstawione": r_holo_far,
         "onehot_hard_baseline": r_onehot,
     })
+
+    print("=== Projector.scan (pozycja NIEZNANA z góry, skanowana) ===")
+    _run_projector_scan()
+
+    print("=== BLIND vs ORACLE (dekoder nie zna struktury złożenia) ===")
+    _run_blind_ablation()
+
+    print("=== Obserwator szuka najlepszego widoku (pozycja x tryb, przypadek trudny) ===")
+    _run_observer_search()
 
     print("\n=== to_phi_atoms smoke (rodzina pisać -> PhiJSON) ===")
     lingua, slowa = przyklad_pisac_rodzina(AtomEncoding.HOLOGRAM)

@@ -23,6 +23,7 @@ from karmazyn_lingua import (
     AtomEncoding,
     FeatureOverlay,
     LinguaLayer,
+    Projector,
     feature_vector,
     przyklad_pisac_rodzina,
     to_phi_atoms,
@@ -276,6 +277,130 @@ def test_to_phi_atoms_roundtrips_through_phi_dump(tmp_path) -> None:
     batch = graph_to_content_tracer(g)
     assert batch.content.shape[0] == 1
     assert batch.content.shape[1] == len(atoms)
+
+
+# --- 4. unbind_position(blind=True): ablacja korekty strukturalnej --------
+
+def test_unbind_position_blind_loses_signal_for_close_phases() -> None:
+    """blind=True pomija odejmowanie znanego wkładu sąsiadów (compose()
+    zna ich dokładnie, patrz unbind_position) — dla faz stłoczonych
+    30°-60° ta ablacja MUSI cofnąć r@1 do poziomu przypadku, dokładnie
+    tak jak przed poprawką opisaną w LINGUA_PROBE_MLP.md (kontrast z
+    test_unbind_position_subtracts_known_interference_close_phases, gdzie
+    blind=False/domyślne daje r@1=1.0 na TYCH SAMYCH fazach)."""
+    fazy = {"na-": math.pi / 4, "prze-": math.pi / 3, "wy-": math.pi / 6}
+    r1 = _r1_for_phases_blind(fazy, label="pisac_close_blind", blind=True)
+    assert abs(r1 - 1 / 3) < 1e-9, f"blind na fazach bliskich powinien wrocic do przypadku, dostal {r1}"
+
+
+def test_unbind_position_blind_keeps_signal_for_far_phases() -> None:
+    """Dla faz rozstawionych 0°/120°/240° interferencja od wspólnego rdzenia
+    jest i tak zdominowana przez separację faz — pominięcie korekty
+    (blind=True) nie powinno nic popsuć, w przeciwieństwie do faz bliskich."""
+    fazy = {"na-": 0.0, "prze-": 2 * math.pi / 3, "wy-": 4 * math.pi / 3}
+    assert _r1_for_phases_blind(fazy, label="pisac_far_blind", blind=True) == 1.0
+
+
+def _r1_for_phases_blind(fazy: dict[str, float], *, label: str, blind: bool) -> float:
+    lingua = _fresh_lingua()
+    rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
+    prefiksy = {
+        n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, ph, 1)], AtomEncoding.HOLOGRAM)
+        for n, ph in fazy.items()
+    }
+    candidates = list(prefiksy.values())
+
+    trafienia = 0
+    for nazwa, prefiks in prefiksy.items():
+        slowo = lingua.compose(f"{nazwa}{label}", [prefiks, rdzen], kind="word")
+        odzyskany = lingua.unbind_position(slowo, position=1, blind=blind)
+        top1 = lingua.nearest_morpheme(odzyskany, candidates, top_k=1)[0][1]
+        trafienia += top1.E == nazwa
+    return trafienia / len(fazy)
+
+
+# --- 5. Projector: skanowanie pozycji x trybu (oracle vs blind) ------------
+
+def _pisac_close_phase_setup():
+    """Trzy prefiksy o fazach stłoczonych 30°-60° (najtrudniejszy przypadek
+    z sekcji 4) + rdzeń, jeszcze NIEZŁOŻONE — do budowania kompozytów per
+    test, tak jak w _run_projector_scan/_run_observer_search."""
+    lingua = _fresh_lingua()
+    rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
+    prefiksy_faza = {"na-": math.pi / 4, "prze-": math.pi / 3, "wy-": math.pi / 6}
+    prefiks_atoms = {
+        n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, ph, 1)], AtomEncoding.HOLOGRAM)
+        for n, ph in prefiksy_faza.items()
+    }
+    return lingua, rdzen, prefiks_atoms
+
+
+def test_projector_scan_recovers_position_and_morpheme_without_prior_knowledge() -> None:
+    """Projector.scan() NIE dostaje position=1 z góry (w przeciwieństwie do
+    _r1_for_phases, który zawsze woła unbind_position(position=1)) — musi
+    sam, przez skan pozycji 1 i 2 na puli kandydatów złożonej z prefiksów
+    I rdzenia razem, trafić zarówno WŁAŚCIWĄ pozycję (1, bo prefiks jest
+    pierwszy w compose([prefiks, rdzen])) jak i WŁAŚCIWY morfem."""
+    lingua, rdzen, prefiks_atoms = _pisac_close_phase_setup()
+    projector = Projector(lingua)
+    candidates = list(prefiks_atoms.values()) + [rdzen]
+
+    for nazwa, prefiks in prefiks_atoms.items():
+        slowo = lingua.compose(f"{nazwa}pisać_scan", [prefiks, rdzen], kind="word")
+        pos, blind, _sim, atom = projector.best(slowo, candidates, positions=(1, 2))
+        assert pos == 1, f"projektor powinien sam trafic pozycje 1 dla {nazwa!r}, dostal {pos}"
+        assert atom.E == nazwa, f"projektor powinien sam trafic morfem {nazwa!r}, dostal {atom.E!r}"
+        assert blind is False, "scan() z domyslnym blind_modes=(False,) nie powinien zwracac blind=True"
+
+
+def test_projector_best_matches_scan_top_result() -> None:
+    """best() to udokumentowany skrót: musi być dokładnie scan()[0], nie
+    osobną, niezależnie liczoną ścieżką."""
+    lingua, rdzen, prefiks_atoms = _pisac_close_phase_setup()
+    projector = Projector(lingua)
+    candidates = list(prefiks_atoms.values()) + [rdzen]
+    prefiks = prefiks_atoms["na-"]
+    slowo = lingua.compose("na-pisać_best", [prefiks, rdzen], kind="word")
+
+    scan_wyniki = projector.scan(slowo, candidates, positions=(1, 2))
+    assert projector.best(slowo, candidates, positions=(1, 2)) == scan_wyniki[0]
+
+
+def test_projector_best_returns_none_without_candidates() -> None:
+    """Gdy nie ma czego dopasować (pusta lista kandydatów), best() musi
+    zwrócić None zamiast rzucić wyjątkiem lub zwrócić fałszywy wynik."""
+    lingua, rdzen, prefiks_atoms = _pisac_close_phase_setup()
+    projector = Projector(lingua)
+    slowo = lingua.compose("na-pisać_empty", [prefiks_atoms["na-"], rdzen], kind="word")
+    assert projector.best(slowo, [], positions=(1, 2)) is None
+
+
+def test_projector_scan_mixed_modes_observer_prefers_oracle_over_blind() -> None:
+    """Z obiema opcjami na stole (blind_modes=(False, True)), obserwator
+    (sortowanie scan() po similarity) sam wybiera oracle jako top wynik —
+    bez żadnej podpowiedzi, bo oracle po prostu daje silniejszy sygnał na
+    fazach stłoczonych (patrz test_unbind_position_blind_loses_signal_for_
+    close_phases: blind tu pada do przypadku). Sprawdzamy też, że przepaść
+    similarity między najlepszym widokiem oracle i najlepszym blind jest
+    dodatnia i wyraźna — to sam w sobie sygnał wiarygodności, jaki dostaje
+    obserwator bez znajomości ground truth."""
+    lingua, rdzen, prefiks_atoms = _pisac_close_phase_setup()
+    projector = Projector(lingua)
+    candidates = list(prefiks_atoms.values())
+
+    for nazwa, prefiks in prefiks_atoms.items():
+        slowo = lingua.compose(f"{nazwa}pisać_mixed", [prefiks, rdzen], kind="word")
+        wyniki = projector.scan(slowo, candidates, positions=(1, 2), blind_modes=(False, True))
+        pos, blind, _sim, atom = wyniki[0]
+        assert blind is False, f"obserwator powinien preferowac oracle dla {nazwa!r}, wybral blind={blind}"
+        assert pos == 1 and atom.E == nazwa
+
+        best_oracle = max((r for r in wyniki if not r[1]), key=lambda r: r[2])
+        best_blind = max((r for r in wyniki if r[1]), key=lambda r: r[2])
+        assert best_oracle[2] > best_blind[2], (
+            f"przepasc similarity oracle-blind powinna byc dodatnia dla {nazwa!r}, "
+            f"oracle={best_oracle[2]:.3f} blind={best_blind[2]:.3f}"
+        )
 
 
 if __name__ == "__main__":
