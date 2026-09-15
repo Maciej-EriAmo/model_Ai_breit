@@ -23,8 +23,10 @@ from karmazyn_lingua import (
     AtomEncoding,
     FeatureOverlay,
     LinguaLayer,
+    PhaseRegistry,
     Projector,
     feature_vector,
+    glyph_features_from_unicode,
     przyklad_pisac_rodzina,
     to_phi_atoms,
 )
@@ -401,6 +403,122 @@ def test_projector_scan_mixed_modes_observer_prefers_oracle_over_blind() -> None
             f"przepasc similarity oracle-blind powinna byc dodatnia dla {nazwa!r}, "
             f"oracle={best_oracle[2]:.3f} blind={best_blind[2]:.3f}"
         )
+
+
+# --- 6. glyph_features_from_unicode: ekstraktor cech dla nowego znaku -----
+
+def test_glyph_extractor_atomic_char_has_only_base_feature() -> None:
+    """Znak bez kanonicznej dekompozycji Unicode (np. 'k') nie ma znaków
+    łączących do wykrycia — ekstraktor NIE ZGADUJE struktury, której
+    Unicode nie opisuje, więc zwraca tylko cechę bazy, zero diakrytyku."""
+    base_reg, mark_reg = PhaseRegistry(), PhaseRegistry()
+    feats = glyph_features_from_unicode("k", base_reg, mark_reg)
+    assert len(feats) == 1
+    assert feats[0].slot == 0
+    assert len(mark_reg) == 0
+
+
+def test_glyph_extractor_decomposes_latin_diacritic() -> None:
+    """'é' (nigdy ręcznie nie wpisane do żadnej tabeli w tym repo) musi
+    rozłożyć się przez NFD na bazę 'e' (slot 0) + znak łączący U+0301
+    COMBINING ACUTE ACCENT (slot 1) — dokładnie ta sama struktura co
+    ręcznie kodowana hiragana z raportu, ale wykryta automatycznie."""
+    base_reg, mark_reg = PhaseRegistry(), PhaseRegistry()
+    feats = glyph_features_from_unicode("é", base_reg, mark_reg)
+    assert [f.slot for f in feats] == [0, 1]
+    assert feats[0].name == "base:e"
+    assert "ACUTE" in feats[1].name
+
+
+def test_glyph_extractor_decomposes_hiragana_dakuten() -> None:
+    """Ten sam mechanizm (NFD) generalizuje na hiraganę z sekcji 10
+    raportu: 'ば' = 'は' + COMBINING KATAKANA-HIRAGANA VOICED SOUND MARK —
+    dowód, że ekstraktor nie jest specyficzny dla alfabetu łacińskiego
+    (cel z sekcji 1: jeden mechanizm, wiele pism)."""
+    base_reg, mark_reg = PhaseRegistry(), PhaseRegistry()
+    feats = glyph_features_from_unicode("ば", base_reg, mark_reg)
+    assert feats[0].name == "base:は"
+    assert "VOICED" in feats[1].name
+
+
+def test_glyph_extractor_is_deterministic_across_calls() -> None:
+    """Ten sam znak wywołany dwa razy na TYM SAMYM rejestrze musi dostać
+    IDENTYCZNE fazy (rejestr pamięta, nie losuje na nowo) — analog
+    test_get_or_create_idempotent, ale dla ekstraktora, nie Store."""
+    base_reg, mark_reg = PhaseRegistry(), PhaseRegistry()
+    f1 = glyph_features_from_unicode("é", base_reg, mark_reg)
+    f2 = glyph_features_from_unicode("é", base_reg, mark_reg)
+    assert [f.phase for f in f1] == [f.phase for f in f2]
+    assert len(base_reg) == 1 and len(mark_reg) == 1
+
+
+def test_phase_registry_capacity_exhausted_raises() -> None:
+    """Pojemność jest rezerwowana Z GÓRY (lekcja 9B: rozstaw faz musi być
+    stabilny, nie doliczany na bieżąco) — przekroczenie jej musi jawnie
+    odmówić (ValueError), nie po cichu nadpisać/skolidować istniejącą
+    fazę (patrz wzorzec _check_slots / _check_slots_onehot)."""
+    reg = PhaseRegistry(capacity=2)
+    reg.phase_for("a")
+    reg.phase_for("b")
+    try:
+        reg.phase_for("c")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("trzeci klucz przy capacity=2 powinien rzucić ValueError")
+
+
+def test_glyph_extractor_retrieval_recovers_base_and_mark_axes() -> None:
+    """Test integracyjny na PRAWDZIWYCH, nigdy ręcznie niewpisanych do tabeli
+    znakach: 4 bazy (a,e,o,u) x 3 akcenty (´,`,^) = 12 prawdziwych znaków
+    łacińskich z narodowych alfabetów. Ekstraktor sam odkrywa strukturę
+    (NFD), rejestr sam przydziela rozstawione fazy — jedyna ręczna wiedza
+    to LISTA znaków do przetestowania, nie ich struktura wewnętrzna.
+
+    Metodologia z sekcji 10.2 raportu (dowód 'template ma zera wszędzie
+    poza swoim slotem'): dwie ROZŁĄCZNE pule czystych kandydatów (same
+    bazy, same akcenty), każdy złożony znak odpytywany OSOBNO względem
+    obu osi — jeśli overlay faktycznie się nie miesza między slotami,
+    r@1=1.0 na obu osiach dla wszystkich 12 znaków."""
+    baza_akcent = {
+        "á": ("a", "´"), "à": ("a", "`"), "â": ("a", "^"),
+        "é": ("e", "´"), "è": ("e", "`"), "ê": ("e", "^"),
+        "ó": ("o", "´"), "ò": ("o", "`"), "ô": ("o", "^"),
+        "ú": ("u", "´"), "ù": ("u", "`"), "û": ("u", "^"),
+    }
+    base_reg, mark_reg = PhaseRegistry(capacity=8), PhaseRegistry(capacity=8)
+    lingua = _fresh_lingua()
+
+    # pule czystych kandydatów per oś, zbudowane z TYCH SAMYCH rejestrów
+    base_candidates = {
+        b: lingua.make_morpheme(f"purebase:{b}",
+                                 [FeatureOverlay(f"base:{b}", 1.0, base_reg.phase_for(b), slot=0)],
+                                 AtomEncoding.HOLOGRAM)
+        for b in {b for b, _ in baza_akcent.values()}
+    }
+    znak_do_kodu_akcentu = {"´": "́", "`": "̀", "^": "̂"}
+    mark_candidates = {
+        a: lingua.make_morpheme(f"puremark:{a}",
+                                 [FeatureOverlay(f"mark:{a}", 0.8,
+                                                  mark_reg.phase_for(znak_do_kodu_akcentu[a]), slot=1)],
+                                 AtomEncoding.HOLOGRAM)
+        for a in {a for _, a in baza_akcent.values()}
+    }
+
+    trafienia_base = trafienia_mark = 0
+    for znak, (oczek_base, oczek_mark) in baza_akcent.items():
+        feats = glyph_features_from_unicode(znak, base_reg, mark_reg)
+        atom = lingua.make_morpheme(f"glyph:{znak}", feats, AtomEncoding.HOLOGRAM)
+        query = np.asarray(atom.vector[:FEATURE_DIM], dtype=float)
+
+        top1_base = lingua.nearest_morpheme(query, list(base_candidates.values()), top_k=1)[0][1]
+        top1_mark = lingua.nearest_morpheme(query, list(mark_candidates.values()), top_k=1)[0][1]
+        trafienia_base += (top1_base.E == f"purebase:{oczek_base}")
+        trafienia_mark += (top1_mark.E == f"puremark:{oczek_mark}")
+
+    n = len(baza_akcent)
+    assert trafienia_base == n, f"baza: r@1={trafienia_base/n:.3f} (oczekiwano 1.0)"
+    assert trafienia_mark == n, f"akcent: r@1={trafienia_mark/n:.3f} (oczekiwano 1.0)"
 
 
 if __name__ == "__main__":

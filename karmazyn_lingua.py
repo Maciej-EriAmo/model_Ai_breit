@@ -99,6 +99,7 @@ from __future__ import annotations
 
 import cmath
 import math
+import unicodedata
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Optional, Sequence
@@ -240,6 +241,86 @@ def _composite_member_ids(atom) -> Optional[list[str]]:
     if isinstance(val, dict) and "members" in val:
         return list(val["members"])
     return None
+
+
+class PhaseRegistry:
+    """Przypisuje NOWYM, nieznanym wcześniej kluczom (np. kodpunktowi
+    znaku łączącego Unicode) stabilną fazę na okręgu, z góry ustalonej
+    pojemności `capacity`, w kolejności pierwszego zgłoszenia — lekcja
+    z sekcji 9B raportu hologram-znaki: fazy MUSZĄ być świadomie
+    rozstawione (2π/N), nie losowe, a rozstaw musi być STABILNY (nie
+    przeliczany na nowo przy każdym nowym kluczu, bo to zmieniłoby fazy
+    już zakodowanych atomów pod nimi — capacity jest więc rezerwowana z
+    góry, nie dociągana na bieżąco)."""
+
+    def __init__(self, capacity: int = 16):
+        self.capacity = capacity
+        self._phase_of: dict[Any, float] = {}
+
+    def phase_for(self, key: Any) -> float:
+        if key not in self._phase_of:
+            if len(self._phase_of) >= self.capacity:
+                raise ValueError(
+                    f"PhaseRegistry capacity={self.capacity} wyczerpana przy "
+                    f"próbie zarejestrowania {key!r} — zwiększ capacity świadomie "
+                    f"(patrz limit pojemności w sekcji 9A raportu), nie zgaduj"
+                )
+            self._phase_of[key] = 2 * math.pi * len(self._phase_of) / self.capacity
+        return self._phase_of[key]
+
+    def __len__(self) -> int:
+        return len(self._phase_of)
+
+
+def glyph_features_from_unicode(
+    char: str,
+    base_registry: PhaseRegistry,
+    mark_registry: PhaseRegistry,
+    *,
+    base_amplitude: float = 1.0,
+    mark_amplitude: float = 0.8,
+) -> list[FeatureOverlay]:
+    """Ekstraktor cech dla NIEZNANEGO WCZEŚNIEJ znaku — brakujący
+    komponent z sekcji 11.3 raportu hologram-znaki ("rozpoznawanie
+    rzeczywistego, nieuprzednio zakodowanego znaku"). Zamiast ręcznej
+    tabeli znak<->wiersz<->diakrytyk (jak hiragana w raporcie, gdzie
+    przypisanie było "z wiedzy ugruntowanej", czyli ręcznie wpisane),
+    używa KANONICZNEJ DEKOMPOZYCJI UNICODE (NFD): dowolny znak złożony
+    rozkłada się na BAZĘ + 0..N znaków łączących — to ten sam mechanizm,
+    którym Unicode już opisuje np. hiraganę z dakuten (ば = は +
+    U+3099 COMBINING KATAKANA-HIRAGANA VOICED SOUND MARK, dokładnie ta
+    sama struktura co test bazowy/diakrytyk z sekcji 10 raportu) i
+    litery narodowe alfabetu łacińskiego (é = e + U+0301 COMBINING
+    ACUTE ACCENT) — jeden realny mechanizm, wiele pism, zgodnie z celem
+    z sekcji 1. Generalizuje na znak, którego nikt nie wpisał ręcznie do
+    tabeli, bo rozpoznaje jego CZĘŚCI SKŁADOWE, nie sam znak.
+
+    Ograniczenie jawne, nie ukryte: znak bez kanonicznej dekompozycji
+    (np. samo 'h', albo kanji bez dakuten) dostaje TYLKO cechę bazy,
+    zero cech diakrytyku — ekstraktor nie zgaduje struktury, której
+    Unicode nie opisuje. Diakrytyk / baza nigdy wcześniej niewidziane w
+    danym rejestrze dostają nową fazę PRZY PIERWSZYM użyciu (rejestr
+    rośnie), ale to oznacza, że bez choć jednego WCZEŚNIEJSZEGO
+    przykładu z TYM SAMYM diakrytykiem/bazą nie ma z czym go odróżnić
+    przy retrievalu — ekstraktor generalizuje na nowe KOMBINACJE znanych
+    części, nie na całkowicie pierwszy-raz-widziane części."""
+    norm = unicodedata.normalize("NFD", char)
+    if not norm:
+        raise ValueError(f"pusty znak: {char!r}")
+    base_char, marks = norm[0], norm[1:]
+
+    features = [FeatureOverlay(f"base:{base_char}", base_amplitude,
+                                base_registry.phase_for(base_char), slot=0)]
+    for i, mark in enumerate(marks, start=1):
+        if i >= N_SLOTS:
+            raise ValueError(
+                f"znak {char!r} ma {len(marks)} znaków łączących — więcej niż "
+                f"dostępnych slotów (N_SLOTS={N_SLOTS}) po odjęciu slotu bazy"
+            )
+        features.append(FeatureOverlay(f"mark:{unicodedata.name(mark, mark)}",
+                                        mark_amplitude, mark_registry.phase_for(mark),
+                                        slot=i))
+    return features
 
 
 class LinguaLayer:
