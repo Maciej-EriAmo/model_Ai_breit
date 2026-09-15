@@ -591,6 +591,170 @@ def test_observe_with_confidence_votes_sum_to_n_jitter() -> None:
     assert sum(wynik["votes"].values()) == 17
 
 
+# --- 8. yōon: sekwencyjny compose() na PRAWDZIWYM piśmie (nie syntetyce) --
+
+_YOON_ROWS = {
+    "k": "き", "s": "し", "t": "ち", "n": "に", "h": "ひ", "m": "み", "r": "り",
+    "g": "ぎ", "z": "じ", "b": "び", "p": "ぴ",
+}  # 11 wierszy spółgłoskowych biorących udział w jōon (prawdziwa hiragana)
+_YOON_SMALLS = {"ya": "ゃ", "yu": "ゅ", "yo": "ょ"}  # małe kana ya/yu/yo
+
+
+def test_yoon_sequential_compose_recovers_row_and_small_on_real_script() -> None:
+    """Pierwszy test SEKWENCYJNEGO compose() (bind pozycyjny dwóch REALNYCH
+    morfemów, nie flat overlay jak hiragana z sekcji 10 raportu) na
+    prawdziwym piśmie: 33 prawdziwe kombinacje jōon (11 wierszy x
+    ya/yu/yo) — standardowy, weryfikowalny zestaw japońskiego sylabariusza,
+    żadna kombinacja nie jest zmyślona. Każda kombinacja = compose(wielka
+    kana, mała kana), pozycja 1=wiersz, pozycja 2=ya/yu/yo.
+
+    Rozstrzyga pytanie otwarte z sekcji 9A/11.3 raportu: sweep pojemności
+    na danych SYNTETYCZNYCH przeskoczył wprost z N=10 (r@1=1.0) do N=12
+    (r@1=0.667), nigdy nie sprawdzając N=11 — a to WŁAŚNIE liczba wierszy
+    biorących udział w prawdziwym jōon. Zweryfikowane empirycznie przed
+    napisaniem tego testu: N=11 na wspólnym slocie w sekwencyjnym compose()
+    działa IDEALNIE (r@1=1.0) — granica pojemności leży gdzieś między 11 a
+    12, nie między 10 a 11."""
+    lingua = _fresh_lingua()
+    big_reg = PhaseRegistry(capacity=len(_YOON_ROWS))
+    small_reg = PhaseRegistry(capacity=len(_YOON_SMALLS))
+
+    big_atoms = {
+        row: lingua.make_morpheme(f"big:{kana}",
+                                   [FeatureOverlay(f"row_{row}", 1.0, big_reg.phase_for(kana), slot=0)],
+                                   AtomEncoding.HOLOGRAM)
+        for row, kana in _YOON_ROWS.items()
+    }
+    small_atoms = {
+        s: lingua.make_morpheme(f"small:{kana}",
+                                 [FeatureOverlay(f"s_{s}", 0.8, small_reg.phase_for(kana), slot=1)],
+                                 AtomEncoding.HOLOGRAM)
+        for s, kana in _YOON_SMALLS.items()
+    }
+    big_candidates = list(big_atoms.values())
+    small_candidates = list(small_atoms.values())
+
+    trafienia_row = trafienia_small = 0
+    n = 0
+    for row, kana in _YOON_ROWS.items():
+        for s, small_kana in _YOON_SMALLS.items():
+            n += 1
+            combo = lingua.compose(f"yoon:{kana}{small_kana}", [big_atoms[row], small_atoms[s]], kind="word")
+            top1_row = lingua.nearest_morpheme(
+                lingua.unbind_position(combo, position=1), big_candidates, top_k=1)[0][1]
+            top1_small = lingua.nearest_morpheme(
+                lingua.unbind_position(combo, position=2), small_candidates, top_k=1)[0][1]
+            trafienia_row += (top1_row.E == f"big:{kana}")
+            trafienia_small += (top1_small.E == f"small:{small_kana}")
+
+    assert n == 33, f"standardowy jōon to 11x3=33 kombinacji, policzono {n}"
+    assert trafienia_row == n, f"wiersz: r@1={trafienia_row/n:.3f} (oczekiwano 1.0)"
+    assert trafienia_small == n, f"mały kana: r@1={trafienia_small/n:.3f} (oczekiwano 1.0)"
+
+
+# --- 9. trwałość atomów w czasie: reach-GC / tick() ------------------------
+
+def _ticks_to_cross_tomb(sub_mod) -> int:
+    """Ile ticków potrzeba, żeby T_INIT ostygł poniżej T_TOMB przy
+    multiplikatywnym rozpadzie T *= DECAY co tick (patrz Store._tick_body) —
+    liczone z PRAWDZIWYCH stałych substratu, nie zgadywane na sztywno, żeby
+    test nie posypał się przy zmianie stałych termicznych silnika."""
+    n = math.ceil(math.log(sub_mod.T_TOMB / sub_mod.T_INIT) / math.log(sub_mod.DECAY))
+    return n + 1  # margines: GC działa W TYM SAMYM ticku, w którym atom pada is_dead()
+
+
+def test_unrooted_composite_is_reaped_by_reach_gc_when_cold() -> None:
+    """compose() domyślnie NIE chroni złożenia (bubble_root=False), a
+    Store() startuje bez żadnych korzeni (store.roots=[]) — więc KAŻDY
+    atom jest 'nieosiągalny' od pierwszego ticku. Gdy ostygnie poniżej
+    T_TOMB, reach-GC go usuwa (has_atom -> False) — dokładnie obawa z
+    sekcji 11.3 raportu ('możliwe, że atom ostygnie i zostanie zebrany,
+    zanim ktoś spróbuje go odzyskać'), teraz zweryfikowana na prawdziwym
+    Store.tick(), nie tylko przypuszczona."""
+    import karmazyn_substrate as sub
+    lingua = _fresh_lingua()
+    rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
+    prefiks = lingua.make_morpheme("na-", [FeatureOverlay("a_na", 0.8, math.pi / 4, 1)], AtomEncoding.HOLOGRAM)
+    slowo = lingua.compose("na-pisac_gc", [prefiks, rdzen], kind="word")
+    wid = slowo.id
+
+    for _ in range(_ticks_to_cross_tomb(sub)):
+        lingua.store.tick()
+
+    assert not lingua.store.has_atom(wid), "niezakorzeniony atom powinien zostać zebrany po ostygnięciu"
+
+
+def test_rooted_composite_survives_gc_and_stays_retrievable() -> None:
+    """compose(..., bubble_root=True) chroni złożenie — bąbel trafia do
+    store.roots, więc atomy są w REACH: zamiast reapowania dostają
+    retencję TOMB. has_atom() zostaje True, i unbind_position/
+    nearest_morpheme dalej działają poprawnie NAWET po ostygnięciu —
+    prawdziwa trwałość, nie tylko 'jeszcze nie zniknął'."""
+    import karmazyn_substrate as sub
+    fazy = {"na-": 0.0, "prze-": 2 * math.pi / 3, "wy-": 4 * math.pi / 3}
+    lingua = _fresh_lingua()
+    rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
+    prefiksy = {n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, ph, 1)], AtomEncoding.HOLOGRAM)
+                for n, ph in fazy.items()}
+    candidates = list(prefiksy.values())
+    slowa = {n: lingua.compose(f"{n}pisac_rooted", [p, rdzen], kind="word", bubble_root=True)
+             for n, p in prefiksy.items()}
+
+    for _ in range(_ticks_to_cross_tomb(sub)):
+        lingua.store.tick()
+
+    for n, slowo in slowa.items():
+        assert lingua.store.has_atom(slowo.id), f"{n}: zakorzeniony atom nie powinien zostać zebrany"
+        assert lingua.store.get_atom(slowo.id).state == "TOMB"
+        top1 = lingua.nearest_morpheme(lingua.unbind_position(slowo, position=1), candidates, top_k=1)[0][1]
+        assert top1.E == n, f"{n}: retrieval powinien działać też po ostygnięciu do TOMB, dostał {top1.E!r}"
+
+
+def test_unrooted_family_silently_loses_oracle_correction_after_gc() -> None:
+    """ZNALEZIONE PRZEZ TEN TEST, nie przez czytanie kodu: korekta 'oracle'
+    w unbind_position (odejmowanie znanego wkładu sąsiadów, patrz
+    test_unbind_position_subtracts_known_interference_close_phases) ma
+    UKRYTĄ zależność od tego, że sąsiedzi WCIĄŻ ISTNIEJĄ w Store —
+    `if sibling is None: continue` po cichu POMIJA odjęcie, gdy sąsiad
+    został zebrany przez reach-GC. Wołający dalej prosi o oracle
+    (blind=False, domyślne), dostaje jednak dokładnie wynik poziomu BLIND
+    (r@1 spada z 1.0 do 0.333 na fazach stłoczonych) — BEZ ŻADNEGO
+    wyjątku ani ostrzeżenia. To odpowiedź na pytanie z sekcji 11.3
+    ('możliwe, że atom ostygnie i zostanie zebrany, zanim ktoś spróbuje go
+    odzyskać') w NAJGORSZEJ możliwej formie: nie awaria, tylko CICHA
+    degradacja jakości — dokładnie to, czego projekt unika gdzie indziej
+    (patrz jawne NotImplementedError przy braku HRR, sekcja 8 raportu)."""
+    import karmazyn_substrate as sub
+    fazy = {"na-": math.pi / 4, "prze-": math.pi / 3, "wy-": math.pi / 6}
+    lingua = _fresh_lingua()
+    rdzen = lingua.make_morpheme("pisa", [FeatureOverlay("r", 1.0, 0.0, 0)], AtomEncoding.HOLOGRAM)
+    prefiksy = {n: lingua.make_morpheme(n, [FeatureOverlay(f"a_{n}", 0.8, ph, 1)], AtomEncoding.HOLOGRAM)
+                for n, ph in fazy.items()}
+    candidates = list(prefiksy.values())
+    slowa = {n: lingua.compose(f"{n}pisac_gc_silent", [p, rdzen], kind="word")  # bubble_root=False domyślne
+             for n, p in prefiksy.items()}
+
+    trafienia_przed = sum(
+        lingua.nearest_morpheme(lingua.unbind_position(s, position=1), candidates, top_k=1)[0][1].E == n
+        for n, s in slowa.items()
+    )
+    assert trafienia_przed == 3, "przed GC oracle powinien działać idealnie (r@1=1.0), jak w sekcji 5 raportu"
+
+    for _ in range(_ticks_to_cross_tomb(sub)):
+        lingua.store.tick()
+    assert not lingua.store.has_atom(rdzen.id), "test zakłada, że sąsiedzi FAKTYCZNIE zostali zebrani"
+
+    trafienia_po = sum(
+        lingua.nearest_morpheme(lingua.unbind_position(s, position=1, blind=False), candidates, top_k=1)[0][1].E == n
+        for n, s in slowa.items()
+    )
+    assert trafienia_po == 1, (
+        f"po GC sąsiadów, oracle=False powinien cicho spaść do poziomu blind (r@1=1/3), "
+        f"dostał {trafienia_po}/3 — jeśli to teraz 3/3, ktoś naprawił unbind_position, "
+        f"żeby wykrywał brakujących sąsiadów (dobrze!), zaktualizuj ten test"
+    )
+
+
 if __name__ == "__main__":
     import sys
     import tempfile
