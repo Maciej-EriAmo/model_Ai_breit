@@ -1,0 +1,137 @@
+{
+  "protocol": "Solar Names v2 control (orbital log-distance tracer, holdout=7 bodies)",
+  "holdout_bodies": [
+    "Neptune",
+    "Ceres",
+    "Deimos",
+    "Europa",
+    "Mimas",
+    "Umbriel",
+    "Nereid"
+  ],
+  "train_bodies": [
+    "Sun",
+    "Mercury",
+    "Venus",
+    "Earth",
+    "Mars",
+    "Jupiter",
+    "Saturn",
+    "Uranus",
+    "Moon",
+    "Phobos",
+    "Io",
+    "Ganymede",
+    "Callisto",
+    "Titan",
+    "Rhea",
+    "Iapetus",
+    "Dione",
+    "Tethys",
+    "Enceladus",
+    "Titania",
+    "Oberon",
+    "Ariel",
+    "Miranda",
+    "Triton",
+    "Pluto",
+    "Charon"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    7,
+    11,
+    17,
+    23,
+    42
+  ],
+  "epochs": 60,
+  "n_pass": 0,
+  "verdict": "Solar v2 FAIL: 0/8 (Most vs ZERO na holdout)",
+  "rows": [
+    {
+      "seed": 0,
+      "most_r1": 0.019999999552965164,
+      "sm_r1": 0.029999999329447746,
+      "zero_r1": 0.019999999552965164,
+      "delta_zero": 0.0,
+      "delta_sm": -0.009999999776482582,
+      "gate_pass": false,
+      "most_train_r1_sanity": 0.0
+    },
+    {
+      "seed": 1,
+      "most_r1": 0.009999999776482582,
+      "sm_r1": 0.0,
+      "zero_r1": 0.009999999776482582,
+      "delta_zero": 0.0,
+      "delta_sm": 0.009999999776482582,
+      "gate_pass": false,
+      "most_train_r1_sanity": 0.0
+    },
+    {
+      "seed": 2,
+      "most_r1": 0.0,
+      "sm_r1": 0.0,
+      "zero_r1": 0.0,
+      "delta_zero": 0.0,
+      "delta_sm": 0.0,
+      "gate_pass": false,
+      "most_train_r1_sanity": 0.0
+    },
+    {
+      "seed": 7,
+      "most_r1": 0.0,
+      "sm_r1": 0.0,
+      "zero_r1": 0.0,
+      "delta_zero": 0.0,
+      "delta_sm": 0.0,
+      "gate_pass": false,
+      "most_train_r1_sanity": 0.0
+    },
+    {
+      "seed": 11,
+      "most_r1": 0.03999999910593033,
+      "sm_r1": 0.019999999552965164,
+      "zero_r1": 0.029999999329447746,
+      "delta_zero": 0.009999999776482582,
+      "delta_sm": 0.019999999552965164,
+      "gate_pass": false,
+      "most_train_r1_sanity": 0.0
+    },
+    {
+      "seed": 17,
+      "most_r1": 0.009999999776482582,
+      "sm_r1": 0.009999999776482582,
+      "zero_r1": 0.009999999776482582,
+      "delta_zero": 0.0,
+      "delta_sm": 0.0,
+      "gate_pass": false,
+      "most_train_r1_sanity": 0.0
+    },
+    {
+      "seed": 23,
+      "most_r1": 0.0,
+      "sm_r1": 0.0,
+      "zero_r1": 0.0,
+      "delta_zero": 0.0,
+      "delta_sm": 0.0,
+      "gate_pass": false,
+      "most_train_r1_sanity": 0.0
+    },
+    {
+      "seed": 42,
+      "most_r1": 0.0,
+      "sm_r1": 0.0,
+      "zero_r1": 0.0,
+      "delta_zero": 0.0,
+      "delta_sm": 0.0,
+      "gate_pass": false,
+      "most_train_r1_sanity": 0.0
+    }
+  ],
+  "mean_delta_zero": 0.0012499999720603228,
+  "mean_delta_sm": 0.0024999999441206455
+}

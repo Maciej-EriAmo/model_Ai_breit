@@ -1,0 +1,206 @@
+{
+  "protocol": "Mendelejew hold-out — ukryj pierwiastek, ranking Na/nucleus→train",
+  "holdout": "Na",
+  "train_symbols": [
+    "H",
+    "He",
+    "Li",
+    "C",
+    "N",
+    "O",
+    "Fe"
+  ],
+  "expected_cousin": "H",
+  "epochs": 48,
+  "seed": 0,
+  "arms": {
+    "most": {
+      "val_r1": 0.415625,
+      "val_r3": 0.7265625,
+      "cousin": "H",
+      "cousin_symbol_rank": 6,
+      "cousin_in_top5_atoms": false,
+      "top_symbols": [
+        {
+          "symbol": "O",
+          "best_sim": 0.5384484529495239
+        },
+        {
+          "symbol": "Fe",
+          "best_sim": 0.4602905213832855
+        },
+        {
+          "symbol": "N",
+          "best_sim": 0.2909850776195526
+        },
+        {
+          "symbol": "C",
+          "best_sim": 0.17469477653503418
+        },
+        {
+          "symbol": "Li",
+          "best_sim": 0.1512151062488556
+        }
+      ],
+      "top_atoms": [
+        {
+          "rank": 1,
+          "atom_id": "O/1s/m0/up",
+          "symbol": "O",
+          "sim": 0.5384484529495239
+        },
+        {
+          "rank": 2,
+          "atom_id": "O/1s/m0/down",
+          "symbol": "O",
+          "sim": 0.5131989121437073
+        },
+        {
+          "rank": 3,
+          "atom_id": "Fe/3s/m0/down",
+          "symbol": "Fe",
+          "sim": 0.4602905213832855
+        },
+        {
+          "rank": 4,
+          "atom_id": "O/2s/m0/up",
+          "symbol": "O",
+          "sim": 0.40989217162132263
+        },
+        {
+          "rank": 5,
+          "atom_id": "Fe/nucleus",
+          "symbol": "Fe",
+          "sim": 0.34308096766471863
+        }
+      ],
+      "query": "Na/nucleus"
+    },
+    "softmax": {
+      "val_r1": 0.4125,
+      "val_r3": 0.7265625,
+      "cousin": "H",
+      "cousin_symbol_rank": 7,
+      "cousin_in_top5_atoms": false,
+      "top_symbols": [
+        {
+          "symbol": "N",
+          "best_sim": 0.5193677544593811
+        },
+        {
+          "symbol": "Fe",
+          "best_sim": 0.4001869261264801
+        },
+        {
+          "symbol": "He",
+          "best_sim": 0.3987081050872803
+        },
+        {
+          "symbol": "O",
+          "best_sim": 0.3825492262840271
+        },
+        {
+          "symbol": "C",
+          "best_sim": 0.3280625343322754
+        }
+      ],
+      "top_atoms": [
+        {
+          "rank": 1,
+          "atom_id": "N/2p/m0/up",
+          "symbol": "N",
+          "sim": 0.5193677544593811
+        },
+        {
+          "rank": 2,
+          "atom_id": "Fe/1s/m0/down",
+          "symbol": "Fe",
+          "sim": 0.4001869261264801
+        },
+        {
+          "rank": 3,
+          "atom_id": "He/nucleus",
+          "symbol": "He",
+          "sim": 0.3987081050872803
+        },
+        {
+          "rank": 4,
+          "atom_id": "O/2s/m0/up",
+          "symbol": "O",
+          "sim": 0.3825492262840271
+        },
+        {
+          "rank": 5,
+          "atom_id": "O/1s/m0/down",
+          "symbol": "O",
+          "sim": 0.3726288974285126
+        }
+      ],
+      "query": "Na/nucleus"
+    },
+    "flat": {
+      "val_r1": 0.375,
+      "val_r3": 0.68125,
+      "cousin": "H",
+      "cousin_symbol_rank": 2,
+      "cousin_in_top5_atoms": true,
+      "top_symbols": [
+        {
+          "symbol": "Fe",
+          "best_sim": 0.49489566683769226
+        },
+        {
+          "symbol": "H",
+          "best_sim": 0.44167008996009827
+        },
+        {
+          "symbol": "He",
+          "best_sim": 0.28547218441963196
+        },
+        {
+          "symbol": "C",
+          "best_sim": 0.28434810042381287
+        },
+        {
+          "symbol": "Li",
+          "best_sim": 0.2686375379562378
+        }
+      ],
+      "top_atoms": [
+        {
+          "rank": 1,
+          "atom_id": "Fe/2s/m0/up",
+          "symbol": "Fe",
+          "sim": 0.49489566683769226
+        },
+        {
+          "rank": 2,
+          "atom_id": "Fe/3d/m-2/up",
+          "symbol": "Fe",
+          "sim": 0.4709799587726593
+        },
+        {
+          "rank": 3,
+          "atom_id": "Fe/2p/m-1/down",
+          "symbol": "Fe",
+          "sim": 0.46751660108566284
+        },
+        {
+          "rank": 4,
+          "atom_id": "Fe/1s/m0/up",
+          "symbol": "Fe",
+          "sim": 0.4541400969028473
+        },
+        {
+          "rank": 5,
+          "atom_id": "H/nucleus",
+          "symbol": "H",
+          "sim": 0.44167008996009827
+        }
+      ],
+      "query": "Na/nucleus"
+    }
+  },
+  "verdict": "Kuzyn H NIE w top-2 symboli u Mostu — hold-out nie odzyskał miejsca grupy dla Na (za mały set / za słaby sygnał).",
+  "elapsed_s": 346.53664660453796
+}

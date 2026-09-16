@@ -38,8 +38,10 @@ Encoder Most → **recall/ranking** nad atomami (nie od razu generative LLM).
 | Recall r@1 (C) | **+71 pkt** | PASS |
 | Dump Φ (D) | +2.3 pkt | PASS |
 | Solar / 3 ciała | **+20.6 / +40 pkt** | PASS |
+| G2 glify v2 | +2.2 pkt (best-seed) | PASS lab; nie multi-seed |
+| Mendelejew P0 | ≈ Softmax (−0.02) | **parity** + nonflat ≫ flat |
 
-Pełna tabela: [`docs/WYNIKI.md`](docs/WYNIKI.md)
+Pełna tabela: [`docs/WYNIKI.md`](docs/WYNIKI.md) · stan: [`docs/STATUS.md`](docs/STATUS.md)
 
 ## Fazy
 
@@ -74,7 +76,7 @@ python test_not_flat.py; python test_mask.py; python test_memory_bus.py
 ```
 
 **Obsługa:** [`docs/INSTRUKCJA.md`](docs/INSTRUKCJA.md) · **Nauka:** [`docs/LEARN.md`](docs/LEARN.md) · **Glify/alfabety:** [`docs/GLYPHS.md`](docs/GLYPHS.md) · **vs LLM:** [`docs/POROWNANIE_MODELE.md`](docs/POROWNANIE_MODELE.md).  
-**Doświadczenie** (JoannaM / DESI / glify wyniki): [`doswiadczenie/README.md`](doswiadczenie/README.md).  
+**Doświadczenie** (JoannaM / DESI / glify / Mendelejew): [`doswiadczenie/README.md`](doswiadczenie/README.md) · mapa glify: [`doswiadczenie/glify/README.md`](doswiadczenie/glify/README.md).  
 Benchi: `bench_phi.py`, `bench_recall.py`, `bench_dump.py`, `bench_nbody.py`.
 
 ## Konfiguracja i flagi

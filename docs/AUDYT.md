@@ -85,3 +85,28 @@ przez globalny default `CANON.t_attn_seal=True` — bez świadomości, że:
 `bench_nbody.py` i `bench_phi.py` (zamknięte, audytowane przed powstaniem seala)
 jawnie ustawiają `t_seal=False`. Zweryfikowano: 17/17 testów zielone,
 `historia/WYNIKI_NBODY.md` po naprawie bit-identyczny z wersją już w git.
+
+### Drugi bug seala: ZERO-tracer martwy przez hard floor (2026-09-13, P5.1)
+
+Podczas P5.1 (`doswiadczenie/glify/HOLO_P5_1.md`) audyt kodu transformera
+wykrył kolejny efekt tej samej rodziny bugów: `RecallBatch.ablate(zero_tracer=True)`
+/ `bridge.batch_to_xy(zero_tracer=True)` zerują CAŁY wektor tracera (nie tylko T)
+jako kontrolę ablacyjną ("Most bez τ"). Ponieważ T=0 jest zawsze < `t_attn_floor`
+(0.20), `apply_t_key_seal` maskował to jako "archive/TOMB" — **100% kluczy
+hard-masked**, potwierdzone bezpośrednim testem. Zamiast matematycznej degeneracji
+formuły zamka (`ΔE=0 → A=C/γ`, wciąż pełna, sensowna macierz uwagi), tor ZERO
+dostawał martwą uwagę — inny, dużo gorszy eksperyment niż "Most bez informacji
+z tracera". To dotyczyło **każdego benchu z ZERO-tracer w całym projekcie**
+(Holo P0-P4a raportowanie ZERO, DESI, dump recall) korzystającego z domyślnego
+`t_seal`, nie tylko P5.1 — choć w P4a gate liczony był Most vs Softmax (nie
+vs ZERO), więc werdykty P4a/P0-P3 się nie zmieniają; ich raportowane liczby
+ZERO są jednak zaniżone/nieinformacyjne sprzed tej naprawy.
+
+**Fix:** `most_seal.apply_t_key_seal` wykrywa teraz per-wiersz, czy CAŁY
+tracer atomu (poza CLS) jest zerowy (sygnatura ablacji — realny atom zawsze ma
+niezerowy depth one-hot z `atom_tracer_vec`) i pomija seal dla takich wierszy,
+zamiast traktować je jak archiwum. Zweryfikowano bezpośrednio (fraction
+hard-masked: 1.0 → 0.0) i przez pełny test suite (20/20 zielone) oraz
+inspekcję wag uwagi: silnik Most poprawnie reaguje na τ (|Δw| realne vs
+zero_tracer ≈ 0.0245, przed i po treningu) — mechanizm działa zgodnie z
+deklaracją, bugi były w warstwie kontroli ablacyjnej, nie w formule zamka.

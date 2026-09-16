@@ -1,0 +1,332 @@
+{
+  "target": {
+    "name": "JoannaM",
+    "ra_deg": 120.0,
+    "dec_deg": 5.0,
+    "galactic_l": 216.317,
+    "galactic_b": 17.5199,
+    "erosita_de_public_hemisphere": true,
+    "date": "2026-09-16"
+  },
+  "queries": {
+    "nvss_5": {
+      "ok": true,
+      "source": "VIII/65/nvss",
+      "radius_arcmin": 5.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=VIII%2F65%2Fnvss&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:24 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:24\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=VIII%2F65%2Fnvss&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\t-c=120.000000+05.000000,rm=5.\t\n#Constraint -oc.form=d\n\n#RESOURCE=yCat_8065\n#Name: VIII/65\n#Title: 1.4GHz NRAO VLA Sky Survey (NVSS) (Condon+ 1998)\n#INFO\tivoid=ivo://cds.vizier/viii/65\t    IVOID of underlying data collection\n#INFO\tdata_ivoid=ivo://cds.vizier/viii/65\t    IVOID of underlying data collection\n#INFO\tcreator=Condon J.J.\t    First author or institution\n#INFO\tcites=bibcode:1998AJ....115.1693C\t    Article or Data origin sources\n#INFO\tjournal=AJ\t    Journal name\n#INFO\toriginal_date=1998\t    Year of the article publication\n#INFO\treference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/VIII/65\t    Dataset landing page\n#INFO\tpublication_date=2007-12-13\t    Date of first publication in the data centre\n#INFO\trights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html\t    Licence URI\n#Table\tVIII_65_nvss:\n#Name: VIII/65/nvss\n#Title: The NVSS Catalog\n#Column\t_r\t(F6.4)\tDistance from center (08 00 00.00+05 00 00.0)[FK5/J2000]\t[ucd=pos.angDistance]\n#Column\tNVSS\t(a14)\tSource name (1)\t[ucd=meta.id;meta.main]\n#Column\tRAJ2000\t(A11)\tRight Ascension J2000 (2)\t[ucd=pos.eq.ra;meta.ma"
+    },
+    "nvss_15": {
+      "ok": true,
+      "source": "VIII/65/nvss",
+      "radius_arcmin": 15.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=VIII%2F65%2Fnvss&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 6,
+      "objects": [
+        {
+          "ra": 120.09370833333334,
+          "dec": 4.974,
+          "dist_arcsec": 348.86,
+          "_r": "5.8144",
+          "NVSS": "080022+045826",
+          "RAJ2000": "08 00 22.49",
+          "DEJ2000": "+04 58 26.4",
+          "e_RAJ2000": "0.40",
+          "e_DEJ2000": "9.3",
+          "S1.4": "3.1",
+          "e_S1.4": "0.5",
+          "l_MajAxis": "<",
+          "MajAxis": "93.0",
+          "l_MinAxis": "<",
+          "MinAxis": "50.1",
+          "f_resFlux": ""
+        },
+        {
+          "ra": 119.92975,
+          "dec": 4.920305555555556,
+          "dist_arcsec": 381.83,
+          "_r": "6.3638",
+          "NVSS": "075943+045513",
+          "RAJ2000": "07 59 43.14",
+          "DEJ2000": "+04 55 13.1",
+          "e_RAJ2000": "0.08",
+          "e_DEJ2000": "1.3",
+          "S1.4": "14.7",
+          "e_S1.4": "0.6",
+          "l_MajAxis": "<",
+          "MajAxis": "29.1",
+          "l_MinAxis": "<",
+          "MinAxis": "24.0",
+          "f_resFlux": "P*"
+        },
+        {
+          "ra": 120.07016666666667,
+          "dec": 5.127666666666666,
+          "dist_arcsec": 523.97,
+          "_r": "8.7328",
+          "NVSS": "080016+050739",
+          "RAJ2000": "08 00 16.84",
+          "DEJ2000": "+05 07 39.6",
+          "e_RAJ2000": "0.99",
+          "e_DEJ2000": "11.3",
+          "S1.4": "3.1",
+          "e_S1.4": "0.6",
+          "l_MajAxis": "<",
+          "MajAxis": "160.0",
+          "l_MinAxis": "<",
+          "MinAxis": "53.3",
+          "f_resFlux": ""
+        },
+        {
+          "ra": 120.07279166666666,
+          "dec": 4.863333333333333,
+          "dist_arcsec": 556.98,
+          "_r": "9.2830",
+          "NVSS": "080017+045148",
+          "RAJ2000": "08 00 17.47",
+          "DEJ2000": "+04 51 48.0",
+          "e_RAJ2000": "0.38",
+          "e_DEJ2000": "9.9",
+          "S1.4": "2.9",
+          "e_S1.4": "0.5",
+          "l_MajAxis": "<",
+          "MajAxis": "92.6",
+          "l_MinAxis": "<",
+          "MinAxis": "51.9",
+          "f_resFlux": ""
+        },
+        {
+          "ra": 119.97004166666667,
+          "dec": 5.171777777777778,
+          "dist_arcsec": 627.66,
+          "_r": "10.4610",
+          "NVSS": "075952+051018",
+          "RAJ2000": "07 59 52.81",
+          "DEJ2000": "+05 10 18.4",
+          "e_RAJ2000": "0.05",
+          "e_DEJ2000": "0.9",
+          "S1.4": "22.2",
+          "e_S1.4": "0.8",
+          "l_MajAxis": "<",
+          "MajAxis": "19.9",
+          "l_MinAxis": "<",
+          "MinAxis": "17.4",
+          "f_resFlux": ""
+        },
+        {
+          "ra": 120.12758333333332,
+          "dec": 5.181472222222222,
+          "dist_arcsec": 797.56,
+          "_r": "13.2926",
+          "NVSS": "080030+051053",
+          "RAJ2000": "08 00 30.62",
+          "DEJ2000": "+05 10 53.3",
+          "e_RAJ2000": "0.24",
+          "e_DEJ2000": "2.9",
+          "S1.4": "6.4",
+          "e_S1.4": "0.5",
+          "l_MajAxis": "<",
+          "MajAxis": "60.9",
+          "l_MinAxis": "<",
+          "MinAxis": "31.9",
+          "f_resFlux": ""
+        }
+      ],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:24 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:24\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=VIII%2F65%2Fnvss&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\t-c=120.000000+05.000000,rm=15.\t\n#Constraint -oc.form=d\n\n#RESOURCE=yCat_8065\n#Name: VIII/65\n#Title: 1.4GHz NRAO VLA Sky Survey (NVSS) (Condon+ 1998)\n#INFO\tivoid=ivo://cds.vizier/viii/65\t    IVOID of underlying data collection\n#INFO\tdata_ivoid=ivo://cds.vizier/viii/65\t    IVOID of underlying data collection\n#INFO\tcreator=Condon J.J.\t    First author or institution\n#INFO\tcites=bibcode:1998AJ....115.1693C\t    Article or Data origin sources\n#INFO\tjournal=AJ\t    Journal name\n#INFO\toriginal_date=1998\t    Year of the article publication\n#INFO\treference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/VIII/65\t    Dataset landing page\n#INFO\tpublication_date=2007-12-13\t    Date of first publication in the data centre\n#INFO\trights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html\t    Licence URI\n#Table\tVIII_65_nvss:\n#Name: VIII/65/nvss\n#Title: The NVSS Catalog\n#Column\t_r\t(F7.4)\tDistance from center (08 00 00.00+05 00 00.0)[FK5/J2000]\t[ucd=pos.angDistance]\n#Column\tNVSS\t(a14)\tSource name (1)\t[ucd=meta.id;meta.main]\n#Column\tRAJ2000\t(A11)\tRight Ascension J2000 (2)\t[ucd=pos.eq.ra;meta."
+    },
+    "first_5": {
+      "ok": true,
+      "source": "VIII/90/first14",
+      "radius_arcmin": 5.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=VIII%2F90%2Ffirst14&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:25 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:25\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=VIII%2F90%2Ffirst14&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table 'first14' does not exist in catalog: VIII/90\t\n"
+    },
+    "first_15": {
+      "ok": true,
+      "source": "VIII/90/first14",
+      "radius_arcmin": 15.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=VIII%2F90%2Ffirst14&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:26 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:26\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=VIII%2F90%2Ffirst14&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table 'first14' does not exist in catalog: VIII/90\t\n"
+    },
+    "2rxs_5": {
+      "ok": true,
+      "source": "J/A+A/588/A103/catalog",
+      "radius_arcmin": 5.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F588%2FA103%2Fcatalog&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:26 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:26\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F588%2FA103%2Fcatalog&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table 'catalog' does not exist in catalog: J/A+A/588/A103\t\n"
+    },
+    "2rxs_15": {
+      "ok": true,
+      "source": "J/A+A/588/A103/catalog",
+      "radius_arcmin": 15.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F588%2FA103%2Fcatalog&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:27 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:27\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F588%2FA103%2Fcatalog&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table 'catalog' does not exist in catalog: J/A+A/588/A103\t\n"
+    },
+    "xmmslew_5": {
+      "ok": true,
+      "source": "J/A+A/647/A1/xmmsl2",
+      "radius_arcmin": 5.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F647%2FA1%2Fxmmsl2&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:27 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:28\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F647%2FA1%2Fxmmsl2&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table or Catalog not found: J/A+A/647/A1/xmmsl2\t\n"
+    },
+    "xmmslew_15": {
+      "ok": true,
+      "source": "J/A+A/647/A1/xmmsl2",
+      "radius_arcmin": 15.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F647%2FA1%2Fxmmsl2&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:28 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:28\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F647%2FA1%2Fxmmsl2&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table or Catalog not found: J/A+A/647/A1/xmmsl2\t\n"
+    },
+    "erass1_main_5": {
+      "ok": true,
+      "source": "J/A+A/682/A34/main",
+      "radius_arcmin": 5.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F682%2FA34%2Fmain&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:29 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:29\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F682%2FA34%2Fmain&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table 'main' does not exist in catalog: J/A+A/682/A34\t\n"
+    },
+    "erass1_main_15": {
+      "ok": true,
+      "source": "J/A+A/682/A34/main",
+      "radius_arcmin": 15.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F682%2FA34%2Fmain&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:30 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:30\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F682%2FA34%2Fmain&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table 'main' does not exist in catalog: J/A+A/682/A34\t\n"
+    },
+    "erass1_cat_5": {
+      "ok": true,
+      "source": "J/A+A/682/A34/erass1",
+      "radius_arcmin": 5.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F682%2FA34%2Ferass1&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:30 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:30\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F682%2FA34%2Ferass1&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table 'erass1' does not exist in catalog: J/A+A/682/A34\t\n"
+    },
+    "csc21_5": {
+      "ok": true,
+      "source": "IX/57/csc2master",
+      "radius_arcmin": 5.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=IX%2F57%2Fcsc2master&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:31 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:31\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=IX%2F57%2Fcsc2master&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\t-c=120.000000+05.000000,rm=5.\t\n#Constraint -oc.form=d\n\n#RESOURCE=yCat_9057\n#Name: IX/57\n#Title: The Chandra Source Catalog (CSC), Release 2.0 (Evans+, 2019)\n#INFO\tivoid=ivo://cds.vizier/ix/57\t    IVOID of underlying data collection\n#INFO\tdata_ivoid=ivo://cds.vizier/ix/57\t    IVOID of underlying data collection\n#INFO\tcreator=Evans I.N.\t    First author or institution\n#INFO\tcites=bibcode:2010ApJS..189...37E\t    Article or Data origin sources\n#INFO\tjournal=ApJS\t    Journal name\n#INFO\toriginal_date=2010\t    Year of the article publication\n#INFO\treference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/IX/57\t    Dataset landing page\n#INFO\tpublication_date=2020-04-06\t    Date of first publication in the data centre\n#INFO\trights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html\t    Licence URI\n#Coosys\tH:\tICRS\n#Table\tIX_57_csc2master:\n#Name: IX/57/csc2master\n#Title: Chandra Source Catalog, V2.0; master sources\n#Column\t_r\t(F6.4)\tDistance from center (120.0000000  5.0000000)[ICRS]\t[ucd=pos.angDistance]\n#Column\t2CXO\t(A18)\tSource name (Jhhmmss.s+ddmmssX) (name)\t[ucd=meta.id;me"
+    },
+    "csc21_15": {
+      "ok": true,
+      "source": "IX/57/csc2master",
+      "radius_arcmin": 15.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=IX%2F57%2Fcsc2master&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:32 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:32\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=IX%2F57%2Fcsc2master&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\t-c=120.000000+05.000000,rm=15.\t\n#Constraint -oc.form=d\n\n#RESOURCE=yCat_9057\n#Name: IX/57\n#Title: The Chandra Source Catalog (CSC), Release 2.0 (Evans+, 2019)\n#INFO\tivoid=ivo://cds.vizier/ix/57\t    IVOID of underlying data collection\n#INFO\tdata_ivoid=ivo://cds.vizier/ix/57\t    IVOID of underlying data collection\n#INFO\tcreator=Evans I.N.\t    First author or institution\n#INFO\tcites=bibcode:2010ApJS..189...37E\t    Article or Data origin sources\n#INFO\tjournal=ApJS\t    Journal name\n#INFO\toriginal_date=2010\t    Year of the article publication\n#INFO\treference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/IX/57\t    Dataset landing page\n#INFO\tpublication_date=2020-04-06\t    Date of first publication in the data centre\n#INFO\trights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html\t    Licence URI\n#Coosys\tH:\tICRS\n#Table\tIX_57_csc2master:\n#Name: IX/57/csc2master\n#Title: Chandra Source Catalog, V2.0; master sources\n#Column\t_r\t(F7.4)\tDistance from center (120.0000000  5.0000000)[ICRS]\t[ucd=pos.angDistance]\n#Column\t2CXO\t(A18)\tSource name (Jhhmmss.s+ddmmssX) (name)\t[ucd=meta.id;"
+    },
+    "xmm4dr14_5": {
+      "ok": true,
+      "source": "IX/69/xmm4d14s",
+      "radius_arcmin": 5.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=IX%2F69%2Fxmm4d14s&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:32 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:32\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=IX%2F69%2Fxmm4d14s&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table 'xmm4d14s' does not exist in catalog: IX/69\t\n"
+    },
+    "vlass_5": {
+      "ok": true,
+      "source": "J/ApJS/255/30/component",
+      "radius_arcmin": 5.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FApJS%2F255%2F30%2Fcomponent&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:33 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:33\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FApJS%2F255%2F30%2Fcomponent&-c=120.0+%2B5.0&-c.rm=5.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table 'component' does not exist in catalog: J/ApJS/255/30\t\n"
+    },
+    "vlass_15": {
+      "ok": true,
+      "source": "J/ApJS/255/30/component",
+      "radius_arcmin": 15.0,
+      "url": "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FApJS%2F255%2F30%2Fcomponent&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d",
+      "n": 0,
+      "objects": [],
+      "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T05:55:33 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T05:55:33\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FApJS%2F255%2F30%2Fcomponent&-c=120.0+%2B5.0&-c.rm=15.0&-out.max=100&-out.add=_r&-sort=_r&-oc.form=d\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table 'component' does not exist in catalog: J/ApJS/255/30\t\n"
+    },
+    "erass1_final": {
+      "erass1_5arcmin": {
+        "n": 0,
+        "objects": []
+      },
+      "erass1_15arcmin": {
+        "n": 7,
+        "objects": [
+          {
+            "_r_arcmin": 7.3972,
+            "IAUName": "1eRASS J080025.8+045621",
+            "RA": 120.10767504766,
+            "DE": 4.93923347595,
+            "_r_arcsec": 443.8
+          },
+          {
+            "_r_arcmin": 8.6304,
+            "IAUName": "1eRASS J080016.2+050737",
+            "RA": 120.06780128967,
+            "DE": 5.12699966736,
+            "_r_arcsec": 517.8
+          },
+          {
+            "_r_arcmin": 8.9483,
+            "IAUName": "1eRASS J075949.6+045125",
+            "RA": 119.9570475293,
+            "DE": 4.85713231716,
+            "_r_arcsec": 536.9
+          },
+          {
+            "_r_arcmin": 10.2837,
+            "IAUName": "1eRASS J080032.1+045332",
+            "RA": 120.13396650108,
+            "DE": 4.89246996189,
+            "_r_arcsec": 617.0
+          },
+          {
+            "_r_arcmin": 12.5313,
+            "IAUName": "1eRASS J075920.8+045207",
+            "RA": 119.83699625423,
+            "DE": 4.86867184217,
+            "_r_arcsec": 751.9
+          },
+          {
+            "_r_arcmin": 12.8384,
+            "IAUName": "1eRASS J075954.2+051245",
+            "RA": 119.97585406415,
+            "DE": 5.21261682529,
+            "_r_arcsec": 770.3
+          },
+          {
+            "_r_arcmin": 13.9165,
+            "IAUName": "1eRASS J080011.7+051336",
+            "RA": 120.04915185076,
+            "DE": 5.22671646523,
+            "_r_arcsec": 835.0
+          }
+        ]
+      }
+    }
+  },
+  "verdict": {
+    "xray_5arcmin": "NO_MATCH",
+    "radio_nvss_5arcmin": "NO_MATCH",
+    "nearest_erosita_arcmin": 7.4,
+    "nearest_nvss_arcsec": 348.86
+  }
+}

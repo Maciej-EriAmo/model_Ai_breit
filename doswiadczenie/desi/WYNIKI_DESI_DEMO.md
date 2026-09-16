@@ -1,36 +1,15 @@
-# WYNIKI DESI — barwa→T (ciepłota) + jasność→content
+# WYNIKI DESI (patchy cutouts) — po audycie
 
-**Data:** 2026-09-10  
-**Zmiana prep:**  
-- **content** = luminancja + morfologia (bez per-band color)  
-- **τ.T** = ciepłota z barwy **g−r** (+ lekko r−z)  
-- XY osobno; SNR osobno (nie jako T)  
-- uczciwy split, size=128, maska  
+**Kanon:** tracer = obserwator gwarantujący prawidłowy most.
+Główny warunek = **Most vs ZERO**. Softmax = twin bez obserwatora.
 
-**Set:** 40 train / 14 val (unikalne ra,dec)
+- Softmax acc=0.7027 loss=0.7071  (brak τ)
+- Most     acc=0.7838 loss=0.6163 |dE|=0.5024
+- ZERO     acc=0.6757 loss=0.8232  (Most z τ=0)
+- **Δ(Most−ZERO)=+0.1081**  gate=0.03 → most prawidłowy? **PASS**
+- Δ(Most−SM)=+0.0811  gate=0.03 → vs Softmax **PASS**
 
-## Softmax | Most | ZERO
+- size=128 N=64 train_files=112 val_files=37 (augment tylko train; maska w uwadze)
+- geometry_only=False demo_only=True
 
-| | Softmax | Most | ZERO |
-|--|---------|------|------|
-| acc | 0.857 | **0.929** | **0.929** |
-| \|dE\| | 0 | 0.557 | 0 |
-
-| Metryka | Δ | |
-|---------|---|---|
-| **Most − ZERO** | **0.00** | **FAIL** gate mostu (Most≈ZERO) |
-| Most − Softmax | **+0.071** | **PASS** vs twin bez obserwatora |
-
-## Porównanie z poprzednim (T≈SNR, color w content)
-
-| | Softmax | Most | ZERO |
-|--|---------|------|------|
-| przed (SNR-as-T) | 0.93 | **0.50** | 0.86 |
-| **po (barwa→T)** | 0.86 | **0.93** | 0.93 |
-
-**Wniosek:** rozdzielenie jasność/barwa **podniosło Most z 0.50 → 0.93** i dało **+7 pkt vs Softmax**.  
-Most≈ZERO: na tym val Bridge bez τ też trafia; barwa w T jeszcze nie daje przewagi Most−ZERO (ziarno 1/14≈7%). Kierunek prep jest właściwy.
-
-```bat
-python bench_desi.py --demo-only --force-import --size 128 --epochs 40 --augment 4 --val-frac 0.25
-```
+Most<SM nie znaczy „tracer zbędny” — Softmax nie formuje mostu.

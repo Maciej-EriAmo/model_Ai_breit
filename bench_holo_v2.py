@@ -24,7 +24,7 @@ from make_dump_holo_v2 import (
     HOLDOUT_RADICAL,
     TRAIN_RADICALS,
     build_holdout_eval_batch,
-    build_train_batch,
+    build_mixed_train_batch,
     write_manifest,
 )
 from recall_model import PhiBridgeEncoder, PhiSoftmaxEncoder, recall_metrics
@@ -45,11 +45,17 @@ def _make_batches(seed: int) -> tuple[list, list, dict]:
     # zależy od tego, ile losowań zużyło to, co działo się wcześniej w procesie
     # (dokładnie ten sam efekt co niedeterminizm z replikacji P4a, §2.5).
     torch.manual_seed(seed)
+    # mieszany graf (wszystkie radykały treningowe razem) — patrz
+    # build_mixed_train_batch: build_train_batch (jeden-radykał-per-graf) nie
+    # dawał żadnych negatywów podczas treningu, więc τ nie miało nic do
+    # odróżniania (HOLO_P5_1.md diagnoza). Kilka wywołań z różnym seedem =
+    # tyle samo kroków gradientu na epokę co poprzednio (4).
     train = [
-        build_train_batch(
-            r, d_x=CANON.d_x, n_dim=CANON.n_dim, batch_size=TRAIN_BATCH_SIZE, seed=seed * 97 + r
+        build_mixed_train_batch(
+            TRAIN_RADICALS, d_x=CANON.d_x, n_dim=CANON.n_dim,
+            batch_size=TRAIN_BATCH_SIZE, seed=seed * 97 + k,
         )
-        for r in TRAIN_RADICALS
+        for k in range(len(TRAIN_RADICALS))
     ]
     holdout, meta = build_holdout_eval_batch(
         d_x=CANON.d_x, n_dim=CANON.n_dim, batch_size=EVAL_BATCH_SIZE, seed=seed * 97 + HOLDOUT_RADICAL

@@ -1,0 +1,1064 @@
+[
+  {
+    "atom_number": 1,
+    "symbol": "H",
+    "name": "Wodór",
+    "group": 1,
+    "period": 1,
+    "electron_configuration": "1s1",
+    "electrons_per_shell": "1"
+  },
+  {
+    "atom_number": 2,
+    "symbol": "He",
+    "name": "Hel",
+    "group": 18,
+    "period": 1,
+    "electron_configuration": "[He]",
+    "electrons_per_shell": "2"
+  },
+  {
+    "atom_number": 3,
+    "symbol": "Li",
+    "name": "Lit",
+    "group": 1,
+    "period": 2,
+    "electron_configuration": "[He] 2s1",
+    "electrons_per_shell": "2, 1"
+  },
+  {
+    "atom_number": 4,
+    "symbol": "Be",
+    "name": "Beryl",
+    "group": 2,
+    "period": 2,
+    "electron_configuration": "[He] 2s2",
+    "electrons_per_shell": "2, 2"
+  },
+  {
+    "atom_number": 5,
+    "symbol": "B",
+    "name": "Bor",
+    "group": 13,
+    "period": 2,
+    "electron_configuration": "[He] 2s2 2p1",
+    "electrons_per_shell": "2, 3"
+  },
+  {
+    "atom_number": 6,
+    "symbol": "C",
+    "name": "Węgiel",
+    "group": 14,
+    "period": 2,
+    "electron_configuration": "[He] 2s2 2p2",
+    "electrons_per_shell": "2, 4"
+  },
+  {
+    "atom_number": 7,
+    "symbol": "N",
+    "name": "Azot",
+    "group": 15,
+    "period": 2,
+    "electron_configuration": "[He] 2s2 2p3",
+    "electrons_per_shell": "2, 5"
+  },
+  {
+    "atom_number": 8,
+    "symbol": "O",
+    "name": "Tlen",
+    "group": 16,
+    "period": 2,
+    "electron_configuration": "[He] 2s2 2p4",
+    "electrons_per_shell": "2, 6"
+  },
+  {
+    "atom_number": 9,
+    "symbol": "F",
+    "name": "Fluor",
+    "group": 17,
+    "period": 2,
+    "electron_configuration": "[He] 2s2 2p5",
+    "electrons_per_shell": "2, 7"
+  },
+  {
+    "atom_number": 10,
+    "symbol": "Ne",
+    "name": "Neon",
+    "group": 18,
+    "period": 2,
+    "electron_configuration": "[Ne]",
+    "electrons_per_shell": "2, 8"
+  },
+  {
+    "atom_number": 11,
+    "symbol": "Na",
+    "name": "Sód",
+    "group": 1,
+    "period": 3,
+    "electron_configuration": "[Ne] 3s1",
+    "electrons_per_shell": "2, 8, 1"
+  },
+  {
+    "atom_number": 12,
+    "symbol": "Mg",
+    "name": "Magnez",
+    "group": 2,
+    "period": 3,
+    "electron_configuration": "[Ne] 3s2",
+    "electrons_per_shell": "2, 8, 2"
+  },
+  {
+    "atom_number": 13,
+    "symbol": "Al",
+    "name": "Glin",
+    "group": 13,
+    "period": 3,
+    "electron_configuration": "[Ne] 3s2 3p1",
+    "electrons_per_shell": "2, 8, 3"
+  },
+  {
+    "atom_number": 14,
+    "symbol": "Si",
+    "name": "Krzem",
+    "group": 14,
+    "period": 3,
+    "electron_configuration": "[Ne] 3s2 3p2",
+    "electrons_per_shell": "2, 8, 4"
+  },
+  {
+    "atom_number": 15,
+    "symbol": "P",
+    "name": "Fosfor",
+    "group": 15,
+    "period": 3,
+    "electron_configuration": "[Ne] 3s2 3p3",
+    "electrons_per_shell": "2, 8, 5"
+  },
+  {
+    "atom_number": 16,
+    "symbol": "S",
+    "name": "Siarka",
+    "group": 16,
+    "period": 3,
+    "electron_configuration": "[Ne] 3s2 3p4",
+    "electrons_per_shell": "2, 8, 6"
+  },
+  {
+    "atom_number": 17,
+    "symbol": "Cl",
+    "name": "Chlor",
+    "group": 17,
+    "period": 3,
+    "electron_configuration": "[Ne] 3s2 3p5",
+    "electrons_per_shell": "2, 8, 7"
+  },
+  {
+    "atom_number": 18,
+    "symbol": "Ar",
+    "name": "Argon",
+    "group": 18,
+    "period": 3,
+    "electron_configuration": "[Ar]",
+    "electrons_per_shell": "2, 8, 8"
+  },
+  {
+    "atom_number": 19,
+    "symbol": "K",
+    "name": "Potas",
+    "group": 1,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s1",
+    "electrons_per_shell": "2, 8, 8, 1"
+  },
+  {
+    "atom_number": 20,
+    "symbol": "Ca",
+    "name": "Wapń",
+    "group": 2,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2",
+    "electrons_per_shell": "2, 8, 8, 2"
+  },
+  {
+    "atom_number": 21,
+    "symbol": "Sc",
+    "name": "Skand",
+    "group": 3,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d1",
+    "electrons_per_shell": "2, 8, 9, 2"
+  },
+  {
+    "atom_number": 22,
+    "symbol": "Ti",
+    "name": "Tytan",
+    "group": 4,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d2",
+    "electrons_per_shell": "2, 8, 10, 2"
+  },
+  {
+    "atom_number": 23,
+    "symbol": "V",
+    "name": "Wanad",
+    "group": 5,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d3",
+    "electrons_per_shell": "2, 8, 11, 2"
+  },
+  {
+    "atom_number": 24,
+    "symbol": "Cr",
+    "name": "Chrom",
+    "group": 6,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s1 3d5",
+    "electrons_per_shell": "2, 8, 12, 2"
+  },
+  {
+    "atom_number": 25,
+    "symbol": "Mn",
+    "name": "Mangan",
+    "group": 7,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d5",
+    "electrons_per_shell": "2, 8, 13, 2"
+  },
+  {
+    "atom_number": 26,
+    "symbol": "Fe",
+    "name": "Żelazo",
+    "group": 8,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d6",
+    "electrons_per_shell": "2, 8, 14, 2"
+  },
+  {
+    "atom_number": 27,
+    "symbol": "Co",
+    "name": "Kobalt",
+    "group": 9,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d7",
+    "electrons_per_shell": "2, 8, 15, 2"
+  },
+  {
+    "atom_number": 28,
+    "symbol": "Ni",
+    "name": "Nikiel",
+    "group": 10,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d8",
+    "electrons_per_shell": "2, 8, 16, 2"
+  },
+  {
+    "atom_number": 29,
+    "symbol": "Cu",
+    "name": "Miedź",
+    "group": 11,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s1 3d10",
+    "electrons_per_shell": "2, 8, 17, 2"
+  },
+  {
+    "atom_number": 30,
+    "symbol": "Zn",
+    "name": "Cynk",
+    "group": 12,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d10",
+    "electrons_per_shell": "2, 8, 18, 2"
+  },
+  {
+    "atom_number": 31,
+    "symbol": "Ga",
+    "name": "Gal",
+    "group": 13,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d10 4p1",
+    "electrons_per_shell": "2, 8, 18, 3"
+  },
+  {
+    "atom_number": 32,
+    "symbol": "Ge",
+    "name": "German",
+    "group": 14,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d10 4p2",
+    "electrons_per_shell": "2, 8, 18, 4"
+  },
+  {
+    "atom_number": 33,
+    "symbol": "As",
+    "name": "Arsen",
+    "group": 15,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d10 4p3",
+    "electrons_per_shell": "2, 8, 18, 5"
+  },
+  {
+    "atom_number": 34,
+    "symbol": "Se",
+    "name": "Selen",
+    "group": 16,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d10 4p4",
+    "electrons_per_shell": "2, 8, 18, 6"
+  },
+  {
+    "atom_number": 35,
+    "symbol": "Br",
+    "name": "Brom",
+    "group": 17,
+    "period": 4,
+    "electron_configuration": "[Ar] 4s2 3d10 4p5",
+    "electrons_per_shell": "2, 8, 18, 7"
+  },
+  {
+    "atom_number": 36,
+    "symbol": "Kr",
+    "name": "Krypton",
+    "group": 18,
+    "period": 4,
+    "electron_configuration": "[Kr]",
+    "electrons_per_shell": "2, 8, 18, 8"
+  },
+  {
+    "atom_number": 37,
+    "symbol": "Rb",
+    "name": "Rubid",
+    "group": 1,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s1",
+    "electrons_per_shell": "2, 8, 18, 8, 1"
+  },
+  {
+    "atom_number": 38,
+    "symbol": "Sr",
+    "name": "Stront",
+    "group": 2,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s2",
+    "electrons_per_shell": "2, 8, 18, 8, 2"
+  },
+  {
+    "atom_number": 39,
+    "symbol": "Y",
+    "name": "Itr",
+    "group": 3,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s2 4d1",
+    "electrons_per_shell": "2, 8, 18, 9, 2"
+  },
+  {
+    "atom_number": 40,
+    "symbol": "Zr",
+    "name": "Cyrkon",
+    "group": 4,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s2 4d2",
+    "electrons_per_shell": "2, 8, 18, 10, 2"
+  },
+  {
+    "atom_number": 41,
+    "symbol": "Nb",
+    "name": "Niob",
+    "group": 5,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s1 4d4",
+    "electrons_per_shell": "2, 8, 18, 11, 2"
+  },
+  {
+    "atom_number": 42,
+    "symbol": "Mo",
+    "name": "Molibden",
+    "group": 6,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s1 4d5",
+    "electrons_per_shell": "2, 8, 18, 12, 2"
+  },
+  {
+    "atom_number": 43,
+    "symbol": "Tc",
+    "name": "Technet",
+    "group": 7,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s2 4d5",
+    "electrons_per_shell": "2, 8, 18, 13, 2"
+  },
+  {
+    "atom_number": 44,
+    "symbol": "Ru",
+    "name": "Ruten",
+    "group": 8,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s1 4d7",
+    "electrons_per_shell": "2, 8, 18, 14, 2"
+  },
+  {
+    "atom_number": 45,
+    "symbol": "Rh",
+    "name": "Rod",
+    "group": 9,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s1 4d8",
+    "electrons_per_shell": "2, 8, 18, 15, 2"
+  },
+  {
+    "atom_number": 46,
+    "symbol": "Pd",
+    "name": "Pallad",
+    "group": 10,
+    "period": 5,
+    "electron_configuration": "[Kr] 4d10",
+    "electrons_per_shell": "2, 8, 18, 16, 2"
+  },
+  {
+    "atom_number": 47,
+    "symbol": "Ag",
+    "name": "Srebro",
+    "group": 11,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s1 4d10",
+    "electrons_per_shell": "2, 8, 18, 17, 2"
+  },
+  {
+    "atom_number": 48,
+    "symbol": "Cd",
+    "name": "Kadm",
+    "group": 12,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s2 4d10",
+    "electrons_per_shell": "2, 8, 18, 18, 2"
+  },
+  {
+    "atom_number": 49,
+    "symbol": "In",
+    "name": "Ind",
+    "group": 13,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s2 4d10 5p1",
+    "electrons_per_shell": "2, 8, 18, 18, 3"
+  },
+  {
+    "atom_number": 50,
+    "symbol": "Sn",
+    "name": "Cyna",
+    "group": 14,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s2 4d10 5p2",
+    "electrons_per_shell": "2, 8, 18, 18, 4"
+  },
+  {
+    "atom_number": 51,
+    "symbol": "Sb",
+    "name": "Antymon",
+    "group": 15,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s2 4d10 5p3",
+    "electrons_per_shell": "2, 8, 18, 18, 5"
+  },
+  {
+    "atom_number": 52,
+    "symbol": "Te",
+    "name": "Tellur",
+    "group": 16,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s2 4d10 5p4",
+    "electrons_per_shell": "2, 8, 18, 18, 6"
+  },
+  {
+    "atom_number": 53,
+    "symbol": "I",
+    "name": "Jod",
+    "group": 17,
+    "period": 5,
+    "electron_configuration": "[Kr] 5s2 4d10 5p5",
+    "electrons_per_shell": "2, 8, 18, 18, 7"
+  },
+  {
+    "atom_number": 54,
+    "symbol": "Xe",
+    "name": "Ksenon",
+    "group": 18,
+    "period": 5,
+    "electron_configuration": "[Xe]",
+    "electrons_per_shell": "2, 8, 18, 18, 8"
+  },
+  {
+    "atom_number": 55,
+    "symbol": "Cs",
+    "name": "Cez",
+    "group": 1,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s1",
+    "electrons_per_shell": "2, 8, 18, 18, 8, 1"
+  },
+  {
+    "atom_number": 56,
+    "symbol": "Ba",
+    "name": "Bar",
+    "group": 2,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2",
+    "electrons_per_shell": "2, 8, 18, 18, 8, 2"
+  },
+  {
+    "atom_number": 57,
+    "symbol": "La",
+    "name": "Lantan",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 5d1",
+    "electrons_per_shell": "2, 8, 18, 19, 8, 2"
+  },
+  {
+    "atom_number": 58,
+    "symbol": "Ce",
+    "name": "Cer",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f1 5d1",
+    "electrons_per_shell": "2, 8, 18, 20, 8, 2"
+  },
+  {
+    "atom_number": 59,
+    "symbol": "Pr",
+    "name": "Prazeodym",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f3",
+    "electrons_per_shell": "2, 8, 18, 21, 8, 2"
+  },
+  {
+    "atom_number": 60,
+    "symbol": "Nd",
+    "name": "Neodym",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f4",
+    "electrons_per_shell": "2, 8, 18, 22, 8, 2"
+  },
+  {
+    "atom_number": 61,
+    "symbol": "Pm",
+    "name": "Promet",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f5",
+    "electrons_per_shell": "2, 8, 18, 23, 8, 2"
+  },
+  {
+    "atom_number": 62,
+    "symbol": "Sm",
+    "name": "Samar",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f6",
+    "electrons_per_shell": "2, 8, 18, 24, 8, 2"
+  },
+  {
+    "atom_number": 63,
+    "symbol": "Eu",
+    "name": "Europ",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f7",
+    "electrons_per_shell": "2, 8, 18, 25, 8, 2"
+  },
+  {
+    "atom_number": 64,
+    "symbol": "Gd",
+    "name": "Gadolin",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f7 5d1",
+    "electrons_per_shell": "2, 8, 18, 26, 8, 2"
+  },
+  {
+    "atom_number": 65,
+    "symbol": "Tb",
+    "name": "Terb",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f9",
+    "electrons_per_shell": "2, 8, 18, 27, 8, 2"
+  },
+  {
+    "atom_number": 66,
+    "symbol": "Dy",
+    "name": "Dysproz",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f10",
+    "electrons_per_shell": "2, 8, 18, 28, 8, 2"
+  },
+  {
+    "atom_number": 67,
+    "symbol": "Ho",
+    "name": "Holm",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f11",
+    "electrons_per_shell": "2, 8, 18, 29, 8, 2"
+  },
+  {
+    "atom_number": 68,
+    "symbol": "Er",
+    "name": "Erb",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f12",
+    "electrons_per_shell": "2, 8, 18, 30, 8, 2"
+  },
+  {
+    "atom_number": 69,
+    "symbol": "Tm",
+    "name": "Tul",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f13",
+    "electrons_per_shell": "2, 8, 18, 31, 8, 2"
+  },
+  {
+    "atom_number": 70,
+    "symbol": "Yb",
+    "name": "Iterb",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14",
+    "electrons_per_shell": "2, 8, 18, 32, 8, 2"
+  },
+  {
+    "atom_number": 71,
+    "symbol": "Lu",
+    "name": "Lutet",
+    "group": 3,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d1",
+    "electrons_per_shell": "2, 8, 18, 32, 9, 2"
+  },
+  {
+    "atom_number": 72,
+    "symbol": "Hf",
+    "name": "Hafn",
+    "group": 4,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d2",
+    "electrons_per_shell": "2, 8, 18, 32, 10, 2"
+  },
+  {
+    "atom_number": 73,
+    "symbol": "Ta",
+    "name": "Tantal",
+    "group": 5,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d3",
+    "electrons_per_shell": "2, 8, 18, 32, 11, 2"
+  },
+  {
+    "atom_number": 74,
+    "symbol": "W",
+    "name": "Wolfram",
+    "group": 6,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d4",
+    "electrons_per_shell": "2, 8, 18, 32, 12, 2"
+  },
+  {
+    "atom_number": 75,
+    "symbol": "Re",
+    "name": "Ren",
+    "group": 7,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d5",
+    "electrons_per_shell": "2, 8, 18, 32, 13, 2"
+  },
+  {
+    "atom_number": 76,
+    "symbol": "Os",
+    "name": "Osm",
+    "group": 8,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d6",
+    "electrons_per_shell": "2, 8, 18, 32, 14, 2"
+  },
+  {
+    "atom_number": 77,
+    "symbol": "Ir",
+    "name": "Iryd",
+    "group": 9,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d7",
+    "electrons_per_shell": "2, 8, 18, 32, 15, 2"
+  },
+  {
+    "atom_number": 78,
+    "symbol": "Pt",
+    "name": "Platyna",
+    "group": 10,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s1 4f14 5d9",
+    "electrons_per_shell": "2, 8, 18, 32, 16, 2"
+  },
+  {
+    "atom_number": 79,
+    "symbol": "Au",
+    "name": "Złoto",
+    "group": 11,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s1 4f14 5d10",
+    "electrons_per_shell": "2, 8, 18, 32, 17, 2"
+  },
+  {
+    "atom_number": 80,
+    "symbol": "Hg",
+    "name": "Rtęć",
+    "group": 12,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d10",
+    "electrons_per_shell": "2, 8, 18, 32, 18, 2"
+  },
+  {
+    "atom_number": 81,
+    "symbol": "Tl",
+    "name": "Tal",
+    "group": 13,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d10 6p1",
+    "electrons_per_shell": "2, 8, 18, 32, 18, 3"
+  },
+  {
+    "atom_number": 82,
+    "symbol": "Pb",
+    "name": "Ołów",
+    "group": 14,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d10 6p2",
+    "electrons_per_shell": "2, 8, 18, 32, 18, 4"
+  },
+  {
+    "atom_number": 83,
+    "symbol": "Bi",
+    "name": "Bizmut",
+    "group": 15,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d10 6p3",
+    "electrons_per_shell": "2, 8, 18, 32, 18, 5"
+  },
+  {
+    "atom_number": 84,
+    "symbol": "Po",
+    "name": "Polon",
+    "group": 16,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d10 6p4",
+    "electrons_per_shell": "2, 8, 18, 32, 18, 6"
+  },
+  {
+    "atom_number": 85,
+    "symbol": "At",
+    "name": "Astat",
+    "group": 17,
+    "period": 6,
+    "electron_configuration": "[Xe] 6s2 4f14 5d10 6p5",
+    "electrons_per_shell": "2, 8, 18, 32, 18, 7"
+  },
+  {
+    "atom_number": 86,
+    "symbol": "Rn",
+    "name": "Radon",
+    "group": 18,
+    "period": 6,
+    "electron_configuration": "[Rn]",
+    "electrons_per_shell": "2, 8, 18, 32, 18, 8"
+  },
+  {
+    "atom_number": 87,
+    "symbol": "Fr",
+    "name": "Frans",
+    "group": 1,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s1",
+    "electrons_per_shell": "2, 8, 18, 32, 18, 8, 1"
+  },
+  {
+    "atom_number": 88,
+    "symbol": "Ra",
+    "name": "Rad",
+    "group": 2,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2",
+    "electrons_per_shell": "2, 8, 18, 32, 18, 8, 2"
+  },
+  {
+    "atom_number": 89,
+    "symbol": "Ac",
+    "name": "Aktyn",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 6d1",
+    "electrons_per_shell": "2, 8, 18, 32, 19, 8, 2"
+  },
+  {
+    "atom_number": 90,
+    "symbol": "Th",
+    "name": "Tor",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 6d2",
+    "electrons_per_shell": "2, 8, 18, 32, 20, 8, 2"
+  },
+  {
+    "atom_number": 91,
+    "symbol": "Pa",
+    "name": "Protaktyn",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f2 6d1",
+    "electrons_per_shell": "2, 8, 18, 32, 21, 8, 2"
+  },
+  {
+    "atom_number": 92,
+    "symbol": "U",
+    "name": "Uran",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f3 6d1",
+    "electrons_per_shell": "2, 8, 18, 32, 22, 8, 2"
+  },
+  {
+    "atom_number": 93,
+    "symbol": "Np",
+    "name": "Neptun",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f4 6d1",
+    "electrons_per_shell": "2, 8, 18, 32, 23, 8, 2"
+  },
+  {
+    "atom_number": 94,
+    "symbol": "Pu",
+    "name": "Pluton",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f6",
+    "electrons_per_shell": "2, 8, 18, 32, 24, 8, 2"
+  },
+  {
+    "atom_number": 95,
+    "symbol": "Am",
+    "name": "Ameryk",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f7",
+    "electrons_per_shell": "2, 8, 18, 32, 25, 8, 2"
+  },
+  {
+    "atom_number": 96,
+    "symbol": "Cm",
+    "name": "Kiur",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f7 6d1",
+    "electrons_per_shell": "2, 8, 18, 32, 26, 8, 2"
+  },
+  {
+    "atom_number": 97,
+    "symbol": "Bk",
+    "name": "Berkel",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f9",
+    "electrons_per_shell": "2, 8, 18, 32, 27, 8, 2"
+  },
+  {
+    "atom_number": 98,
+    "symbol": "Cf",
+    "name": "Kaliforn",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f10",
+    "electrons_per_shell": "2, 8, 18, 32, 28, 8, 2"
+  },
+  {
+    "atom_number": 99,
+    "symbol": "Es",
+    "name": "Einstein",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f11",
+    "electrons_per_shell": "2, 8, 18, 32, 29, 8, 2"
+  },
+  {
+    "atom_number": 100,
+    "symbol": "Fm",
+    "name": "Ferm",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f12",
+    "electrons_per_shell": "2, 8, 18, 32, 30, 8, 2"
+  },
+  {
+    "atom_number": 101,
+    "symbol": "Md",
+    "name": "Mendelew",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f13",
+    "electrons_per_shell": "2, 8, 18, 32, 31, 8, 2"
+  },
+  {
+    "atom_number": 102,
+    "symbol": "No",
+    "name": "Nobel",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 8, 2"
+  },
+  {
+    "atom_number": 103,
+    "symbol": "Lr",
+    "name": "Lorens",
+    "group": 3,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d1",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 9, 2"
+  },
+  {
+    "atom_number": 104,
+    "symbol": "Rf",
+    "name": "Rutherford",
+    "group": 4,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d2",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 10, 2"
+  },
+  {
+    "atom_number": 105,
+    "symbol": "Db",
+    "name": "Dubn",
+    "group": 5,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d3",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 11, 2"
+  },
+  {
+    "atom_number": 106,
+    "symbol": "Sg",
+    "name": "Seaborg",
+    "group": 6,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d4",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 12, 2"
+  },
+  {
+    "atom_number": 107,
+    "symbol": "Bh",
+    "name": "Bohr",
+    "group": 7,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d5",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 13, 2"
+  },
+  {
+    "atom_number": 108,
+    "symbol": "Hs",
+    "name": "Has",
+    "group": 8,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d6",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 14, 2"
+  },
+  {
+    "atom_number": 109,
+    "symbol": "Mt",
+    "name": "Meitner",
+    "group": 9,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d7",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 15, 2"
+  },
+  {
+    "atom_number": 110,
+    "symbol": "Ds",
+    "name": "Darmstadt",
+    "group": 10,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d8",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 16, 2"
+  },
+  {
+    "atom_number": 111,
+    "symbol": "Rg",
+    "name": "Roentgen",
+    "group": 11,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d9",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 17, 2"
+  },
+  {
+    "atom_number": 112,
+    "symbol": "Cn",
+    "name": "Kopernik",
+    "group": 12,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d10",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 18, 2"
+  },
+  {
+    "atom_number": 113,
+    "symbol": "Nh",
+    "name": "Nihon",
+    "group": 13,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d10 7p1",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 18, 3"
+  },
+  {
+    "atom_number": 114,
+    "symbol": "Fl",
+    "name": "Flerow",
+    "group": 14,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d10 7p2",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 18, 4"
+  },
+  {
+    "atom_number": 115,
+    "symbol": "Mc",
+    "name": "Moskow",
+    "group": 15,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d10 7p3",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 18, 5"
+  },
+  {
+    "atom_number": 116,
+    "symbol": "Lv",
+    "name": "Liwermor",
+    "group": 16,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d10 7p4",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 18, 6"
+  },
+  {
+    "atom_number": 117,
+    "symbol": "Ts",
+    "name": "Tenness",
+    "group": 17,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d10 7p5",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 18, 7"
+  },
+  {
+    "atom_number": 118,
+    "symbol": "Og",
+    "name": "Oganeson",
+    "group": 18,
+    "period": 7,
+    "electron_configuration": "[Rn] 7s2 5f14 6d10 7p6",
+    "electrons_per_shell": "2, 8, 18, 32, 32, 18, 8"
+  }
+]

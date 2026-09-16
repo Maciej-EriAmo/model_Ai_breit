@@ -280,9 +280,9 @@ def glyph_features_from_unicode(
     base_amplitude: float = 1.0,
     mark_amplitude: float = 0.8,
 ) -> list[FeatureOverlay]:
-    """Ekstraktor cech dla NIEZNANEGO WCZEŚNIEJ znaku — brakujący
-    komponent z sekcji 11.3 raportu hologram-znaki ("rozpoznawanie
-    rzeczywistego, nieuprzednio zakodowanego znaku"). Zamiast ręcznej
+    """Ekstraktor cech dla NIEZNANEGO WCZEŚNIEJ znaku (domknięty item z
+    pierwotnej sekcji 11.3 raportu hologram-znaki: rozpoznawanie
+    rzeczywistego, nieuprzednio zakodowanego znaku). Zamiast ręcznej
     tabeli znak<->wiersz<->diakrytyk (jak hiragana w raporcie, gdzie
     przypisanie było "z wiedzy ugruntowanej", czyli ręcznie wpisane),
     używa KANONICZNEJ DEKOMPOZYCJI UNICODE (NFD): dowolny znak złożony

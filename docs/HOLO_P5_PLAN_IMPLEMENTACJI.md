@@ -1,7 +1,8 @@
 # Holo-Φ P5 — plan implementacji i testów
 
-**Status:** plan (kod jeszcze nie napisany) — realizuje projekt [`HOLO_P5_TOR_DESI.md`](HOLO_P5_TOR_DESI.md)
-**Sesja:** 2026-09-11 — plan zapisany, implementacja w kolejnej sesji
+**Status:** P5.0 + P5.1 **zrobione** → **FAIL holdout 0/8** (2026-09-13). P5.2+ wstrzymane (brak sygnału).  
+**Plan bazowy:** [`HOLO_P5_TOR_DESI.md`](HOLO_P5_TOR_DESI.md) · wynik: [`../doswiadczenie/glify/HOLO_P5_1.md`](../doswiadczenie/glify/HOLO_P5_1.md)  
+**Sesja planu:** 2026-09-11 · **Sesja wyniku:** 2026-09-13 (opcja A graf-per-radykał; 2 bugi seal/negatywy naprawione w trakcie)
 
 ---
 

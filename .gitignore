@@ -20,3 +20,8 @@ ZdjęcieW/demo/*.fits
 ZdjęcieW/demo/*.png
 ZdjęcieW/__pycache__/
 
+# scratch / tmp zapytań katalogowych
+doswiadczenie/joannam/_tmp*
+doswiadczenie/joannam/_query_*.py
+doswiadczenie/joannam/_xmatch_next.py
+

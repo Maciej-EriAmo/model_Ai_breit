@@ -1,0 +1,426 @@
+{
+  "when_utc": "20260916T061457Z",
+  "target": {
+    "label": "candidate_2_new_field_01",
+    "file": "desi_new_field_01_ra142.5_dec6.5_s128.fits",
+    "ra": 142.5,
+    "dec": 6.5,
+    "galactic_l": 226.757,
+    "galactic_b": 38.007
+  },
+  "gaia": {
+    "ra": 142.5023355692689,
+    "dec": 6.498635129308401,
+    "ref": "GE:586076295021789056",
+    "mag_r": 13.598594,
+    "dist_arcsec": 9.692
+  },
+  "ls": {
+    "n": 18,
+    "bright_r_lt_20": [
+      {
+        "ra": "142.5023355692689",
+        "dec": "6.498635129308401",
+        "type": "PSF",
+        "mag_g": "13.848329",
+        "mag_r": "13.598594",
+        "mag_z": "13.811648",
+        "parallax": "1.1816889",
+        "ref_cat": "GE",
+        "ref_id": "586076295021789056",
+        "dist_arcsec": 9.692,
+        "mag_r_f": 13.598594
+      }
+    ]
+  },
+  "simbad_60as": {
+    "n": 0,
+    "nearest": [],
+    "raw_preview": "!! No astronomical object found : \n coord 142.5 +6.5 (ICRS, J2000, 2000.0), radius: 60 arcsec\n"
+  },
+  "simbad_5arcmin": {
+    "n": 16,
+    "nearest": [
+      {
+        "dist_asec": 85.77,
+        "id": "SDSS J092958.22+063121.5",
+        "otype": "*"
+      },
+      {
+        "dist_asec": 87.97,
+        "id": "WiggleZ S09J092954100+06300272",
+        "otype": "G"
+      },
+      {
+        "dist_asec": 149.67,
+        "id": "NVSS J093001+062733",
+        "otype": "rG"
+      },
+      {
+        "dist_asec": 160.01,
+        "id": "SDSS J092957.77+062723.4",
+        "otype": "G"
+      },
+      {
+        "dist_asec": 186.8,
+        "id": "SDSS J093011.61+063110.2",
+        "otype": "G"
+      },
+      {
+        "dist_asec": 197.41,
+        "id": "SDSS J092954.56+062700.0",
+        "otype": "G"
+      },
+      {
+        "dist_asec": 207.95,
+        "id": "SDSS J093010.86+063210.4",
+        "otype": "G"
+      },
+      {
+        "dist_asec": 215.61,
+        "id": "SDSS J093012.12+062802.3",
+        "otype": "*"
+      }
+    ]
+  },
+  "desi": [
+    {
+      "targetid": "39627943919488014",
+      "z": "5.718113574024049e-05",
+      "zwarn": "0",
+      "spectype": "STAR",
+      "mean_fiber_ra": "142.4853990568367",
+      "mean_fiber_dec": "6.490102095043919",
+      "dist_arcsec": 63.22
+    },
+    {
+      "targetid": "39627943919488101",
+      "z": "0.3173373432360856",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.4912482175623",
+      "mean_fiber_dec": "6.515272227376136",
+      "dist_arcsec": 63.27
+    },
+    {
+      "targetid": "39627943919487862",
+      "z": "0.23154678396123",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.4755406832517",
+      "mean_fiber_dec": "6.52947787268247",
+      "dist_arcsec": 137.53
+    },
+    {
+      "targetid": "39627943919488918",
+      "z": "0.2339544448057201",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.5367742890874",
+      "mean_fiber_dec": "6.525437138197814",
+      "dist_arcsec": 160.27
+    },
+    {
+      "targetid": "39627943919487459",
+      "z": "9.787149599200387e-05",
+      "zwarn": "0",
+      "spectype": "STAR",
+      "mean_fiber_ra": "142.4503286760051",
+      "mean_fiber_dec": "6.47462183413859",
+      "dist_arcsec": 199.79
+    },
+    {
+      "targetid": "39627943919487563",
+      "z": "0.4431769939902734",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.4564453251845",
+      "mean_fiber_dec": "6.462424516483491",
+      "dist_arcsec": 206.33
+    },
+    {
+      "targetid": "39627943919487563",
+      "z": "0.4432454778648864",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.4564573221847",
+      "mean_fiber_dec": "6.462403952457347",
+      "dist_arcsec": 206.34
+    },
+    {
+      "targetid": "39627943923679610",
+      "z": "0.2337012126117617",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.5587140283196",
+      "mean_fiber_dec": "6.511672236608066",
+      "dist_arcsec": 214.17
+    },
+    {
+      "targetid": "39627943919488759",
+      "z": "0.5112317516097391",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.5287371887988",
+      "mean_fiber_dec": "6.553777688963686",
+      "dist_arcsec": 219.19
+    },
+    {
+      "targetid": "39627943919487491",
+      "z": "0.3035623362578433",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.4518824795207",
+      "mean_fiber_dec": "6.545733397979213",
+      "dist_arcsec": 238.17
+    },
+    {
+      "targetid": "39627943923679448",
+      "z": "0.2359877937503239",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.5505954811403",
+      "mean_fiber_dec": "6.54715185229605",
+      "dist_arcsec": 248.12
+    },
+    {
+      "targetid": "39627943923679845",
+      "z": "1.473742466359818",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.572776356136",
+      "mean_fiber_dec": "6.474870515889127",
+      "dist_arcsec": 275.59
+    },
+    {
+      "targetid": "39627943919488697",
+      "z": "0.2668075546469932",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.5249230181377",
+      "mean_fiber_dec": "6.575818108925215",
+      "dist_arcsec": 287.13
+    },
+    {
+      "targetid": "39627943919487079",
+      "z": "0.07018287458119238",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.4279268028284",
+      "mean_fiber_dec": "6.45925821464348",
+      "dist_arcsec": 296.61
+    },
+    {
+      "targetid": "39627943923679741",
+      "z": "0.2966943615450436",
+      "zwarn": "0",
+      "spectype": "GALAXY",
+      "mean_fiber_ra": "142.5658751787436",
+      "mean_fiber_dec": "6.438540425446817",
+      "dist_arcsec": 323.23
+    }
+  ],
+  "erosita_5": {
+    "n": 0,
+    "objects": []
+  },
+  "erosita_15": {
+    "n": 5,
+    "objects": [
+      {
+        "_r_arcmin": 7.917,
+        "IAUName": "1eRASS J092928.8+063137",
+        "RA": 142.37002167616,
+        "DE": 6.52709157002
+      },
+      {
+        "_r_arcmin": 8.5871,
+        "IAUName": "1eRASS J092932.4+062447",
+        "RA": 142.38541113603,
+        "DE": 6.41329078795
+      },
+      {
+        "_r_arcmin": 11.4282,
+        "IAUName": "1eRASS J093027.8+063906",
+        "RA": 142.61593564303,
+        "DE": 6.65170420913
+      },
+      {
+        "_r_arcmin": 13.833,
+        "IAUName": "1eRASS J092919.5+062030",
+        "RA": 142.33134992306,
+        "DE": 6.34167586465
+      },
+      {
+        "_r_arcmin": 14.4626,
+        "IAUName": "1eRASS J093015.9+061605",
+        "RA": 142.56665687846,
+        "DE": 6.26823862712
+      }
+    ]
+  },
+  "nvss_5": {
+    "ok": true,
+    "n": 4,
+    "objects": [
+      {
+        "_r_arcmin": 2.4912,
+        "NVSS": "093001+062733",
+        "S1.4": "3.7"
+      },
+      {
+        "_r_arcmin": 3.201,
+        "NVSS": "093006+063246",
+        "S1.4": "8.0"
+      },
+      {
+        "_r_arcmin": 4.1075,
+        "NVSS": "093013+062739",
+        "S1.4": "4.4"
+      },
+      {
+        "_r_arcmin": 4.2295,
+        "NVSS": "093015+063152",
+        "S1.4": "13.2"
+      }
+    ],
+    "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T06:15:05 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T06:15:05\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=VIII%2F65%2Fnvss&-c=142.5+%2B6.5&-c.rm=5.0&-out.max=40&-out.add=_r&-sort=_r\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\t-c=142.500000+06.500000,rm=5.\t\n#Constraint -sort=_r\n\n#RESOURCE=yCat_8065\n#Name: VIII/65\n#Title: 1.4GHz NRAO VLA Sky Survey (NVSS) (Condon+ 1998)\n#INFO\tivoid=ivo://cds.vizier/viii/65\t    IVOID of underlying data collection\n#INFO\tdata_ivoid=ivo://cds.vizier/viii/65\t    IVOID of underlying data collection\n"
+  },
+  "nvss_15": {
+    "ok": true,
+    "n": 9,
+    "objects": [
+      {
+        "_r_arcmin": 2.4912,
+        "NVSS": "093001+062733",
+        "S1.4": "3.7"
+      },
+      {
+        "_r_arcmin": 3.201,
+        "NVSS": "093006+063246",
+        "S1.4": "8.0"
+      },
+      {
+        "_r_arcmin": 4.1075,
+        "NVSS": "093013+062739",
+        "S1.4": "4.4"
+      },
+      {
+        "_r_arcmin": 4.2295,
+        "NVSS": "093015+063152",
+        "S1.4": "13.2"
+      },
+      {
+        "_r_arcmin": 6.3352,
+        "NVSS": "092934+063105",
+        "S1.4": "5.6"
+      },
+      {
+        "_r_arcmin": 11.4665,
+        "NVSS": "093026+063927",
+        "S1.4": "25.6"
+      },
+      {
+        "_r_arcmin": 13.4747,
+        "NVSS": "093028+061836",
+        "S1.4": "4.5"
+      },
+      {
+        "_r_arcmin": 13.8768,
+        "NVSS": "093014+061635",
+        "S1.4": "79.3"
+      },
+      {
+        "_r_arcmin": 14.2245,
+        "NVSS": "093050+062318",
+        "S1.4": "2.8"
+      }
+    ],
+    "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T06:15:05 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T06:15:06\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=VIII%2F65%2Fnvss&-c=142.5+%2B6.5&-c.rm=15.0&-out.max=40&-out.add=_r&-sort=_r\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\t-c=142.500000+06.500000,rm=15.\t\n#Constraint -sort=_r\n\n#RESOURCE=yCat_8065\n#Name: VIII/65\n#Title: 1.4GHz NRAO VLA Sky Survey (NVSS) (Condon+ 1998)\n#INFO\tivoid=ivo://cds.vizier/viii/65\t    IVOID of underlying data collection\n#INFO\tdata_ivoid=ivo://cds.vizier/viii/65\t    IVOID of underlying data collectio"
+  },
+  "rass_2rxs_15": {
+    "ok": true,
+    "n": 0,
+    "objects": [],
+    "raw_preview": "#\n#   VizieR Astronomical Server vizier.cds.unistra.fr\n#    Date: 2026-09-16T06:15:06 [V7.6]\n#   In case of problem, please report to:\tcds-question@unistra.fr\n#\n#\n#Coosys\tJ2000:\teq_FK5 J2000\n#INFO\tservice_protocol=ASU\t  IVOID of the protocol through which the data was retrieved\n#INFO\trequest_date=2026-09-16T06:15:06\t  Query execution date\n#INFO\trequest=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FA%2BA%2F588%2FA103%2Fcatalog&-c=142.5+%2B6.5&-c.rm=15.0&-out.max=40&-out.add=_r&-sort=_r\t  Full request URL\n#INFO\tcontact=cds-question@unistra.fr\t  Email or URL to contact publisher\n#INFO\tserver_software=VizieR/7.6\t  Software version\n#INFO\tpublisher=CDS\t  Data centre that produced the VOTable\n#INFO\tError=Table 'catalog' does not exist in catalog: J/A+A/588/A103\t\n"
+  },
+  "old": {
+    "file": "desi_new_field_01_ra142.5_dec6.5_s128.fits",
+    "sha": "adcb49b24024de5e",
+    "bytes": 403200,
+    "baseline": {
+      "p_cluster": 0.9742810130119324,
+      "T_mean": 0.5908902883529663,
+      "dE": 0.5545850396156311,
+      "pred": 1
+    },
+    "gaia_pix": {
+      "x": 28,
+      "y": 45,
+      "peak": 14.177807807922363,
+      "shift": 3.62
+    },
+    "ablation_gaia": {
+      "r3": {
+        "p": 0.9703695774078369,
+        "delta": -0.003911435604095459,
+        "n_pix": 29
+      },
+      "r4": {
+        "p": 0.8004989624023438,
+        "delta": -0.17378205060958862,
+        "n_pix": 49
+      }
+    },
+    "control_180": {
+      "p": 0.9742773771286011,
+      "delta": -3.635883331298828e-06
+    }
+  },
+  "fresh": {
+    "file": "desi_c2_fresh_20260916T061457Z_ra142.5_dec6.5_s128.fits",
+    "sha": "adcb49b24024de5e",
+    "bytes": 403200,
+    "baseline": {
+      "p_cluster": 0.9742810130119324,
+      "T_mean": 0.5908902883529663,
+      "dE": 0.5545850396156311,
+      "pred": 1
+    },
+    "gaia_pix": {
+      "x": 28,
+      "y": 45,
+      "peak": 14.177807807922363,
+      "shift": 3.62
+    },
+    "ablation_gaia": {
+      "r3": {
+        "p": 0.9703695774078369,
+        "delta": -0.003911435604095459,
+        "n_pix": 29
+      },
+      "r4": {
+        "p": 0.8004989624023438,
+        "delta": -0.17378205060958862,
+        "n_pix": 49
+      }
+    },
+    "control_180": {
+      "p": 0.9742773771286011,
+      "delta": -3.635883331298828e-06
+    }
+  },
+  "alias": "desi_c2_fresh_ra142.5_dec6.5_s128.fits",
+  "verdict": {
+    "spectroscopy_center": "NO_MATCH_SIMBAD_60as",
+    "desi_in_cutout": false,
+    "nearest_desi_arcsec": 63.22,
+    "xray_erosita_5arcmin": 0,
+    "radio_nvss_5arcmin": 4,
+    "star_partial": true,
+    "residual_high_after_mask": true,
+    "fresh_reproduces": true,
+    "unlike_joannam": true,
+    "summary_pl": "Kandydat #2: wysoki p_cluster; Gaia dok\u0142ada ~0.17, ale po masce zostaje ~0.80. SIMBAD 60as pusto; eROSITA/NVSS \u22645' do sprawdzenia w tabelach."
+  }
+}

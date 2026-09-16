@@ -115,6 +115,66 @@ def build_train_batch(
     )
 
 
+def build_mixed_train_batch(
+    radicals: tuple[int, ...],
+    *,
+    d_x: int,
+    n_dim: int,
+    batch_size: int,
+    seed: int,
+    noise_scale: float = 0.05,
+) -> RecallBatch:
+    """Jeden graf = WSZYSTKIE radykały treningowe razem. Pozytyw = ten sam
+    radykał co query; kandydaci = cały graf (inne radykały = prawdziwe
+    negatywy cross-family podczas treningu).
+
+    `build_train_batch` (jeden-radykał-per-graf) dawał zerowy sygnał
+    kontrastowy: w grafie złożonym z samego jednego radykału KAŻDY kandydat
+    jest poprawnym pozytywem, więc τ nie ma nic do odróżniania — model uczy
+    się dowolnego, samo-spójnego rozmieszczenia 20 elementów (trywialne
+    train_r1→100%), co nie ma żadnego powodu przenieść się na holdout
+    (zob. HOLO_P5_1.md). Ta wersja daje τ realną robotę: musi pomóc wybrać
+    właściwy radykał spośród kandydatów z innych radykałów w tym samym grafie.
+    """
+    rng = random.Random(seed)
+    atoms: list[PhiAtom] = []
+    radical_of_idx: list[int] = []
+    idx_by_radical: dict[int, list[int]] = {r: [] for r in radicals}
+    for r in radicals:
+        for ch in chars_for_radical(r):
+            idx_by_radical[r].append(len(atoms))
+            atoms.append(_atom_for_char(ch, r))
+            radical_of_idx.append(r)
+
+    N = len(atoms)
+    content = torch.zeros(batch_size, N, d_x)
+    tracer = torch.zeros(batch_size, N, n_dim)
+    depths = torch.zeros(batch_size, N)
+    states = torch.zeros(batch_size, N, dtype=torch.long)
+    mask = torch.ones(batch_size, N)
+    topics = torch.zeros(batch_size, N, dtype=torch.long)
+    q_idx = torch.zeros(batch_size, dtype=torch.long)
+    p_idx = torch.zeros(batch_size, dtype=torch.long)
+
+    c0, t0 = _pack(atoms, d_x, n_dim)
+    for b in range(batch_size):
+        ns = 0.0 if b == 0 else noise_scale
+        c = c0.clone()
+        if ns > 0:
+            c = c + ns * torch.randn(N, d_x)
+            c = c / c.norm(dim=-1, keepdim=True).clamp_min(1e-6)
+        content[b] = c
+        tracer[b] = t0
+        r = rng.choice(radicals)
+        qi, pi = rng.sample(idx_by_radical[r], 2)
+        q_idx[b], p_idx[b] = qi, pi
+
+    return RecallBatch(
+        content=content, tracer=tracer, depths=depths, states=states,
+        mask=mask, query_idx=q_idx, pos_idx=p_idx, topics=topics,
+    )
+
+
 def build_holdout_eval_batch(
     *,
     d_x: int,

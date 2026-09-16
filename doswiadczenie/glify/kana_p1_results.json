@@ -1,0 +1,137 @@
+{
+  "protocol": "Kana P1 - cel pierwotny: czy hologram pomaga Mostowi uczyc sie predzej (71 tozsamosci, bez kanji)",
+  "seeds": [
+    0,
+    1,
+    17,
+    23,
+    42
+  ],
+  "encodings": [
+    "hologram",
+    "symbolic"
+  ],
+  "epochs": 16,
+  "n_train": 80,
+  "n_val": 25,
+  "rows": [
+    {
+      "seed": 0,
+      "most_r1": 0.0025,
+      "sm_r1": 0.0125,
+      "zero_r1": 0.005,
+      "delta_sm": -0.01,
+      "gate_pass": false,
+      "encoding": "hologram"
+    },
+    {
+      "seed": 1,
+      "most_r1": 0.0075,
+      "sm_r1": 0.005,
+      "zero_r1": 0.01,
+      "delta_sm": 0.0024999999999999996,
+      "gate_pass": false,
+      "encoding": "hologram"
+    },
+    {
+      "seed": 17,
+      "most_r1": 0.005,
+      "sm_r1": 0.0225,
+      "zero_r1": 0.01,
+      "delta_sm": -0.017499999999999998,
+      "gate_pass": false,
+      "encoding": "hologram"
+    },
+    {
+      "seed": 23,
+      "most_r1": 0.01,
+      "sm_r1": 0.0175,
+      "zero_r1": 0.0075,
+      "delta_sm": -0.0075000000000000015,
+      "gate_pass": false,
+      "encoding": "hologram"
+    },
+    {
+      "seed": 42,
+      "most_r1": 0.0,
+      "sm_r1": 0.005,
+      "zero_r1": 0.0025,
+      "delta_sm": -0.005,
+      "gate_pass": false,
+      "encoding": "hologram"
+    },
+    {
+      "seed": 0,
+      "most_r1": 0.01,
+      "sm_r1": 0.0075,
+      "zero_r1": 0.01,
+      "delta_sm": 0.0025000000000000005,
+      "gate_pass": false,
+      "encoding": "symbolic"
+    },
+    {
+      "seed": 1,
+      "most_r1": 0.0075,
+      "sm_r1": 0.0125,
+      "zero_r1": 0.01,
+      "delta_sm": -0.005000000000000001,
+      "gate_pass": false,
+      "encoding": "symbolic"
+    },
+    {
+      "seed": 17,
+      "most_r1": 0.0075,
+      "sm_r1": 0.0225,
+      "zero_r1": 0.0125,
+      "delta_sm": -0.015,
+      "gate_pass": false,
+      "encoding": "symbolic"
+    },
+    {
+      "seed": 23,
+      "most_r1": 0.0125,
+      "sm_r1": 0.0175,
+      "zero_r1": 0.015,
+      "delta_sm": -0.005000000000000001,
+      "gate_pass": false,
+      "encoding": "symbolic"
+    },
+    {
+      "seed": 42,
+      "most_r1": 0.0025,
+      "sm_r1": 0.005,
+      "zero_r1": 0.0025,
+      "delta_sm": -0.0025,
+      "gate_pass": false,
+      "encoding": "symbolic"
+    }
+  ],
+  "by_encoding": [
+    {
+      "encoding": "hologram",
+      "n_atoms": 286,
+      "n_pass": 0,
+      "n_seeds": 5,
+      "mean_delta_sm": -0.0075,
+      "best_delta_sm": 0.0024999999999999996,
+      "worst_delta_sm": -0.017499999999999998,
+      "mean_most": 0.005,
+      "mean_sm": 0.0125,
+      "mean_zero": 0.007000000000000001
+    },
+    {
+      "encoding": "symbolic",
+      "n_atoms": 286,
+      "n_pass": 0,
+      "n_seeds": 5,
+      "mean_delta_sm": -0.005,
+      "best_delta_sm": 0.0025000000000000005,
+      "worst_delta_sm": -0.015,
+      "mean_most": 0.008,
+      "mean_sm": 0.013000000000000001,
+      "mean_zero": 0.01
+    }
+  ],
+  "best_encoding": "symbolic",
+  "verdict": "best encoding=symbolic PASS 0/5 meanDSM=-0.0050; gate = Most r@1 - Softmax r@1 >= CANON.gate_recall_r1 (0.02)"
+}

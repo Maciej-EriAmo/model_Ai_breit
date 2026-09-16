@@ -1,0 +1,366 @@
+{
+  "protocol": "loo-bh-v2-filtered",
+  "filter_on": true,
+  "min_snr": 20.0,
+  "epochs": 40,
+  "seed": 0,
+  "n_bh": 9,
+  "n_non_train": 97,
+  "n_non_val": 41,
+  "bh_kept": [
+    "3c273",
+    "3c279",
+    "3c345",
+    "3c48",
+    "cta102",
+    "m87",
+    "mrk421",
+    "ngc4151",
+    "oj287"
+  ],
+  "rejected": [
+    {
+      "name": "cena",
+      "reason": "empty",
+      "snr_core_max": 0.0,
+      "img_max": 0.0,
+      "role": "bh"
+    },
+    {
+      "name": "ton618",
+      "reason": "snr_core_max<20",
+      "snr_core_max": 2.684617757797241,
+      "img_max": 0.9999995827674866,
+      "role": "bh"
+    }
+  ],
+  "elapsed_s": 429.84420824050903,
+  "baseline_unfiltered": {
+    "note": "n=11 z poprzedniej sesji (bez filtra)",
+    "Softmax": {
+      "recall": 0.545,
+      "precision": 0.462,
+      "f1": 0.5
+    },
+    "Most": {
+      "recall": 0.636,
+      "precision": 0.304,
+      "f1": 0.412
+    },
+    "ZERO": {
+      "recall": 0.545,
+      "precision": 0.333,
+      "f1": 0.414
+    }
+  },
+  "summary": {
+    "Softmax": {
+      "recall": 0.5555555555555556,
+      "precision": 0.3333333333333333,
+      "f1": 0.4166666666666667,
+      "tp": 5,
+      "fp": 10,
+      "fn": 4,
+      "tn": 359,
+      "pattern": "110110001",
+      "per_object": {
+        "3c273": true,
+        "3c279": true,
+        "3c345": false,
+        "3c48": true,
+        "cta102": true,
+        "m87": false,
+        "mrk421": false,
+        "ngc4151": false,
+        "oj287": true
+      }
+    },
+    "Most": {
+      "recall": 0.5555555555555556,
+      "precision": 0.4166666666666667,
+      "f1": 0.4761904761904762,
+      "tp": 5,
+      "fp": 7,
+      "fn": 4,
+      "tn": 362,
+      "pattern": "100010111",
+      "per_object": {
+        "3c273": true,
+        "3c279": false,
+        "3c345": false,
+        "3c48": false,
+        "cta102": true,
+        "m87": false,
+        "mrk421": true,
+        "ngc4151": true,
+        "oj287": true
+      }
+    },
+    "ZERO": {
+      "recall": 0.6666666666666666,
+      "precision": 0.3333333333333333,
+      "f1": 0.4444444444444444,
+      "tp": 6,
+      "fp": 12,
+      "fn": 3,
+      "tn": 357,
+      "pattern": "100011111",
+      "per_object": {
+        "3c273": true,
+        "3c279": false,
+        "3c345": false,
+        "3c48": false,
+        "cta102": true,
+        "m87": true,
+        "mrk421": true,
+        "ngc4151": true,
+        "oj287": true
+      }
+    }
+  },
+  "folds": [
+    {
+      "held_out": "3c273",
+      "stem": "demo_desi_bh_3c273_ra187.2779_dec2.0524_s128",
+      "models": {
+        "Softmax": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "tn": 40,
+          "caught": true
+        },
+        "Most": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "tn": 40,
+          "caught": true
+        },
+        "ZERO": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 0,
+          "tn": 38,
+          "caught": true
+        }
+      }
+    },
+    {
+      "held_out": "3c279",
+      "stem": "demo_desi_bh_3c279_ra194.0465_dec-5.7893_s128",
+      "models": {
+        "Softmax": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 0,
+          "tn": 39,
+          "caught": true
+        },
+        "Most": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "tn": 41,
+          "caught": false
+        },
+        "ZERO": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "tn": 41,
+          "caught": false
+        }
+      }
+    },
+    {
+      "held_out": "3c345",
+      "stem": "demo_desi_bh_3c345_ra250.745_dec39.81_s128",
+      "models": {
+        "Softmax": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "tn": 41,
+          "caught": false
+        },
+        "Most": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1,
+          "tn": 40,
+          "caught": false
+        },
+        "ZERO": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "tn": 41,
+          "caught": false
+        }
+      }
+    },
+    {
+      "held_out": "3c48",
+      "stem": "demo_desi_bh_3c48_ra24.4221_dec33.1598_s128",
+      "models": {
+        "Softmax": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 41,
+          "caught": true
+        },
+        "Most": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "tn": 41,
+          "caught": false
+        },
+        "ZERO": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "tn": 41,
+          "caught": false
+        }
+      }
+    },
+    {
+      "held_out": "cta102",
+      "stem": "demo_desi_bh_cta102_ra338.1517_dec11.7308_s128",
+      "models": {
+        "Softmax": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "tn": 40,
+          "caught": true
+        },
+        "Most": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "tn": 40,
+          "caught": true
+        },
+        "ZERO": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 0,
+          "tn": 39,
+          "caught": true
+        }
+      }
+    },
+    {
+      "held_out": "m87",
+      "stem": "demo_desi_bh_m87_ra187.7059_dec12.3911_s128",
+      "models": {
+        "Softmax": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "tn": 41,
+          "caught": false
+        },
+        "Most": {
+          "tp": 0,
+          "fp": 3,
+          "fn": 1,
+          "tn": 38,
+          "caught": false
+        },
+        "ZERO": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "tn": 40,
+          "caught": true
+        }
+      }
+    },
+    {
+      "held_out": "mrk421",
+      "stem": "demo_desi_bh_mrk421_ra166.1138_dec38.2088_s128",
+      "models": {
+        "Softmax": {
+          "tp": 0,
+          "fp": 3,
+          "fn": 1,
+          "tn": 38,
+          "caught": false
+        },
+        "Most": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 41,
+          "caught": true
+        },
+        "ZERO": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 0,
+          "tn": 39,
+          "caught": true
+        }
+      }
+    },
+    {
+      "held_out": "ngc4151",
+      "stem": "demo_desi_bh_ngc4151_ra182.6358_dec39.4057_s128",
+      "models": {
+        "Softmax": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1,
+          "tn": 40,
+          "caught": false
+        },
+        "Most": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 41,
+          "caught": true
+        },
+        "ZERO": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "tn": 40,
+          "caught": true
+        }
+      }
+    },
+    {
+      "held_out": "oj287",
+      "stem": "demo_desi_bh_oj287_ra133.7036_dec20.1085_s128",
+      "models": {
+        "Softmax": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 0,
+          "tn": 39,
+          "caught": true
+        },
+        "Most": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "tn": 40,
+          "caught": true
+        },
+        "ZERO": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 0,
+          "tn": 38,
+          "caught": true
+        }
+      }
+    }
+  ]
+}

@@ -25,12 +25,26 @@
 ## Uwaga naukowa
 
 To **anomalia optyczna według Mostu**, nie odkrycie horyzontu zdarzeń.  
-DESI pokazuje światło (galaktyki / jądro / struktura), nie samą czarną dziurę.  
-Dalsza weryfikacja: katalogi SDSS/DESI, spektroskopia, cross-match X-ray/radio.
+DESI Legacy pokazuje światło (galaktyki / jądro / struktura), nie samą czarną dziurę.
+
+## Cross-match (2026-09-16)
+
+Pełny raport: [`CROSSMATCH.md`](CROSSMATCH.md).
+
+| Warstwa | Wynik |
+|---------|--------|
+| SDSS DR17 Spec / DESI DR1 zpix | **brak spektrum** w okolicy (5′ / ~20′) |
+| SIMBAD ≤ 60″ | pusto |
+| LS DR10 tractor ≤ 36″ | 37 źródeł; jasna gwiazda Gaia @ **8.8″** (r≈17.7, π≈0.34 mas) |
+| eROSITA eRASS1 / NVSS ≤ 5′ | **0** (najbliższe X @ 7.4′, radio @ ~5.8′) |
+| Ablacja maski Gaia @8.8″ | **gwiazda odpowiedzialna** — p_cluster 0.80→0.24 (r=4 px); kontrole Δ≈0 |
+| Świeży cutout Legacy | **reprodukcja OK** — sha identyczny, p=0.797, ablacja Δ=−0.556 |
+
+**Werdykt:** spektroskopia + X-ray + radio = **NO MATCH**; flaga Most w dużej mierze od **jasnej gwiazdy Gaia**, nie od ukrytego AGN/BH. Weryfikacja katalogowa + ablacja + fresh cutout — **domknięte**.
 
 ## Cytowanie wewnętrzne
 
 Komora SE `Most_Lorentz`: fact JoannaM.  
 Kandydaci: `doswiadczenie/joannam/JOANNAM_CANDIDATES.json`.  
-Weryfikacja: [`WERYFIKACJA.md`](WERYFIKACJA.md) · post forum: [`FORUM_EN.md`](FORUM_EN.md).  
+Weryfikacja: [`WERYFIKACJA.md`](WERYFIKACJA.md) · cross-match: [`CROSSMATCH.md`](CROSSMATCH.md) · post forum: [`FORUM_EN.md`](FORUM_EN.md).  
 Hub doświadczenia: [`../README.md`](../README.md).

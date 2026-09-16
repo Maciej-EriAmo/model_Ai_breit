@@ -95,6 +95,27 @@ Dzień: `python phimost_day.py`.
 |----|--------|--------|
 | G0 | **DONE PASS** | `make_dump_glyphs` + learn baselines · `most_glyphs.pt` |
 | G1 | **DONE** | `glyph_transcribe.py` — zdjęcie → PhiJSON · demo `dumps/from_photo` |
-| G2 | **NEXT** | multi-script bench, ablacje T, mniej archive w recall |
+| G2 | **DONE best-seed** | parity v2 PASS seed0; **nie** multi-seed · dalej stabilność / korpus |
 | G3 | opc. | Luneta Store → dump (nie screen) |
-| D\* | później | DESI jako test geometrii — nie fundament alfabetu |
+| D\* | zawieszone | DESI jako test geometrii — nie fundament alfabetu |
+
+---
+
+## Kolejka 2026-09-16 (po porządkach docs)
+
+Stan żywy: [`STATUS.md`](STATUS.md) · mapa empirii: [`../doswiadczenie/glify/README.md`](../doswiadczenie/glify/README.md)
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Mendelejew P0 (parity Most≈SM, nonflat 3/3) | **DONE** |
+| 2 | Hold-out Na (mini) | **DONE negatyw** |
+| 3 | `run_mendelejew_full.py --most-only` (118) | **NEXT** gdy budżet ~1.5–3 h |
+| 4 | Hold-out Na/K na FULL | po #3 |
+| 5 | Classical Softmax loader (nie twin-on-Φ) | **TODO** TRANSCODE §2 |
+| 6 | Multi-seed G2 / bogatszy korpus | otwarte |
+| 7 | hologram-E (period×group×block) | otwarte |
+| 8 | Track `hologram-znaki-raport.md` | untracked |
+| 9 | JoannaM spektroskopia | TODO checklist |
+| 10 | Qumran | później |
+
+**Świadomie nie mylić torów:** lingua-znaki (warstwa Store) ≠ Holo-Φ (τ Unihan) ≠ Mendelejew (struktura Φ) ≠ DESI.

@@ -16,6 +16,9 @@ Kanon silnika: **softplus × 2**, Softmax twin + **ZERO**, bez EMA-S.
 | **G0** glify lat+hira (recall) | +2 pkt r@1 | 0.231 | **0.259** | 0.227 | **+2.8 pkt** | **PASS** (seed 42) |
 | **G1** photo→atoms (demo) | +2 pkt r@1 | 0.221 | **0.265** | 0.231 | **+4.4 pkt** | **PASS** (seed 0) |
 | **G2** glyph_unit_v2 parity | +2 pkt r@1 | 0.309 | **0.331** | 0.308 | **+2.2 pkt** | **PASS** best-seed 0 (1/3; seed1 FAIL) |
+| **Mendelejew P0** (8 el., N=72) | nonflat / parity | 0.445 | **0.427** | 0.444 | **−0.018** (≈SM) | **parity + nonflat 3/3** · flat 0.329 |
+| **Kana P1b** (46 gojūon) | above_floor | ≈Most | ≈0.29 | ≈Most | ≈0 | above_floor 3/3; gate Most≫SM **0/3** |
+| **Holo P5.1** holdout radical | Most−ZERO ≥+0.02 | ~0.02 | ~0.01 | ~0.01 | **~0** | **FAIL 0/8** (train 100%, holdout≈chance) |
 
 ### Doświadczenie nieba (osobny katalog)
 
@@ -55,11 +58,17 @@ Kanon silnika: **softplus × 2**, Softmax twin + **ZERO**, bez EMA-S.
 | `doswiadczenie/glify/WYNIKI_GLYPHS.md` | glify → atomy (G0) |
 | `doswiadczenie/glify/WYNIKI_GLYPHS_G1.md` | zdjęcie → atomy (G1) |
 | `doswiadczenie/glify/WYNIKI_GLYPHS_G2.md` | parity Softmax\|Most\|ZERO na v2 |
+| `doswiadczenie/glify/MENDELEJEW_P0.md` | parity Most≈SM + nonflat win |
+| `doswiadczenie/glify/MENDELEJEW_HOLDOUT_Na.md` | hold-out Na — negatyw |
+| `doswiadczenie/glify/HOLO_P5_1.md` | P5.1 FAIL holdout + fixy seal |
+| `doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md` | lingua 6/6 + mapa torów |
+| `doswiadczenie/glify/KANA_P1B.md` | kana P1b Most≈SM |
+| `doswiadczenie/glify/CV_BLURB_MOST_PARITY.md` | one-liner CV |
 | `doswiadczenie/glify/LABNOTE_GLYPHS_2026-09-10.md` | dziennik lab / decyzje |
 | `doswiadczenie/desi/` | DESI / holdout / BH-AGN / audyt |
 | `doswiadczenie/joannam/` | JoannaM + weryfikacja + forum EN |
 | `historia/phi_most_*.png` | wykresy faz A–E / n-ciał |
 | `docs/GLYPHS.md` | metoda + teza (kanwa pod opis badawczy) |
 
-Hub doświadczenia: [`../doswiadczenie/README.md`](../doswiadczenie/README.md).  
+Hub doświadczenia: [`../doswiadczenie/README.md`](../doswiadczenie/README.md) · mapa glify: [`../doswiadczenie/glify/README.md`](../doswiadczenie/glify/README.md).  
 Lab (poza tym katalogiem): `C:\Users\drwis\mcps\moje badania\WYNIKI_FINAL.md`, `RAPORT.md`.

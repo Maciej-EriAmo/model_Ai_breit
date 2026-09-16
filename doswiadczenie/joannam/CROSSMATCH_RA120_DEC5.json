@@ -1,0 +1,54 @@
+{
+  "target": {
+    "name": "JoannaM",
+    "ra_deg": 120.0,
+    "dec_deg": 5.0,
+    "cutout": "desi_grid_004_ra120.0_dec5.0_s128",
+    "cutout_half_width_arcsec_approx": 16.8,
+    "most_p_cluster": 0.98,
+    "date": "2026-09-16"
+  },
+  "verdict": {
+    "spectroscopy": "NO_MATCH",
+    "bh_confirmed": false,
+    "summary_pl": "Brak publicznego spektrum SDSS/DESI w okolicy; SIMBAD pusto w 60\"; LS DR10 ma 37 źródeł fotometrycznych w 36\" (jasna gwiazda Gaia @8.8\")."
+  },
+  "spectroscopy": {
+    "sdss_dr17_specobj_5arcmin": {"n": 0, "source": "SkyServer SQL"},
+    "desi_dr1_zpix_approx_20arcmin": {"n": 0, "source": "Astro Data Lab TAP box query"},
+    "simbad_60arcsec": {"n": 0, "source": "SIMBAD cone ASCII"},
+    "simbad_10arcmin_nearest": [
+      {"id": "Zel 0757+051", "otype": "Rad", "dist_asec": 174.44},
+      {"id": "SDSS J075947.23+045938.4", "otype": "G", "dist_asec": 191.86},
+      {"id": "CRTS J075959.7+050400", "otype": "EB*", "dist_asec": 240.34},
+      {"id": "Gaia DR3 3095367640144517632", "otype": "AGN", "dist_asec": 249.19}
+    ]
+  },
+  "photometry_ls_dr10_tractor_36arcsec": {
+    "n": 37,
+    "types": {"PSF": 18, "REX": 15, "DEV": 2, "EXP": 2},
+    "bright_r_lt_20": [
+      {
+        "dist_arcsec": 8.804,
+        "type": "PSF",
+        "mag_g": 18.152,
+        "mag_r": 17.676,
+        "mag_z": 17.524,
+        "parallax_mas": 0.34,
+        "ref": "GE:3095364135451155712",
+        "note": "Gaia star near cutout center"
+      },
+      {
+        "dist_arcsec": 16.986,
+        "type": "PSF",
+        "mag_g": 20.1,
+        "mag_r": 19.209,
+        "mag_z": 18.787,
+        "parallax_mas": -0.199,
+        "ref": "GE:3095364101091415936"
+      }
+    ],
+    "detail_file": "_tmp_ls_box.json"
+  },
+  "report": "CROSSMATCH.md"
+}

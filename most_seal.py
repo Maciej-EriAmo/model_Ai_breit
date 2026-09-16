@@ -47,15 +47,31 @@ def apply_t_key_seal(
     T = tracer[..., t_dim]  # [B, N]
     T_key = T.unsqueeze(1).unsqueeze(2)  # [B,1,1,N]
 
+    # Ablacja zero_tracer (RecallBatch.ablate / bridge.batch_to_xy) zeruje CAŁY
+    # tracer, więc T=0 wszędzie — bez tego guarda hard floor (T<t_floor)
+    # maskowałby TO SAMO co "archive/TOMB" na 100% kluczy, zamieniając test
+    # degeneracji Mostu (ΔE=0 → A=C/γ, wciąż pełna macierz) w martwą uwagę.
+    # Prawdziwy atom (nawet COLD) zawsze ma niezerowy depth one-hot; ablowany
+    # ma cały wektor = 0 — to odróżnia "brak τ do testu" od "realnie zimny".
+    real_atom = tracer.abs().sum(dim=-1) > 0  # [B, N]; CLS też 0, ale i tak bypass niżej
+    row_is_ablated = (~real_atom[:, 1:]).all(dim=-1) if tracer.shape[1] > 1 else torch.zeros(
+        tracer.shape[0], dtype=torch.bool, device=tracer.device
+    )
+    if bool(row_is_ablated.all()):
+        return A
+    ablated = row_is_ablated.view(-1, 1, 1, 1)
+
     # kara COLD (ciągła)
     penalty = torch.exp(-exp_k * F.relu(t_cold - T_key))
     penalty = penalty.clone()
     penalty[..., 0] = 1.0  # CLS
+    penalty = torch.where(ablated, torch.ones_like(penalty), penalty)
     A = A * penalty
 
     # hard mask TOMB / bardzo zimne
     cold_hard = T_key < t_floor
     cold_hard = cold_hard.clone()
     cold_hard[..., 0] = False
+    cold_hard = cold_hard & ~ablated
     A = A.masked_fill(cold_hard, 0.0)
     return A

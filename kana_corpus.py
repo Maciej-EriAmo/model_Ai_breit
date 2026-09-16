@@ -155,3 +155,46 @@ def przyklad_kana_korpus(
         )
         slowa.append(lingua.compose(f"{hira}/{kata}/{romaji}", [hira_m, kata_m, romaji_m], kind="word"))
     return lingua, slowa
+
+
+GOJUON = [row for row in KANA_TABLE if row[5] == "none"]
+assert len(GOJUON) == 46, f"gojūon = 46 (bez dakuten/handakuten), jest {len(GOJUON)}"
+
+
+def przyklad_hiragana_gojuon(
+    encoding: AtomEncoding = AtomEncoding.HOLOGRAM,
+) -> tuple["LinguaLayer", list]:
+    """P1b: sama hiragana, 46 gojūon (bez dakuten/handakuten, bez kata/romaji).
+
+    Mniejszy graf niż pełne Kana P1 (286 atomów) — cel: wyjść ponad
+    podłogę InfoNCE zanim mierzyć hologram vs symbolic. Każdy rząd
+    spółgłoskowy = jedno compose([hira…]) → krawędzie next + parent/bind.
+    """
+    import karmazyn_substrate as sub
+    from collections import defaultdict
+
+    if encoding is AtomEncoding.SYMBOLIC_ONEHOT:
+        raise NotImplementedError(
+            "SYMBOLIC_ONEHOT nieobsługiwany w przyklad_hiragana_gojuon — "
+            "porównanie to HOLOGRAM vs SYMBOLIC."
+        )
+
+    store = sub.Store()
+    lingua = LinguaLayer(store, dim=sub.VEC_DIM)
+    row_reg = PhaseRegistry(capacity=11)
+    vowel_reg = PhaseRegistry(capacity=6)
+
+    by_row: dict[str, list] = defaultdict(list)
+    for hira, _kata, _romaji, row, vowel, _diac in GOJUON:
+        feats = [
+            FeatureOverlay(f"row:{row}", 1.0, row_reg.phase_for(row), ROW_SLOT),
+            FeatureOverlay(f"vowel:{vowel}", 0.9, vowel_reg.phase_for(vowel), VOWEL_SLOT),
+        ]
+        m = lingua.make_morpheme(f"hira:{hira}", feats, encoding)
+        by_row[row].append(m)
+
+    slowa = [
+        lingua.compose(f"row:{row}", morphs, kind="word")
+        for row, morphs in by_row.items()
+    ]
+    return lingua, slowa

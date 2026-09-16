@@ -1,0 +1,152 @@
+{
+  "when_utc": "20260916T060519Z",
+  "ra": 120.0,
+  "dec": 5.0,
+  "ckpt": "most_desi_color.pt",
+  "old": {
+    "file": "desi_grid_004_ra120.0_dec5.0_s128.fits",
+    "path": "C:\\Users\\drwis\\model Ai\\Zdj\u0119cieW\\demo\\desi_grid_004_ra120.0_dec5.0_s128.fits",
+    "sha256_16": "c572001e20e8cbb3",
+    "size_bytes": 403200,
+    "shape": [
+      3,
+      128,
+      128
+    ],
+    "baseline": {
+      "p_cluster": 0.7970554232597351,
+      "p_field": 0.20294460654258728,
+      "pred": 1,
+      "T_mean": 0.5578957796096802,
+      "dE": 0.48415249586105347
+    },
+    "star_peak": {
+      "x": 33,
+      "y": 50,
+      "x_pred": 32.58,
+      "y_pred": 50.34,
+      "peak_lum": 2.9386050701141357,
+      "snap_shift_px": 0.54
+    },
+    "ablation_star": {
+      "r3px": {
+        "p_cluster": 0.40084531903266907,
+        "delta_p": -0.39621010422706604,
+        "T_mean": 0.5573559403419495,
+        "n_pix": 29
+      },
+      "r4px": {
+        "p_cluster": 0.2407117486000061,
+        "delta_p": -0.556343674659729,
+        "T_mean": 0.5569173097610474,
+        "n_pix": 49
+      }
+    },
+    "control_180_r3px": {
+      "p_cluster": 0.7969963550567627,
+      "delta_p": -5.906820297241211e-05,
+      "x": 92,
+      "y": 75
+    }
+  },
+  "fresh": {
+    "file": "desi_joannam_fresh_20260916T060519Z_ra120.0_dec5.0_s128.fits",
+    "path": "C:\\Users\\drwis\\model Ai\\Zdj\u0119cieW\\demo\\desi_joannam_fresh_20260916T060519Z_ra120.0_dec5.0_s128.fits",
+    "sha256_16": "c572001e20e8cbb3",
+    "size_bytes": 403200,
+    "shape": [
+      3,
+      128,
+      128
+    ],
+    "baseline": {
+      "p_cluster": 0.7970554232597351,
+      "p_field": 0.20294460654258728,
+      "pred": 1,
+      "T_mean": 0.5578957796096802,
+      "dE": 0.48415249586105347
+    },
+    "star_peak": {
+      "x": 33,
+      "y": 50,
+      "x_pred": 32.58,
+      "y_pred": 50.34,
+      "peak_lum": 2.9386050701141357,
+      "snap_shift_px": 0.54
+    },
+    "ablation_star": {
+      "r3px": {
+        "p_cluster": 0.40084531903266907,
+        "delta_p": -0.39621010422706604,
+        "T_mean": 0.5573559403419495,
+        "n_pix": 29
+      },
+      "r4px": {
+        "p_cluster": 0.2407117486000061,
+        "delta_p": -0.556343674659729,
+        "T_mean": 0.5569173097610474,
+        "n_pix": 49
+      }
+    },
+    "control_180_r3px": {
+      "p_cluster": 0.7969963550567627,
+      "delta_p": -5.906820297241211e-05,
+      "x": 92,
+      "y": 75
+    }
+  },
+  "alias": {
+    "file": "desi_joannam_fresh_ra120.0_dec5.0_s128.fits",
+    "path": "C:\\Users\\drwis\\model Ai\\Zdj\u0119cieW\\demo\\desi_joannam_fresh_ra120.0_dec5.0_s128.fits",
+    "sha256_16": "c572001e20e8cbb3",
+    "size_bytes": 403200,
+    "shape": [
+      3,
+      128,
+      128
+    ],
+    "baseline": {
+      "p_cluster": 0.7970554232597351,
+      "p_field": 0.20294460654258728,
+      "pred": 1,
+      "T_mean": 0.5578957796096802,
+      "dE": 0.48415249586105347
+    },
+    "star_peak": {
+      "x": 33,
+      "y": 50,
+      "x_pred": 32.58,
+      "y_pred": 50.34,
+      "peak_lum": 2.9386050701141357,
+      "snap_shift_px": 0.54
+    },
+    "ablation_star": {
+      "r3px": {
+        "p_cluster": 0.40084531903266907,
+        "delta_p": -0.39621010422706604,
+        "T_mean": 0.5573559403419495,
+        "n_pix": 29
+      },
+      "r4px": {
+        "p_cluster": 0.2407117486000061,
+        "delta_p": -0.556343674659729,
+        "T_mean": 0.5569173097610474,
+        "n_pix": 49
+      }
+    },
+    "control_180_r3px": {
+      "p_cluster": 0.7969963550567627,
+      "delta_p": -5.906820297241211e-05,
+      "x": 92,
+      "y": 75
+    }
+  },
+  "alias_file": "desi_joannam_fresh_ra120.0_dec5.0_s128.fits",
+  "verdict": {
+    "bytes_identical_to_old": true,
+    "delta_p_fresh_minus_old": 0.0,
+    "score_reproduced_within_5pp": true,
+    "star_ablation_replicates_on_fresh": true,
+    "note": "Fresh Legacy download scored with same most_desi_color.pt. Ablation of Gaia@8.8\" should still drop p_cluster if star-driven."
+  }
+}
