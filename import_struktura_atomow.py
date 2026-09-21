@@ -9,7 +9,7 @@ Przykład konfiguracji: \"[He] 2s2 2p2\" albo \"1s1\".
 
   python import_struktura_atomow.py
   python import_struktura_atomow.py --src struktura_atomow.json --out dumps/from_struktura
-  python finetune_qm_orbitals.py --skip-export ...  # albo poniżej --finetune
+  python archiwum/skrypty/finetune_qm_orbitals.py --skip-export ...  # albo poniżej --finetune
 """
 
 from __future__ import annotations
@@ -24,8 +24,8 @@ from phi_schema import PhiAtom, PhiEdge, PhiGraph, PhiState
 from qm_orbitals_data import SUBSHELL, _approx_energy, _depth_from_n
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_CSV = ROOT / "struktura_atomow.csv"
-DEFAULT_JSON = ROOT / "struktura_atomow.json"
+DEFAULT_CSV = ROOT / "archiwum" / "dane" / "struktura_atomow.csv"
+DEFAULT_JSON = ROOT / "archiwum" / "dane" / "struktura_atomow.json"
 DEFAULT_OUT = ROOT / "dumps" / "from_struktura"
 
 # rdzenie gazów szlachetnych (rozszerzenie [He], [Ne], …)

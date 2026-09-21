@@ -16,7 +16,7 @@ from bridge import BridgeTransformer, SoftmaxTransformer, train_eval
 from synthetic_phi import generate_phi_tree
 
 ROOT = Path(__file__).resolve().parent
-HISTORIA = ROOT / "historia"
+HISTORIA = ROOT / "archiwum" / "historia"
 
 
 def main():

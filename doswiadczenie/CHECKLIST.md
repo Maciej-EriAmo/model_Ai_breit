@@ -12,7 +12,7 @@
 | Link z `docs/INDEX.md` | OK |
 | `docs/STATUS.md` / `PLAN_NEXT.md` / `WYNIKI.md` | OK (dogonione do Mendelejew + lingua + P5.1) |
 | Rozdział w `docs/WYNIKI.md` (DESI / JoannaM / Mendelejew) | OK |
-| `historia/` = tylko A–E / n-ciał / learn (bez nieba/glifów) | OK |
+| `archiwum/historia/` = tylko A–E / n-ciał / learn (bez nieba/glifów) | OK |
 
 ## JoannaM (`joannam/`)
 
@@ -54,7 +54,7 @@
 | Gate: nie kaleka vs Softmax | **PASS lab (best-seed)** | `WYNIKI_GLYPHS_G2.md` — seed0 +0.022; seed1 FAIL |
 | Classical Softmax loader | **TODO** | dziś Softmax-twin-on-Φ (TRANSCODE §2) |
 | Multi-seed parity | **otwarte** | bez claimu zewnętrznego |
-| Testy kontraktu | OK | `test_transcode_contract.py` |
+| Testy kontraktu | OK | `doswiadczenie/testy/test_transcode_contract.py` |
 
 ## Holo-Φ
 
@@ -70,9 +70,9 @@
 | Pozycja | Stan | Uwagi |
 |---------|------|-------|
 | Warstwa 6/6 TODO | **DONE** | `AUDYT_HOLOGRAM_ZNAKI.md` |
-| Testy | OK | `pytest test_karmazyn_lingua.py` 35/35 |
+| Testy | OK | `python -m pytest doswiadczenie/testy/test_karmazyn_lingua.py` 35/35 |
 | Kana P1 / P1b | OK (wyniki) | P1 negatyw; P1b Most≈SM |
-| Raport koncepcyjny w git | **LUKA** | `hologram-znaki-raport.md` = `??` untracked |
+| Raport koncepcyjny w git | OK | `docs/hologram-znaki-raport.md` |
 | `observe_with_confidence` długie sekwencje | otwarte | sim≈0.1, nieosobno |
 
 ## Mendelejew / struktura
@@ -83,8 +83,9 @@
 | Hold-out Na (mini) | OK | **negatyw** — lokalne bindy, nie grupa |
 | CV blurb | OK | `CV_BLURB_MOST_PARITY.md` |
 | Dump FULL 118 | OK | `dumps/from_mendelejew_full` |
-| Run FULL `--most-only` | **NEXT** | `JUTRO_MENDELEJEW_FULL.md` · ~1.5–3 h |
-| Hold-out Na/K na FULL | po runie | |
+| Run FULL `--most-only` | **DONE** | mean r@1=0.567 · floor 3/3 · `MENDELEJEW_FULL.md` |
+| Hold-out Na/K na FULL (square) | **FAIL 2/2** | `MENDELEJEW_HOLDOUT_FULL_NaK.md` |
+| Hold-out Na/K **onesided** | **Na PARTIAL / K FAIL** | Li 10/6 (K top-3); Na 57/59 · `MENDELEJEW_HOLDOUT_FULL_NaK_onesided.md` |
 | hologram-E overlay | otwarte | period×group×block |
 
 ---
@@ -95,7 +96,7 @@
 2. **`HOLO_P5_PLAN_IMPLEMENTACJI.md` mówił „kod jeszcze nie napisany”** mimo istniejącego P5.1 *(naprawione)*.
 3. **`PLAN_NEXT.md` trzymał G2 jako NEXT** mimo PASS best-seed *(naprawione)*.
 4. **Brak mapy `glify/README.md`** przy ~40 plikach w katalogu *(dodane)*.
-5. **`hologram-znaki-raport.md` poza gitem** — ryzyko utraty mimo zaktualizowanego §11.3.
+5. ~~**`hologram-znaki-raport.md` poza gitem**~~ — przeniesiony do `docs/`.
 6. **Classical Softmax loader** — nadal TODO; łatwo przeoczyć i mówić „Softmax klasyczny”, gdy to twin-on-Φ.
 7. ~~**JoannaM weryfikacja pełna**~~ — **DONE 2026-09-16:** NO MATCH katalogów; flaga = gwiazda Gaia; fresh cutout reprodukuje score.
 8. **Hold-out Na negatyw** był w SE/notatce, ale nie w `docs/WYNIKI.md` *(dodane)*.
@@ -104,6 +105,6 @@
 
 ## Świadomie poza tym katalogiem
 
-- Fazy A–E, n-ciał → `historia/` + `docs/WYNIKI.md`
+- Fazy A–E, n-ciał → `archiwum/historia/` + `docs/WYNIKI.md`
 - Kanon pamięci M1/M2/M3 → `docs/PAMIEC_I_KARMIENIE.md`
-- Ciężkie FITS/PNG → `ZdjęcieW/demo/` (nie w git)
+- Ciężkie FITS/PNG → `archiwum/ZdjęcieW/demo/` (nie w git)

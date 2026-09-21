@@ -1,0 +1,88 @@
+{
+  "protocol": "Tiny causal LM Most vs Softmax — kryterium #1b smoke",
+  "cfg": {
+    "vocab_size": 128,
+    "d": 64,
+    "h": 2,
+    "num_layers": 2,
+    "n_dim": 4,
+    "ff_mult": 4,
+    "max_seq": 128,
+    "dropout": 0.0
+  },
+  "steps": 300,
+  "seeds": [
+    0,
+    1
+  ],
+  "seq_len": 64,
+  "batch_size": 16,
+  "data_bytes": 3054,
+  "rows": [
+    {
+      "seed": 0,
+      "most": {
+        "attn": "most",
+        "n_params": 116268,
+        "wall_s": 4.801400100055616,
+        "steps": 300,
+        "loss_first": 40.0659294128418,
+        "loss_final": 0.58487868309021,
+        "ppl_final": 1.7947732210159302,
+        "sec_per_step": 0.016004667000185387
+      },
+      "softmax": {
+        "attn": "softmax",
+        "n_params": 115968,
+        "wall_s": 2.3824367999914102,
+        "steps": 300,
+        "loss_first": 40.14143753051758,
+        "loss_final": 0.6286994814872742,
+        "ppl_final": 1.875170350074768,
+        "sec_per_step": 0.007941455999971368
+      },
+      "delta_final_loss_sm_minus_most": 0.04382079839706421,
+      "time_ratio_most_over_sm": 2.0153315714704068
+    },
+    {
+      "seed": 1,
+      "most": {
+        "attn": "most",
+        "n_params": 116268,
+        "wall_s": 3.820094299968332,
+        "steps": 300,
+        "loss_first": 42.25873565673828,
+        "loss_final": 0.6899924278259277,
+        "ppl_final": 1.993700385093689,
+        "sec_per_step": 0.012733647666561107
+      },
+      "softmax": {
+        "attn": "softmax",
+        "n_params": 115968,
+        "wall_s": 2.5519178999820724,
+        "steps": 300,
+        "loss_first": 42.67145919799805,
+        "loss_final": 0.6999244689941406,
+        "ppl_final": 2.0136005878448486,
+        "sec_per_step": 0.008506392999940241
+      },
+      "delta_final_loss_sm_minus_most": 0.00993204116821289,
+      "time_ratio_most_over_sm": 1.4969503133291118
+    }
+  ],
+  "aggregate": {
+    "most_loss_final": 0.6374355554580688,
+    "sm_loss_final": 0.6643119752407074,
+    "most_ppl": 1.8942368030548096,
+    "sm_ppl": 1.9443854689598083,
+    "delta_sm_minus_most": 0.02687641978263855,
+    "time_ratio": 1.7561409423997594,
+    "n_params_most": 116268,
+    "n_params_sm": 115968
+  },
+  "both_curves_descend": true,
+  "verdict": "#1b tiny LM: params Most/SM=116268/115968 (≪1M) | mean loss Most=0.637 SM=0.664 Δ(SM−Most)=+0.027 | time Most/SM≈1.76× | descend=True",
+  "elapsed_s": 13.57669186592102,
+  "run_dir": "C:\\Users\\drwis\\model Ai\\runs\\20260921_081554_lm_tiny_smoke_1b",
+  "note": "To NIE jest jeszcze gate 100M–300M vs Llama. Smoke = ten sam data/pipeline, mierzalna krzywa loss Most vs Softmax na CPU."
+}

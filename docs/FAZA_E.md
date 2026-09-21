@@ -28,7 +28,7 @@
 | `gen_head.py` | PhiGenHead + train_gen / propose_E |
 | `mazur_neural.py` | blend_lambda, rank_with_neural |
 | Karmazyn `mazur_crystal/neural_lambda.py` | product seam |
-| `test_faza_e.py`, `bench_gen.py` | testy |
+| `doswiadczenie/testy/test_faza_e.py`, `bench_gen.py` | testy |
 
 ## Acceptance
 
@@ -45,4 +45,4 @@
 
 ## Wyniki
 
-[`../historia/WYNIKI_FAZA_E.md`](../historia/WYNIKI_FAZA_E.md) · Karmazyn: `Documents/MAZUR_CRYSTAL.md` (sekcja PhiMost).
+[`../archiwum/historia/WYNIKI_FAZA_E.md`](../archiwum/historia/WYNIKI_FAZA_E.md) · Karmazyn: `Documents/MAZUR_CRYSTAL.md` (sekcja PhiMost).

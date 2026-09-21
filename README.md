@@ -47,12 +47,12 @@ Pełna tabela: [`docs/WYNIKI.md`](docs/WYNIKI.md) · stan: [`docs/STATUS.md`](do
 
 | Faza | Status | Artefakt |
 |------|--------|----------|
-| **A** kontrakt Φ + nie-płaski | PASS | `test_not_flat.py` |
-| **B** Softmax\|Most\|ZERO Φ-drzewo | PASS | `historia/WYNIKI_FAZA_B.md` |
-| **C** recall/ranking | PASS | `historia/WYNIKI_RECALL.md` |
+| **A** kontrakt Φ + nie-płaski | PASS | `doswiadczenie/testy/test_not_flat.py` |
+| **B** Softmax\|Most\|ZERO Φ-drzewo | PASS | `archiwum/historia/WYNIKI_FAZA_B.md` |
+| **C** recall/ranking | PASS | `archiwum/historia/WYNIKI_RECALL.md` |
 | **D** offline dump | PASS | `docs/FAZA_D.md`, `dumps/textfile_phi/` |
 | **E** live + gen + λ_neural | PASS | `docs/FAZA_E.md` |
-| **Audyt + n-ciał** | PASS | `docs/AUDYT.md`, `historia/WYNIKI_NBODY.md` |
+| **Audyt + n-ciał** | PASS | `docs/AUDYT.md`, `archiwum/historia/WYNIKI_NBODY.md` |
 | **Pamięć / karmienie** | kanon | `docs/PAMIEC_I_KARMIENIE.md` |
 
 ## Mapa (skrót)
@@ -70,14 +70,15 @@ Pełna mapa: [`docs/MODULY.md`](docs/MODULY.md)
 
 ```powershell
 cd "C:\Users\drwis\model Ai"
-python phimost_learn.py --src struktura_atomow.csv --no-warm --no-promote
+python phimost_learn.py --src archiwum/dane/struktura_atomow.csv --no-warm --no-promote
 python phimost_learn.py --src dumps/from_struktura --skip-load --skip-train --recall-id C/2p/m-1/up
-python test_not_flat.py; python test_mask.py; python test_memory_bus.py
+python doswiadczenie/testy/test_not_flat.py; python doswiadczenie/testy/test_mask.py; python doswiadczenie/testy/test_memory_bus.py
 ```
 
 **Obsługa:** [`docs/INSTRUKCJA.md`](docs/INSTRUKCJA.md) · **Nauka:** [`docs/LEARN.md`](docs/LEARN.md) · **Glify/alfabety:** [`docs/GLYPHS.md`](docs/GLYPHS.md) · **vs LLM:** [`docs/POROWNANIE_MODELE.md`](docs/POROWNANIE_MODELE.md).  
-**Doświadczenie** (JoannaM / DESI / glify / Mendelejew): [`doswiadczenie/README.md`](doswiadczenie/README.md) · mapa glify: [`doswiadczenie/glify/README.md`](doswiadczenie/glify/README.md).  
-Benchi: `bench_phi.py`, `bench_recall.py`, `bench_dump.py`, `bench_nbody.py`.
+**Doświadczenie:** [`doswiadczenie/README.md`](doswiadczenie/README.md) · testy: [`doswiadczenie/testy/`](doswiadczenie/testy/).  
+**Archiwum** (historia faz, ZdjęcieW, tory boczne): [`archiwum/README.md`](archiwum/README.md).  
+Benchi kanonu: `bench_phi.py`, `bench_recall.py`, `bench_dump.py`, `bench_nbody.py`, `bench_gen.py`.
 
 ## Konfiguracja i flagi
 
@@ -91,19 +92,19 @@ Benchi: `bench_phi.py`, `bench_recall.py`, `bench_dump.py`, `bench_nbody.py`.
 | Lab Most | `C:\Users\drwis\mcps\moje badania\` (`most.py`, `RAPORT.md`) |
 | Mazur produkt | `KarmazynOs\software\mazur_crystal\` |
 | Agent SE | `C:\Users\drwis\Karmin_Ae` · komora `Most_Lorentz` |
-| Plan | [`plan.txt`](plan.txt) |
+| Plan | [`docs/plan.txt`](docs/plan.txt) |
 
 ## Status planu
 
 P1 + **P2 zamknięte** (λ_neural · BubbleFS · dekorelacja C · gen produkt).  
 Plan: [`docs/PLAN_NEXT.md`](docs/PLAN_NEXT.md) · status: [`docs/STATUS.md`](docs/STATUS.md).  
-Artefakty faz: [`historia/`](historia/).
+Artefakty faz: [`archiwum/historia/`](archiwum/historia/).
 
 ```powershell
 # Uniwersalne ładowanie + nauka (PowerShell)
 # domyślnie TYLKO Most (szybko); Softmax/ZERO: dodaj --baselines
-python phimost_learn.py --src struktura_atomow.csv --no-warm --no-promote
-python phimost_learn.py --src struktura_atomow.csv --no-warm --no-promote --baselines
+python phimost_learn.py --src archiwum/dane/struktura_atomow.csv --no-warm --no-promote
+python phimost_learn.py --src archiwum/dane/struktura_atomow.csv --no-warm --no-promote --baselines
 python phimost_learn.py --src .\ksiazka.md --no-warm --no-promote
 python phimost_day.py --query main -k 5
 ```

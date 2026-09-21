@@ -21,7 +21,7 @@ from recall_model import PhiBridgeEncoder, PhiSoftmaxEncoder, train_encoder
 from scalar_r import eval_scalar_R, eval_cosine_only
 
 ROOT = Path(__file__).resolve().parent
-HISTORIA = ROOT / "historia"
+HISTORIA = ROOT / "archiwum" / "historia"
 
 
 def fmt(m: dict) -> str:

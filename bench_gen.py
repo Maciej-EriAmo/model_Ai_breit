@@ -13,7 +13,7 @@ import numpy as np
 import torch
 
 ROOT = Path(__file__).resolve().parent
-HISTORIA = ROOT / "historia"
+HISTORIA = ROOT / "archiwum" / "historia"
 DUMP = ROOT / "dumps" / "textfile_phi"
 sys.path.insert(0, str(Path(r"C:\Users\drwis\KarmazynOs\software")))
 
@@ -166,7 +166,7 @@ def main():
                 "## Artefakty",
                 "",
                 "- `phimost_flags.py`, `live_store.py`, `gen_head.py`, `mazur_neural.py`",
-                "- `bench_gen.py`, `test_faza_e.py`, `historia/WYNIKI_FAZA_E.md`",
+                "- `bench_gen.py`, `doswiadczenie/testy/test_faza_e.py`, `archiwum/archiwum/historia/WYNIKI_FAZA_E.md`",
                 "- Karmazyn: `software/mazur_crystal/neural_lambda.py` + `relevance()` hook",
                 "",
             ]

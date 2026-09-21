@@ -1,0 +1,81 @@
+{
+  "protocol": "Signed / directed ΔE ablation in Most",
+  "note": "E z Linear może być ujemne już dziś; dE² gubi znak. directed/onesided wstawiają znak z powrotem przy A≥0.",
+  "seq_len": 2048,
+  "train_steps": 300,
+  "seed": 0,
+  "rows": [
+    {
+      "name": "softmax",
+      "knobs": null,
+      "entropy_mid": 6.927852630615234,
+      "mid_dip_attn_mass": 5.945126758888364e-05,
+      "attn_mass_mid": 0.005487340735271573,
+      "secret_acc_mean": 0.0
+    },
+    {
+      "name": "most:square",
+      "knobs": {
+        "gamma_init": 0.0,
+        "e_scale": 1.0,
+        "couple_temp": 1.0,
+        "delta_mode": "square",
+        "delta_alpha": 1.0,
+        "directed_bias": 0.25
+      },
+      "entropy_mid": 6.412369251251221,
+      "mid_dip_attn_mass": 0.00028455580468289554,
+      "attn_mass_mid": 0.003487745358143002,
+      "secret_acc_mean": 0.0
+    },
+    {
+      "name": "most:directed",
+      "knobs": {
+        "gamma_init": 0.0,
+        "e_scale": 1.0,
+        "couple_temp": 1.0,
+        "delta_mode": "directed",
+        "delta_alpha": 1.0,
+        "directed_bias": 0.25
+      },
+      "entropy_mid": 6.376898765563965,
+      "mid_dip_attn_mass": 0.0012193641741760075,
+      "attn_mass_mid": 0.0037646846612915397,
+      "secret_acc_mean": 0.0
+    },
+    {
+      "name": "most:onesided",
+      "knobs": {
+        "gamma_init": 0.0,
+        "e_scale": 1.0,
+        "couple_temp": 1.0,
+        "delta_mode": "onesided",
+        "delta_alpha": 1.0,
+        "directed_bias": 0.25
+      },
+      "entropy_mid": 6.660197734832764,
+      "mid_dip_attn_mass": -0.00021077168639749289,
+      "attn_mass_mid": 0.005188925773836672,
+      "secret_acc_mean": 0.0
+    },
+    {
+      "name": "most:ultra_wide_directed",
+      "knobs": {
+        "gamma_init": 2.5,
+        "e_scale": 0.1,
+        "couple_temp": 2.0,
+        "delta_mode": "directed",
+        "delta_alpha": 1.0,
+        "directed_bias": 0.25
+      },
+      "entropy_mid": 6.927925109863281,
+      "mid_dip_attn_mass": -4.070298746228218e-05,
+      "attn_mass_mid": 0.005715622683055699,
+      "secret_acc_mean": 0.0
+    }
+  ],
+  "verdict": "PASS vs Softmax: **most:ultra_wide_directed** ent_mid=6.928 dip=-0.0000.",
+  "status": "pass",
+  "elapsed_s": 335.37517762184143,
+  "run_dir": "C:\\Users\\drwis\\model Ai\\runs\\20260921_092607_signed_delta_ablation"
+}

@@ -39,7 +39,7 @@ from recall_model import (
 )
 
 ROOT = Path(__file__).resolve().parent
-HISTORIA = ROOT / "historia"
+HISTORIA = ROOT / "archiwum" / "historia"
 DUMPS = ROOT / "dumps"
 
 
@@ -260,6 +260,7 @@ def run_seed(
     blend_holo: float,
     restrict_prefix: bool,
     baselines: bool = False,
+    amp_dtype: torch.dtype | None = None,
 ) -> dict:
     """
     domyślnie tylko Most (szybka nauka).
@@ -287,7 +288,15 @@ def run_seed(
     )
     most = build_model(warm=warm)
     torch.manual_seed(seed)
-    most_m = train_encoder(most, train, val, epochs=epochs, lr=CANON.lr)
+    most_m = train_encoder(
+        most,
+        train,
+        val,
+        epochs=epochs,
+        lr=CANON.lr,
+        return_curve=True,
+        amp_dtype=amp_dtype,
+    )
 
     sm_m = {"r@1": float("nan"), "r@3": float("nan"), "mrr": float("nan")}
     z_m = dict(sm_m)
@@ -301,7 +310,9 @@ def run_seed(
             num_layers=CANON.num_layers,
             d=CANON.d_model,
         )
-        sm_m = train_encoder(sm, train, val, epochs=epochs, lr=CANON.lr)
+        sm_m = train_encoder(
+            sm, train, val, epochs=epochs, lr=CANON.lr, amp_dtype=amp_dtype
+        )
         torch.manual_seed(seed)
         most_z = PhiBridgeEncoder(
             input_dim=CANON.d_x,
@@ -317,6 +328,7 @@ def run_seed(
             epochs=epochs,
             lr=CANON.lr,
             ablate_kw={"zero_tracer": True},
+            amp_dtype=amp_dtype,
         )
         d_sm = most_m["r@1"] - sm_m["r@1"]
         ok = d_sm >= CANON.gate_recall_r1
@@ -357,12 +369,47 @@ def train_dump(
     restrict_prefix: bool,
     promote: bool,
     baselines: bool = False,
+    run_name: str | None = None,
+    argv: list[str] | None = None,
+    amp_dtype: torch.dtype | None = None,
 ) -> dict:
     mode = "Most+SM+ZERO" if baselines else "Most-only (szybki)"
     print(
         f"[train] {mode} dump={dump} seeds={seeds} epochs={epochs} "
         f"pair={pair_mode} blend_holo={blend_holo} restrict_prefix={restrict_prefix}"
     )
+    from dataclasses import asdict
+
+    from runlog import RunDir
+
+    rundir = RunDir.create(
+        run_name or "phimost_learn",
+        argv=argv,
+        hparams={
+            "dump": str(dump),
+            "out_ckpt": str(out_ckpt),
+            "seeds": list(seeds),
+            "epochs": epochs,
+            "n_train": n_train,
+            "n_val": n_val,
+            "warm": warm,
+            "pair_mode": pair_mode,
+            "noise": noise,
+            "blend_holo": blend_holo,
+            "restrict_prefix": restrict_prefix,
+            "promote": promote,
+            "baselines": baselines,
+            "amp_dtype": str(amp_dtype) if amp_dtype is not None else "fp32",
+            "canon": asdict(CANON),
+        },
+        extra_meta={
+            "criterion": "success#5_run_dir",
+            "bf16": amp_dtype == torch.bfloat16,
+        },
+    )
+    print(f"[train] run-dir → {rundir.path}")
+    if amp_dtype is not None:
+        print(f"[train] AMP dtype={amp_dtype} (kryterium #2 BF16)")
     results = []
     best = None
     for seed in seeds:
@@ -380,6 +427,7 @@ def train_dump(
             blend_holo=blend_holo,
             restrict_prefix=restrict_prefix,
             baselines=baselines,
+            amp_dtype=amp_dtype,
         )
         if baselines:
             print(
@@ -490,6 +538,33 @@ def train_dump(
     (HISTORIA / "learn_last.json").write_text(
         json.dumps(report, indent=2, default=str), encoding="utf-8"
     )
+    # kryterium #5 — run-dir (loss z wybranego seeda Most)
+    chosen_curve = None
+    for r in results:
+        if r.get("seed") == chosen["seed"]:
+            chosen_curve = (r.get("most") or {}).get("curve")
+            break
+    summary = "\n".join(
+        [
+            f"# phimost_learn — {rundir.name}",
+            "",
+            verdict,
+            f"ckpt=`{path}` promote={promoted}",
+            f"dump=`{dump}`",
+            f"run-dir=`{rundir.path}`",
+            "",
+            *table,
+            "",
+        ]
+    )
+    rundir.finalize(
+        metrics=report,
+        summary=summary,
+        status="ok" if (ok if baselines else True) else "gate_fail",
+        curve=chosen_curve,
+    )
+    report["run_dir"] = str(rundir.path)
+    print(f"[train] run-dir finalized → {rundir.path}")
     return report
 
 
@@ -555,6 +630,11 @@ def main(argv: list[str] | None = None) -> int:
         "--baselines",
         action="store_true",
         help="trenuj też Softmax+ZERO i gate ΔSM (3× wolniej; domyślnie WYŁĄCZONE)",
+    )
+    ap.add_argument(
+        "--bf16",
+        action="store_true",
+        help="kryterium #2: trening w autocast bfloat16 + finite-check zamka",
     )
 
     ap.add_argument("--pair-mode", default="mixed", choices=["same_depth", "all", "mixed"])
@@ -641,6 +721,14 @@ def main(argv: list[str] | None = None) -> int:
 
     report = None
     if not args.skip_train:
+        amp_dtype = None
+        if args.bf16 or __import__("precision").bf16_env_enabled():
+            from precision import bf16_supported
+
+            if not bf16_supported():
+                print("WERDYKT: FAIL (BF16 nieobsługiwane na tym CPU/GPU)")
+                return 2
+            amp_dtype = torch.bfloat16
         report = train_dump(
             dump,
             out_ckpt=ckpt,
@@ -655,6 +743,9 @@ def main(argv: list[str] | None = None) -> int:
             restrict_prefix=restrict,
             promote=promote,
             baselines=args.baselines,
+            run_name=f"phimost_learn_{name}",
+            argv=sys.argv,
+            amp_dtype=amp_dtype,
         )
         if args.baselines and not report["gate_pass"]:
             print("WERDYKT: FAIL (gate ΔSM)")

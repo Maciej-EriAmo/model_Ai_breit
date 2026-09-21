@@ -8,7 +8,7 @@
 cd "C:\Users\drwis\model Ai"
 
 # struktura atomów (CSV/JSON)
-python phimost_learn.py --src struktura_atomow.csv --no-warm --no-promote
+python phimost_learn.py --src archiwum/dane/struktura_atomow.csv --no-warm --no-promote
 
 # literatura (.md / .txt / katalog)
 python phimost_learn.py --src .\rozdzial.md --no-warm --no-promote
@@ -45,7 +45,7 @@ python phimost_learn.py --src dumps/from_photo --no-warm --no-promote --baseline
 ```
 
 Ckpt: `checkpoints/most_glyphs.pt` (G0) / `most_glyphs_photo.pt` (G1).  
-Metoda: [`GLYPHS.md`](GLYPHS.md) · kontrakt: [`../ZdjęcieW/GLYPH_ATOMS.md`](../ZdjęcieW/GLYPH_ATOMS.md).
+Metoda: [`GLYPHS.md`](GLYPHS.md) · kontrakt: [`../archiwum/ZdjęcieW/GLYPH_ATOMS.md`](../archiwum/ZdjęcieW/GLYPH_ATOMS.md).
 
 ## Tryby treningu
 

@@ -1,0 +1,510 @@
+{
+  "protocol": "Mendelejew FULL118 hold-out Na/K — Most delta_mode=onesided",
+  "epochs": 64,
+  "seeds": [
+    0,
+    1
+  ],
+  "most_kw": {
+    "delta_mode": "onesided",
+    "delta_alpha": 1.0,
+    "directed_bias": 0.25,
+    "gamma_init": 0.0,
+    "e_scale": 1.0,
+    "couple_temp": 1.0
+  },
+  "holdouts": [
+    {
+      "holdout": "Na",
+      "n_train": 117,
+      "expected_cousin": "Li",
+      "group": 1,
+      "group_mates_in_train": [
+        "H",
+        "Li",
+        "K",
+        "Rb",
+        "Cs",
+        "Fr"
+      ],
+      "epochs": 64,
+      "seeds": [
+        0,
+        1
+      ],
+      "rows": [
+        {
+          "seed": 0,
+          "val_r1": 0.57,
+          "val_r3": 0.90375,
+          "cousin": "Li",
+          "cousin_symbol_rank": 10,
+          "cousin_in_top5_atoms": false,
+          "best_group_mate_rank": 1,
+          "group_mate_ranks": {
+            "H": 23,
+            "Li": 10,
+            "K": 1,
+            "Rb": 12,
+            "Cs": 43,
+            "Fr": 62
+          },
+          "top_symbols": [
+            {
+              "symbol": "K",
+              "best_sim": 0.49266189336776733
+            },
+            {
+              "symbol": "Cf",
+              "best_sim": 0.480345219373703
+            },
+            {
+              "symbol": "Bk",
+              "best_sim": 0.4728615880012512
+            },
+            {
+              "symbol": "Ds",
+              "best_sim": 0.4399648606777191
+            },
+            {
+              "symbol": "Ca",
+              "best_sim": 0.43079426884651184
+            },
+            {
+              "symbol": "Pd",
+              "best_sim": 0.4033464789390564
+            },
+            {
+              "symbol": "Pt",
+              "best_sim": 0.40138375759124756
+            },
+            {
+              "symbol": "Ar",
+              "best_sim": 0.392860472202301
+            }
+          ],
+          "top_atoms": [
+            {
+              "rank": 1,
+              "atom_id": "K/nucleus",
+              "symbol": "K",
+              "sim": 0.49266189336776733
+            },
+            {
+              "rank": 2,
+              "atom_id": "Cf/nucleus",
+              "symbol": "Cf",
+              "sim": 0.480345219373703
+            },
+            {
+              "rank": 3,
+              "atom_id": "Bk/nucleus",
+              "symbol": "Bk",
+              "sim": 0.4728615880012512
+            },
+            {
+              "rank": 4,
+              "atom_id": "Ds/nucleus",
+              "symbol": "Ds",
+              "sim": 0.4399648606777191
+            },
+            {
+              "rank": 5,
+              "atom_id": "Ca/nucleus",
+              "symbol": "Ca",
+              "sim": 0.43079426884651184
+            },
+            {
+              "rank": 6,
+              "atom_id": "Pd/nucleus",
+              "symbol": "Pd",
+              "sim": 0.4033464789390564
+            },
+            {
+              "rank": 7,
+              "atom_id": "Pt/nucleus",
+              "symbol": "Pt",
+              "sim": 0.40138375759124756
+            },
+            {
+              "rank": 8,
+              "atom_id": "Ar/nucleus",
+              "symbol": "Ar",
+              "sim": 0.392860472202301
+            }
+          ],
+          "query": "Na/nucleus",
+          "elapsed_s": 320.30615878105164
+        },
+        {
+          "seed": 1,
+          "val_r1": 0.57625,
+          "val_r3": 0.8875,
+          "cousin": "Li",
+          "cousin_symbol_rank": 6,
+          "cousin_in_top5_atoms": false,
+          "best_group_mate_rank": 3,
+          "group_mate_ranks": {
+            "H": 48,
+            "Li": 6,
+            "K": 3,
+            "Rb": 53,
+            "Cs": 95,
+            "Fr": 88
+          },
+          "top_symbols": [
+            {
+              "symbol": "Bk",
+              "best_sim": 0.6142069697380066
+            },
+            {
+              "symbol": "Ca",
+              "best_sim": 0.4778141379356384
+            },
+            {
+              "symbol": "K",
+              "best_sim": 0.432784765958786
+            },
+            {
+              "symbol": "Be",
+              "best_sim": 0.4300194978713989
+            },
+            {
+              "symbol": "Sc",
+              "best_sim": 0.4077165722846985
+            },
+            {
+              "symbol": "Li",
+              "best_sim": 0.3422817885875702
+            },
+            {
+              "symbol": "Mg",
+              "best_sim": 0.33183300495147705
+            },
+            {
+              "symbol": "Ds",
+              "best_sim": 0.3260508179664612
+            }
+          ],
+          "top_atoms": [
+            {
+              "rank": 1,
+              "atom_id": "Bk/nucleus",
+              "symbol": "Bk",
+              "sim": 0.6142069697380066
+            },
+            {
+              "rank": 2,
+              "atom_id": "Ca/nucleus",
+              "symbol": "Ca",
+              "sim": 0.4778141379356384
+            },
+            {
+              "rank": 3,
+              "atom_id": "K/nucleus",
+              "symbol": "K",
+              "sim": 0.432784765958786
+            },
+            {
+              "rank": 4,
+              "atom_id": "Be/nucleus",
+              "symbol": "Be",
+              "sim": 0.4300194978713989
+            },
+            {
+              "rank": 5,
+              "atom_id": "Sc/nucleus",
+              "symbol": "Sc",
+              "sim": 0.4077165722846985
+            },
+            {
+              "rank": 6,
+              "atom_id": "Li/nucleus",
+              "symbol": "Li",
+              "sim": 0.3422817885875702
+            },
+            {
+              "rank": 7,
+              "atom_id": "Mg/nucleus",
+              "symbol": "Mg",
+              "sim": 0.33183300495147705
+            },
+            {
+              "rank": 8,
+              "atom_id": "Ds/nucleus",
+              "symbol": "Ds",
+              "sim": 0.3260508179664612
+            }
+          ],
+          "query": "Na/nucleus",
+          "elapsed_s": 369.5334224700928
+        }
+      ],
+      "aggregate": {
+        "mean_cousin_rank": 8.0,
+        "n_cousin_top3": 0,
+        "n_group_mate_top3": 2,
+        "n_seeds": 2,
+        "mean_val_r1": 0.573125
+      },
+      "verdict": "PARTIAL: dokładny kuzyn Li nie zawsze top-3, ale jakiś mate grupy 1 jest w top-3 (2/2) — sygnał grupy częściowy.",
+      "dump": "C:\\Users\\drwis\\model Ai\\dumps\\from_mendelejew_full_holdout_Na",
+      "most_kw": {
+        "delta_mode": "onesided",
+        "delta_alpha": 1.0,
+        "directed_bias": 0.25,
+        "gamma_init": 0.0,
+        "e_scale": 1.0,
+        "couple_temp": 1.0
+      }
+    },
+    {
+      "holdout": "K",
+      "n_train": 117,
+      "expected_cousin": "Na",
+      "group": 1,
+      "group_mates_in_train": [
+        "H",
+        "Li",
+        "Na",
+        "Rb",
+        "Cs",
+        "Fr"
+      ],
+      "epochs": 64,
+      "seeds": [
+        0,
+        1
+      ],
+      "rows": [
+        {
+          "seed": 0,
+          "val_r1": 0.5725,
+          "val_r3": 0.91375,
+          "cousin": "Na",
+          "cousin_symbol_rank": 57,
+          "cousin_in_top5_atoms": false,
+          "best_group_mate_rank": 30,
+          "group_mate_ranks": {
+            "H": 41,
+            "Li": 30,
+            "Na": 57,
+            "Rb": 65,
+            "Cs": 75,
+            "Fr": 46
+          },
+          "top_symbols": [
+            {
+              "symbol": "Ho",
+              "best_sim": 0.5043978691101074
+            },
+            {
+              "symbol": "Sm",
+              "best_sim": 0.4654504060745239
+            },
+            {
+              "symbol": "Og",
+              "best_sim": 0.41401004791259766
+            },
+            {
+              "symbol": "Ts",
+              "best_sim": 0.40911629796028137
+            },
+            {
+              "symbol": "Ca",
+              "best_sim": 0.3968247175216675
+            },
+            {
+              "symbol": "Dy",
+              "best_sim": 0.3655306398868561
+            },
+            {
+              "symbol": "Pm",
+              "best_sim": 0.36478516459465027
+            },
+            {
+              "symbol": "At",
+              "best_sim": 0.3285079598426819
+            }
+          ],
+          "top_atoms": [
+            {
+              "rank": 1,
+              "atom_id": "Ho/nucleus",
+              "symbol": "Ho",
+              "sim": 0.5043978691101074
+            },
+            {
+              "rank": 2,
+              "atom_id": "Sm/nucleus",
+              "symbol": "Sm",
+              "sim": 0.4654504060745239
+            },
+            {
+              "rank": 3,
+              "atom_id": "Og/nucleus",
+              "symbol": "Og",
+              "sim": 0.41401004791259766
+            },
+            {
+              "rank": 4,
+              "atom_id": "Ts/nucleus",
+              "symbol": "Ts",
+              "sim": 0.40911629796028137
+            },
+            {
+              "rank": 5,
+              "atom_id": "Ca/nucleus",
+              "symbol": "Ca",
+              "sim": 0.3968247175216675
+            },
+            {
+              "rank": 6,
+              "atom_id": "Dy/nucleus",
+              "symbol": "Dy",
+              "sim": 0.3655306398868561
+            },
+            {
+              "rank": 7,
+              "atom_id": "Pm/nucleus",
+              "symbol": "Pm",
+              "sim": 0.36478516459465027
+            },
+            {
+              "rank": 8,
+              "atom_id": "At/nucleus",
+              "symbol": "At",
+              "sim": 0.3285079598426819
+            }
+          ],
+          "query": "K/nucleus",
+          "elapsed_s": 334.95036220550537
+        },
+        {
+          "seed": 1,
+          "val_r1": 0.565,
+          "val_r3": 0.89,
+          "cousin": "Na",
+          "cousin_symbol_rank": 59,
+          "cousin_in_top5_atoms": false,
+          "best_group_mate_rank": 3,
+          "group_mate_ranks": {
+            "H": 26,
+            "Li": 20,
+            "Na": 59,
+            "Rb": 87,
+            "Cs": 15,
+            "Fr": 3
+          },
+          "top_symbols": [
+            {
+              "symbol": "Og",
+              "best_sim": 0.7292386889457703
+            },
+            {
+              "symbol": "Rn",
+              "best_sim": 0.6734969019889832
+            },
+            {
+              "symbol": "Fr",
+              "best_sim": 0.5333820581436157
+            },
+            {
+              "symbol": "Es",
+              "best_sim": 0.3962041735649109
+            },
+            {
+              "symbol": "Ts",
+              "best_sim": 0.35437071323394775
+            },
+            {
+              "symbol": "Be",
+              "best_sim": 0.33080655336380005
+            },
+            {
+              "symbol": "N",
+              "best_sim": 0.32750096917152405
+            },
+            {
+              "symbol": "Sc",
+              "best_sim": 0.31243181228637695
+            }
+          ],
+          "top_atoms": [
+            {
+              "rank": 1,
+              "atom_id": "Og/nucleus",
+              "symbol": "Og",
+              "sim": 0.7292386889457703
+            },
+            {
+              "rank": 2,
+              "atom_id": "Rn/nucleus",
+              "symbol": "Rn",
+              "sim": 0.6734969019889832
+            },
+            {
+              "rank": 3,
+              "atom_id": "Fr/nucleus",
+              "symbol": "Fr",
+              "sim": 0.5333820581436157
+            },
+            {
+              "rank": 4,
+              "atom_id": "Es/nucleus",
+              "symbol": "Es",
+              "sim": 0.3962041735649109
+            },
+            {
+              "rank": 5,
+              "atom_id": "Ts/nucleus",
+              "symbol": "Ts",
+              "sim": 0.35437071323394775
+            },
+            {
+              "rank": 6,
+              "atom_id": "Be/nucleus",
+              "symbol": "Be",
+              "sim": 0.33080655336380005
+            },
+            {
+              "rank": 7,
+              "atom_id": "N/nucleus",
+              "symbol": "N",
+              "sim": 0.32750096917152405
+            },
+            {
+              "rank": 8,
+              "atom_id": "Sc/nucleus",
+              "symbol": "Sc",
+              "sim": 0.31243181228637695
+            }
+          ],
+          "query": "K/nucleus",
+          "elapsed_s": 328.207350730896
+        }
+      ],
+      "aggregate": {
+        "mean_cousin_rank": 58.0,
+        "n_cousin_top3": 0,
+        "n_group_mate_top3": 1,
+        "n_seeds": 2,
+        "mean_val_r1": 0.56875
+      },
+      "verdict": "FAIL: kuzyn Na NIE w top-3 symboli (ok 0/2); best group-mate top-3: 1/2. FULL118 Most uczy lokalną topologię, nie generalizuje „grupa → alkaliowiec” na ukryty `K`.",
+      "dump": "C:\\Users\\drwis\\model Ai\\dumps\\from_mendelejew_full_holdout_K",
+      "most_kw": {
+        "delta_mode": "onesided",
+        "delta_alpha": 1.0,
+        "directed_bias": 0.25,
+        "gamma_init": 0.0,
+        "e_scale": 1.0,
+        "couple_temp": 1.0
+      }
+    }
+  ],
+  "summary_verdict": "FULL118 hold-out Most (onesided): PASS=0 PARTIAL=1 FAIL=1 na ['Na', 'K'] (seeds=[0, 1], epochs=64).",
+  "elapsed_s": 1353.019936323166,
+  "json_name": "mendelejew_holdout_full_NaK_onesided_results.json",
+  "baseline_square_ref": "MENDELEJEW_HOLDOUT_FULL_NaK.md (square FAIL 2/2)"
+}

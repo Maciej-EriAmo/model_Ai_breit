@@ -110,7 +110,8 @@ class BridgeTransformer(nn.Module):
             dE = E - E.transpose(-2, -1)
             g = F.softplus(self.log_gammas[li]) + 1e-3
 
-            A = g * self._couple(S) / (g.square() + dE.square() + 1e-12)
+            C = self._couple(S)
+            A = g * C / (g.square() + dE.square() + 1e-12)
             A = A.masked_fill(
                 torch.eye(N, device=x.device, dtype=torch.bool), 0.0
             )
@@ -119,12 +120,24 @@ class BridgeTransformer(nn.Module):
                 A = A.masked_fill(key_pad, 0.0)
             w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
 
+            from precision import assert_finite
+
+            assert_finite(S, f"bridge.S[L{li}]")
+            assert_finite(C, f"bridge.C[L{li}]")
+            assert_finite(dE, f"bridge.dE[L{li}]")
+            assert_finite(A, f"bridge.A[L{li}]")
+            assert_finite(w, f"bridge.w[L{li}]")
+
             y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
             x = x + layer["o"](y)
             x = x + layer["ff"](x)
             dE_last, w_last = dE.detach(), w
 
-        return self.head(x[:, 0]), w_last, dE_last
+        logits = self.head(x[:, 0])
+        from precision import assert_finite
+
+        assert_finite(logits, "bridge.logits")
+        return logits, w_last, dE_last
 
 
 class SoftmaxTransformer(nn.Module):

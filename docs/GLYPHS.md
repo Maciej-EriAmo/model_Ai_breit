@@ -17,7 +17,7 @@ Klasyczna metoda (litery + następstwo → Softmax) zostaje świadkiem — nowa 
 
 Powiązanie z kanonem Mostu: wejście Bridge to para **`(x[t], T[t])`**, nie samo `x[t]`. Softmax chodzi po osi tożsamości/kolejności; Most adresuje po osi `T` (\(\Delta E\) z tracera). Bez niezerowego \(\Delta E\) most degeneruje (kontrola ZERO).
 
-Źródło osi: [`../ZdjęcieW/1d_do_2d.txt`](../ZdjęcieW/1d_do_2d.txt).
+Źródło osi: [`../archiwum/ZdjęcieW/1d_do_2d.txt`](../archiwum/ZdjęcieW/1d_do_2d.txt).
 
 ---
 
@@ -36,7 +36,7 @@ Luneta (`Luneta2`): layout → DisplayList → SDL/Tk (RGB). **Źródło prawdy 
 
 ## 3. Kontrakt atomu glifu
 
-Pełna tabela: [`../ZdjęcieW/GLYPH_ATOMS.md`](../ZdjęcieW/GLYPH_ATOMS.md).
+Pełna tabela: [`../archiwum/ZdjęcieW/GLYPH_ATOMS.md`](../archiwum/ZdjęcieW/GLYPH_ATOMS.md).
 
 Skrót:
 
@@ -89,7 +89,7 @@ python glyph_transcribe.py --src foto.png --text "MOST`nBRIDGE" --out dumps/from
 python phimost_learn.py --src dumps/from_photo --no-warm --no-promote --baselines
 ```
 
-**G1 uwagi:** `--text` = etykiety `S` (MVP bez OCR). `T` z fokusa + ink. Bbox w `E`, nie zamiast `T`. Demo default = **tylko łacina**; hiragana = `--demo-script hira` → osobny plik `ZdjęcieW/demo/demo_hira.png`.
+**G1 uwagi:** `--text` = etykiety `S` (MVP bez OCR). `T` z fokusa + ink. Bbox w `E`, nie zamiast `T`. Demo default = **tylko łacina**; hiragana = `--demo-script hira` → osobny plik `archiwum/ZdjęcieW/demo/demo_hira.png`.
 
 Warstwy pamięci (nie mieszać): M1 wagi · M2 dump Φ · M3 Holon `Most_Lorentz` — [`PAMIEC_I_KARMIENIE.md`](PAMIEC_I_KARMIENIE.md).
 
@@ -134,7 +134,7 @@ Szczegóły + recall: [`../doswiadczenie/glify/WYNIKI_GLYPHS.md`](../doswiadczen
 | **G3** | Luneta Store → dump (nie screen) | adapter atomów UI |
 | **D\*** | DESI / niebo jako *osobny* test geometrii obiektów | po G1–G2; nie mylić z alfabetem |
 
-Szkice poboczne (nie kanon alfabetu): `desi_cutouts.py`, `image_batch.py`, `bench_desi.py`, `ZdjęcieW/zdjęcieW.txt`.
+Szkice poboczne (nie kanon alfabetu): `desi_cutouts.py`, `image_batch.py`, `bench_desi.py`, `archiwum/ZdjęcieW/zdjęcieW.txt`.
 
 ---
 
@@ -160,14 +160,14 @@ Gdy będzie paper: przenieść §1–5 + tabele z `doswiadczenie/glify/WYNIKI_GL
 
 | Ścieżka | Rola |
 |---------|------|
-| `ZdjęcieW/1d_do_2d.txt` | kanon osi (T ≠ bitmapa) |
-| `ZdjęcieW/GLYPH_ATOMS.md` | kontrakt pól atomu |
-| `ZdjęcieW/zdjęcieW.txt` | DESI (tor boczny) |
+| `archiwum/ZdjęcieW/1d_do_2d.txt` | kanon osi (T ≠ bitmapa) |
+| `archiwum/ZdjęcieW/GLYPH_ATOMS.md` | kontrakt pól atomu |
+| `archiwum/ZdjęcieW/zdjęcieW.txt` | DESI (tor boczny) |
 | `make_dump_glyphs.py` | generator G0 |
 | `glyph_transcribe.py` | PR-G1: obraz → PhiJSON |
 | `dumps/from_glyphs/` | M2 (G0) |
 | `dumps/from_photo/` | M2 (G1 demo/transkrypcja) |
-| `ZdjęcieW/demo/demo_lat.png` | demo G1 (tylko łacina) |
+| `archiwum/ZdjęcieW/demo/demo_lat.png` | demo G1 (tylko łacina) |
 | `doswiadczenie/desi/AUDYT_2026-09-10.md` | audyt + lista fixów B1–M8 |
 | `checkpoints/most_glyphs.pt` | M1 (G0) |
 | `checkpoints/most_glyphs_photo.pt` | M1 (G1, jeśli trenowano) |

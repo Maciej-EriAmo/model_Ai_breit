@@ -37,13 +37,13 @@
 ## Plan w punktach (kolejność)
 
 ### P0 — porządek (ten sprint)
-1. Katalog `historia/` na wyniki faz / logi / wykresy — **done**
-2. Benchy piszą artefakty do `historia/` — **done**
-3. Docs wskazują `historia/` — **done**
+1. Katalog `archiwum/historia/` na wyniki faz / logi / wykresy — **done**
+2. Benchy piszą artefakty do `archiwum/historia/` — **done**
+3. Docs wskazują `archiwum/historia/` — **done**
 
 ### P1 — karmienie i trwałość — **DONE**
 4. ~~Dump recall: `atom_content_vec`~~ (`dump_recall.py`, test strip payload)
-5. ~~`mask` w InfoNCE / metrics / attn~~ (`recall_model.py`, `test_mask.py`)
+5. ~~`mask` w InfoNCE / metrics / attn~~ (`recall_model.py`, `doswiadczenie/testy/test_mask.py`)
 6. ~~`checkpoints/` save/load~~ (`checkpoint.py`, zapis z `bench_dump` / smoke)
 7. ~~Smoke load → recall bez re-treningu~~ (`smoke_checkpoint.py` PASS, Δ Most−SM ≈ +4.6)
 
@@ -79,7 +79,7 @@ Nauka: `python phimost_learn.py --src … --no-warm --no-promote`.
 Dzień: `python phimost_day.py`.  
 
 ### Opcjonalny polish (nieblokujący)
-- re-bench C → `historia/`
+- re-bench C → `archiwum/historia/`
 - eksport z pełnego `KarmazynOS.bubbles`
 - PDF/EPUB w `import_literature` (dziś `.md`/`.txt`)
 - `--baselines` na większych dumpach struktura (gate ΔSM)
@@ -114,7 +114,7 @@ Stan żywy: [`STATUS.md`](STATUS.md) · mapa empirii: [`../doswiadczenie/glify/R
 | 5 | Classical Softmax loader (nie twin-on-Φ) | **TODO** TRANSCODE §2 |
 | 6 | Multi-seed G2 / bogatszy korpus | otwarte |
 | 7 | hologram-E (period×group×block) | otwarte |
-| 8 | Track `hologram-znaki-raport.md` | untracked |
+| 8 | Track `hologram-znaki-raport.md` | w `docs/` |
 | 9 | JoannaM spektroskopia | TODO checklist |
 | 10 | Qumran | później |
 

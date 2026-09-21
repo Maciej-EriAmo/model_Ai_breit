@@ -43,12 +43,26 @@ class PhiBridgeEncoder(nn.Module):
         num_layers: int = 2,
         coupling: str = "softplus",
         t_seal: bool | None = None,
+        *,
+        gamma_init: float = 0.0,
+        e_scale: float = 1.0,
+        couple_temp: float = 1.0,
+        delta_mode: str = "square",
+        delta_alpha: float = 1.0,
+        directed_bias: float = 0.25,
     ):
         super().__init__()
+        if delta_mode not in ("square", "directed", "onesided"):
+            raise ValueError(delta_mode)
         self.h, self.dh = h, d // h
         self.d = d
         self.coupling = coupling
         self.t_seal = t_seal
+        self.e_scale = float(e_scale)
+        self.couple_temp = max(float(couple_temp), 1e-3)
+        self.delta_mode = delta_mode
+        self.delta_alpha = float(delta_alpha)
+        self.directed_bias = float(min(max(directed_bias, 0.0), 1.0))
         self.embed = nn.Linear(input_dim, d)
         self.cls = nn.Parameter(torch.zeros(1, 1, d))
         self.layers = nn.ModuleList(
@@ -74,16 +88,36 @@ class PhiBridgeEncoder(nn.Module):
             nn.init.ones_(layer["e"].weight)
             nn.init.zeros_(layer["e"].bias)
         self.log_gammas = nn.ParameterList(
-            [nn.Parameter(torch.zeros(h, 1, 1)) for _ in range(num_layers)]
+            [
+                nn.Parameter(torch.full((h, 1, 1), float(gamma_init)))
+                for _ in range(num_layers)
+            ]
         )
         self.out_norm = nn.LayerNorm(d)
 
     def _couple(self, S: torch.Tensor) -> torch.Tensor:
+        S = S / self.couple_temp
         if self.coupling == "softplus":
             return F.softplus(S).square()
         if self.coupling == "relu":
             return F.relu(S).square()
         raise ValueError(self.coupling)
+
+    def _most_A(self, S: torch.Tensor, dE: torch.Tensor, li: int) -> torch.Tensor:
+        g0 = F.softplus(self.log_gammas[li]) + 1e-3
+        C = self._couple(S)
+        if self.delta_mode == "square":
+            g = g0
+            return g * C / (g.square() + dE.square() + 1e-12)
+        if self.delta_mode == "onesided":
+            g = g0 * (1.0 + F.softplus(self.delta_alpha * dE))
+            return g * C / (g.square() + dE.square() + 1e-12)
+        # directed: prefer E_key < E_query (dE = E_q - E_k > 0)
+        g = g0
+        base = g * C / (g.square() + dE.square() + 1e-12)
+        gate = torch.sigmoid(self.delta_alpha * dE)
+        b = self.directed_bias
+        return base * (b + (1.0 - b) * gate)
 
     def forward(
         self,
@@ -108,9 +142,8 @@ class PhiBridgeEncoder(nn.Module):
             ]
             S = q @ k.transpose(-2, -1) / math.sqrt(self.dh)
             E = layer["e"](tracer).transpose(1, 2).unsqueeze(-1)
-            dE = E - E.transpose(-2, -1)
-            g = F.softplus(self.log_gammas[li]) + 1e-3
-            A = g * self._couple(S) / (g.square() + dE.square() + 1e-12)
+            dE = self.e_scale * (E - E.transpose(-2, -1))
+            A = self._most_A(S, dE, li)
             A = A.masked_fill(
                 torch.eye(N, device=x.device, dtype=torch.bool), 0.0
             )
@@ -118,12 +151,21 @@ class PhiBridgeEncoder(nn.Module):
             if key_pad is not None:
                 A = A.masked_fill(key_pad, 0.0)
             w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
+            from precision import assert_finite
+
+            assert_finite(S, f"enc.S[L{li}]")
+            assert_finite(dE, f"enc.dE[L{li}]")
+            assert_finite(A, f"enc.A[L{li}]")
+            assert_finite(w, f"enc.w[L{li}]")
             y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
             x = x + layer["o"](y)
             x = x + layer["ff"](x)
             dE_last = dE.detach()
 
         tok = self.out_norm(x[:, 1:, :])  # drop CLS → [B,N0,d]
+        from precision import assert_finite
+
+        assert_finite(tok, "enc.tok")
         return tok, dE_last
 
 
@@ -298,43 +340,75 @@ def train_encoder(
     ablate_kw: dict | None = None,
     *,
     return_curve: bool = False,
+    amp_dtype: torch.dtype | None = None,
+    finite_check: bool | None = None,
 ) -> dict:
     """
     return_curve=True → dodaje klucz ``curve``: lista
     {epoch, loss, r@1, r@3, mrr} po każdej epoce
     (loss = średnia strata treningowa danej epoki; r@1/r@3/mrr = walidacyjne).
-    """
-    ablate_kw = ablate_kw or {}
-    opt = torch.optim.Adam(model.parameters(), lr=lr)
-    curve: list[dict] = []
-    last_avg: dict | None = None
-    for ep in range(epochs):
-        model.train()
-        loss_sum = 0.0
-        n_batches = 0
-        for batch in train_batches:
-            b = batch.ablate(**ablate_kw)
-            opt.zero_grad()
-            tok, _ = model(b.content, b.tracer, b.mask)
-            loss = info_nce_loss(tok, b.query_idx, b.pos_idx, mask=b.mask)
-            loss.backward()
-            opt.step()
-            loss_sum += float(loss.item())
-            n_batches += 1
-        if return_curve:
-            last_avg = _avg_val_metrics(model, val_batches, ablate_kw)
-            curve.append(
-                {
-                    "epoch": ep + 1,
-                    "loss": loss_sum / max(n_batches, 1),
-                    "r@1": last_avg["r@1"],
-                    "r@3": last_avg["r@3"],
-                    "mrr": last_avg["mrr"],
-                }
-            )
 
-    # ostatnia epoka już policzyła walidację powyżej — nie liczyć drugi raz
-    avg = last_avg if last_avg is not None else _avg_val_metrics(model, val_batches, ablate_kw)
-    if return_curve:
-        avg["curve"] = curve
-    return avg
+    amp_dtype=torch.bfloat16 → kryterium #2 (BF16) przez autocast.
+    finite_check=True (domyślnie gdy amp_dtype ustawione) → assert na zamku/loss.
+    """
+    from precision import (
+        amp_context,
+        assert_finite_loss,
+        set_finite_check,
+    )
+
+    ablate_kw = ablate_kw or {}
+    if finite_check is None:
+        finite_check = amp_dtype is not None
+    prev = None
+    try:
+        from precision import finite_check_enabled
+
+        prev = finite_check_enabled()
+        set_finite_check(bool(finite_check))
+        opt = torch.optim.Adam(model.parameters(), lr=lr)
+        curve: list[dict] = []
+        last_avg: dict | None = None
+        for ep in range(epochs):
+            model.train()
+            loss_sum = 0.0
+            n_batches = 0
+            for batch in train_batches:
+                b = batch.ablate(**ablate_kw)
+                opt.zero_grad()
+                with amp_context(amp_dtype):
+                    tok, _ = model(b.content, b.tracer, b.mask)
+                    loss = info_nce_loss(tok, b.query_idx, b.pos_idx, mask=b.mask)
+                    assert_finite_loss(loss, step=f"train_ep{ep+1}")
+                loss.backward()
+                opt.step()
+                loss_sum += float(loss.detach().float().item())
+                n_batches += 1
+            if return_curve:
+                with amp_context(amp_dtype):
+                    last_avg = _avg_val_metrics(model, val_batches, ablate_kw)
+                curve.append(
+                    {
+                        "epoch": ep + 1,
+                        "loss": loss_sum / max(n_batches, 1),
+                        "r@1": last_avg["r@1"],
+                        "r@3": last_avg["r@3"],
+                        "mrr": last_avg["mrr"],
+                    }
+                )
+
+        if last_avg is not None:
+            avg = last_avg
+        else:
+            with amp_context(amp_dtype):
+                avg = _avg_val_metrics(model, val_batches, ablate_kw)
+        if return_curve:
+            avg["curve"] = curve
+        if amp_dtype is not None:
+            avg["amp_dtype"] = str(amp_dtype).replace("torch.", "")
+        return avg
+    finally:
+        if prev is not None:
+            set_finite_check(prev)
+        else:
+            set_finite_check(False)

@@ -31,3 +31,8 @@ def lambda_neural_weight() -> float:
 
 def phimost_root() -> str:
     return os.environ.get("PHIMOST_ROOT", r"C:\Users\drwis\model Ai")
+
+
+def bf16_enabled() -> bool:
+    """Kryterium #2 — PHIMOST_BF16=1 włącza AMP bfloat16 (jak --bf16)."""
+    return _on("PHIMOST_BF16", "0")

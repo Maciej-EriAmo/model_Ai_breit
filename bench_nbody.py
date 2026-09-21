@@ -21,7 +21,7 @@ from config import CANON, assert_canon_model_kwargs
 from nbody_data import make_nbody_loaders, NBodyBatch
 
 ROOT = Path(__file__).resolve().parent
-HISTORIA = ROOT / "historia"
+HISTORIA = ROOT / "archiwum" / "historia"
 
 
 def train_eval_nbody(
@@ -217,7 +217,7 @@ def main():
         aud.write_text(
             prev
             + "\n## Walidacja n-ciał\n\n"
-            + f"Zob. `historia/WYNIKI_NBODY.md` — werdykt **{'PASS' if ok else 'FAIL'}** "
+            + f"Zob. `archiwum/archiwum/historia/WYNIKI_NBODY.md` — werdykt **{'PASS' if ok else 'FAIL'}** "
             + f"({wins}/2).\n",
             encoding="utf-8",
         )

@@ -46,7 +46,7 @@ Atomstore / BubbleFS `*.bbl` — **nie kanoniczne** (adapter later).
 - Most ZERO ≈ Most na N=15 — na małym dumpie warunek τ słabiej różnicuje; kanon: τ = warunek mostu, nie handicap.
 ## Wyniki
 
-Zob. [`../historia/WYNIKI_FAZA_D.md`](../historia/WYNIKI_FAZA_D.md) · skrót: [`WYNIKI.md`](WYNIKI.md).
+Zob. [`../archiwum/historia/WYNIKI_FAZA_D.md`](../archiwum/historia/WYNIKI_FAZA_D.md) · skrót: [`WYNIKI.md`](WYNIKI.md).
 
 ## Go
 

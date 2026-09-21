@@ -3,7 +3,7 @@
 **Data:** 2026-09-15  
 **Root:** `C:\Users\drwis\model Ai`  
 **Komora SE:** `Most_Lorentz`  
-**Werdykt testów (dziś):** `pytest test_karmazyn_lingua.py` → **35 passed in 1.69s**
+**Werdykt testów (dziś):** `pytest doswiadczenie/testy/test_karmazyn_lingua.py` → **35 passed in 1.69s**
 
 ---
 
@@ -22,7 +22,7 @@
 
 ## 2. Raport vs kod (dryf dokumentacji)
 
-Źródło koncepcji: `hologram-znaki-raport.md` (**untracked**, kopia `(1).md` też).  
+Źródło koncepcji: [`docs/hologram-znaki-raport.md`](../../docs/hologram-znaki-raport.md).  
 Sekcja **11.3** raportu nadal mówi „TODO / niezaimplementowane” — **to już nieprawda**. Kod i commity domknęły 6 punktów + bugfix reach-GC.
 
 | # | Item z raportu §11.3 | Stan kodu | Dowód |
@@ -60,7 +60,7 @@ Sekcja **11.3** raportu nadal mówi „TODO / niezaimplementowane” — **to ju
 |-----------|------|------|
 | ~~P0~~ | ~~Cel pierwotny (Kana P1)~~ | **Rozstrzygnięty negatywnie pod tym protokołem:** hologram 0/5, symbolic 0/5; mean Most≪bramki; Most≈ZERO. Caveat: absolutne r@1 przy podłodze (~0.01) — możliwy underfit (epochs/n_train/task), nie tylko „hologram nie pomaga” |
 | ~~P1~~ | ~~Odświeżenie `hologram-znaki-raport.md` §11.3~~ | **DONE** 2026-09-15 (6/6 w raporcie) |
-| P1 | Raport nadal **untracked** (`??`) | Ryzyko utraty — `git add hologram-znaki-raport.md` |
+| P1 | Raport w `docs/hologram-znaki-raport.md` | **DONE** (przeniesiony z root) |
 | P2 | `observe_with_confidence` na długich sekwencjach (sim≈0.1) | Nadal nieosobno przetestowane |
 | P2 | Skala Mostu na Kana (po wynikach P1) | Zależy od P0 |
 | P3 | Kanji / >FEATURE_DIM wartości na jednej osi | Świadomie poza Kana P1 |

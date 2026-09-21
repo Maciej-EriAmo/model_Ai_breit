@@ -1,0 +1,98 @@
+{
+  "protocol": "Most knobs sweep → lost-in-middle metrics",
+  "seq_len": 2048,
+  "train_steps": 300,
+  "seed": 0,
+  "rows": [
+    {
+      "name": "softmax",
+      "knobs": null,
+      "entropy_mid": 6.926821708679199,
+      "entropy_head": 4.332663059234619,
+      "entropy_tail": 7.56963586807251,
+      "mid_dip_attn_mass": 9.116862202063203e-05,
+      "attn_mass_mid": 0.006021433393470943,
+      "secret_acc_mean": 0.0,
+      "train_wall_s": 29.739872300007846
+    },
+    {
+      "name": "most:baseline",
+      "knobs": {
+        "gamma_init": 0.0,
+        "e_scale": 1.0,
+        "couple_temp": 1.0
+      },
+      "entropy_mid": 3.1456072330474854,
+      "entropy_head": 1.2561522722244263,
+      "entropy_tail": 4.003875732421875,
+      "mid_dip_attn_mass": -0.005544280982576311,
+      "attn_mass_mid": 0.014911114936694503,
+      "secret_acc_mean": 0.0,
+      "train_wall_s": 45.513049600005616
+    },
+    {
+      "name": "most:wide_gamma",
+      "knobs": {
+        "gamma_init": 1.5,
+        "e_scale": 1.0,
+        "couple_temp": 1.0
+      },
+      "entropy_mid": 5.04607629776001,
+      "entropy_head": 3.0860185623168945,
+      "entropy_tail": 5.525654315948486,
+      "mid_dip_attn_mass": 0.00034106546081602573,
+      "attn_mass_mid": 0.003959453548304737,
+      "secret_acc_mean": 0.0,
+      "train_wall_s": 44.73551510000834
+    },
+    {
+      "name": "most:soft_energy",
+      "knobs": {
+        "gamma_init": 0.0,
+        "e_scale": 0.25,
+        "couple_temp": 1.0
+      },
+      "entropy_mid": 6.777475833892822,
+      "entropy_head": 4.17584228515625,
+      "entropy_tail": 7.42058801651001,
+      "mid_dip_attn_mass": -0.002082628197968006,
+      "attn_mass_mid": 0.08256002143025398,
+      "secret_acc_mean": 0.0,
+      "train_wall_s": 44.86031630000798
+    },
+    {
+      "name": "most:fat_tail",
+      "knobs": {
+        "gamma_init": 1.5,
+        "e_scale": 0.25,
+        "couple_temp": 1.5
+      },
+      "entropy_mid": 6.912741661071777,
+      "entropy_head": 4.316682815551758,
+      "entropy_tail": 7.555757522583008,
+      "mid_dip_attn_mass": -0.00015927187632769346,
+      "attn_mass_mid": 0.00464240915607661,
+      "secret_acc_mean": 0.0,
+      "train_wall_s": 44.669417200027965
+    },
+    {
+      "name": "most:ultra_wide",
+      "knobs": {
+        "gamma_init": 2.5,
+        "e_scale": 0.1,
+        "couple_temp": 2.0
+      },
+      "entropy_mid": 6.928197383880615,
+      "entropy_head": 4.333235740661621,
+      "entropy_tail": 7.571218967437744,
+      "mid_dip_attn_mass": -0.00015779538080096245,
+      "attn_mass_mid": 0.007935449481010437,
+      "secret_acc_mean": 0.0,
+      "train_wall_s": 46.00224800000433
+    }
+  ],
+  "verdict": "PASS strojenia vs Softmax: **most:ultra_wide** ent_mid=6.928≥SM 6.927, dip=-0.0002≤SM +0.0001.",
+  "status": "pass",
+  "elapsed_s": 338.2275938987732,
+  "run_dir": "C:\\Users\\drwis\\model Ai\\runs\\20260921_091257_most_knobs_sweep"
+}

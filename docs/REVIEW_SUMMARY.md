@@ -5,7 +5,7 @@
 - **Files reviewed**: 54
 - **Diff stats**: ~198 KB unified diff
 - **Issue counts**: 4 bugs, 6 suggestions, 2 nits
-- **Follow-up:** 4 bugs **FIXED** (2026-09-09) — see `test_review_fixes.py`
+- **Follow-up:** 4 bugs **FIXED** (2026-09-09) — see `doswiadczenie/testy/test_review_fixes.py`
 
 ## Top issues
 

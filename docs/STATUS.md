@@ -19,11 +19,12 @@
 | **Transcode v2** | `transcode/` + [`TRANSCODE.md`](TRANSCODE.md): lat=słowo@1, CJK=znak@2; Softmax=twin-on-Φ |
 | **Holo-Φ P0–P4a** | P3 FAIL (faza); P4a FAIL @ blend 0.6; seal uszczelniony |
 | **Holo-Φ P5.1** | **FAIL 0/8** holdout (τ=Unihan stroke); train→100%, holdout≈chance — metoda nie generalizuje |
-| **karmazyn_lingua** | **6/6 TODO DONE** + reach-GC fail-loud; `pytest test_karmazyn_lingua.py` **35/35** |
+| **karmazyn_lingua** | **6/6 TODO DONE** + reach-GC fail-loud; `python -m pytest doswiadczenie/testy/test_karmazyn_lingua.py` **35/35** |
 | **Kana P1 / P1b** | P1 negatyw (0/5); P1b above_floor 3/3, Most≈SM (jak PL P1b) |
 | **Mendelejew P0** | **DONE** — nonflat 3/3; Most≈0.43 ≈ Softmax≈0.45 (= **parity CV**) |
 | **Hold-out Na** | **negatyw** — brak generalizacji grupy na ukryty Na (N=7) |
-| **Mendelejew FULL 118** | dump + skrypt gotowe; **run MOST-only jeszcze nie** (~1.5–3 h) |
+| **Mendelejew FULL 118** | **DONE MOST-only** — mean r@1=0.567 · r@3=0.897 · above_floor **3/3** · [`MENDELEJEW_FULL.md`](../doswiadczenie/glify/MENDELEJEW_FULL.md) |
+| **Hold-out Na/K FULL** | **FAIL 2/2** — kuzyn nie top-3 (Na: Li 29/2; K: Na 19/27) · lokalna topologia ≠ grupa · [`MENDELEJEW_HOLDOUT_FULL_NaK.md`](../doswiadczenie/glify/MENDELEJEW_HOLDOUT_FULL_NaK.md) |
 | Softmax/ZERO w nauce | `--baselines` **wymagane** przy claimach parity |
 | Recall orbitali | `exclude_nucleus=True` (bez jądra w top-k) |
 | **Doświadczenie/** | hub `doswiadczenie/` — JoannaM · DESI · glify · Mendelejew |
@@ -32,11 +33,24 @@
 
 | Priorytet | Item | Czas / uwagi |
 |-----------|------|--------------|
-| **A** | `run_mendelejew_full.py --most-only` | ~1.5–3 h; potem hold-out Na/K na FULL |
+| **A** | ~~Hold-out Na/K na FULL118~~ | **FAIL 2/2** — brak generalizacji grupy ([`MENDELEJEW_HOLDOUT_FULL_NaK.md`](../doswiadczenie/glify/MENDELEJEW_HOLDOUT_FULL_NaK.md)) |
+| **A′** | ~~`run_mendelejew_full.py --most-only`~~ | **DONE** mean r@1=0.567 floor 3/3 (~15 min CPU) |
+| **B′** | hologram-E (period×group×block) | opcjonalnie; hold-out FAIL zostaje jako negatyw |
+| **S0** | ~~Kryterium #5 run-dir~~ | **DONE** — `runlog.py` · `runs/` · learn + FULL |
+| **S1** | ~~Kryterium #2 BF16~~ | **DONE** — `precision.py` · `--bf16` · gate PASS ([`BF16_GATE.md`](../doswiadczenie/glify/BF16_GATE.md)) |
+| **S2** | Kryterium **#1** — baselines na FULL118 | **DONE (zrzut)** — Most≈SM r@1 (+0.005), gate **0/5**, Most ~1.7× wolniejszy, RSS≈ · [`MENDELEJEW_BASELINES_COMPARE.md`](../doswiadczenie/glify/MENDELEJEW_BASELINES_COMPARE.md) |
+| **S3** | ~~#1b tiny LM smoke~~ | **DONE** — ~116k params · Most loss 0.637 vs SM 0.664 · descend OK · [`LM_TINY_1B.md`](../doswiadczenie/glify/LM_TINY_1B.md) |
+| **S4** | ~~#1c medium LM ~3.3M~~ | **DONE** — loss Most 2.715 vs SM 2.657 · descend OK · 1.34× wolniejszy · [`LM_MEDIUM_1C.md`](../doswiadczenie/glify/LM_MEDIUM_1C.md) |
+| **S5** | Lost-in-middle probe (recenzja) | **FAIL hipotezy** @3M/2k — SM płaski mid, Most nie wyższy ent_mid · [`LOST_IN_MIDDLE_PROBE.md`](../doswiadczenie/glify/LOST_IN_MIDDLE_PROBE.md) · [`ODPOWIEDZ_RECENZJA_LOST_IN_MIDDLE.md`](ODPOWIEDZ_RECENZJA_LOST_IN_MIDDLE.md) |
+| **S6** | Strojenie gałek zamka (γ/e/τ) | **PASS cienki** — `ultra_wide` (γ=2.5, e=0.1, τ=2) ≈ SM ent_mid · [`MOST_KNOBS_SWEEP.md`](../doswiadczenie/glify/MOST_KNOBS_SWEEP.md) |
+| **S7** | Skierowane ΔE (LM mid) | **PASS cienki** tylko z szerokim g; sam directed ≤ square · [`SIGNED_DELTA_ABLATION.md`](../doswiadczenie/glify/SIGNED_DELTA_ABLATION.md) |
+| **S7b** | ΔE na atomach FULL118 | **PARTIAL** — **onesided** r@1=0.591 > SM 0.579 > square 0.567 · gate 1/2 · [`ATOMS_DELTA_ABLATION.md`](../doswiadczenie/glify/ATOMS_DELTA_ABLATION.md) |
+| **S7c** | Hold-out Na/K **onesided** | **Na PARTIAL / K FAIL** — Li 10/6 (K@1/3); Na 57/59 · [`MENDELEJEW_HOLDOUT_FULL_NaK_onesided.md`](../doswiadczenie/glify/MENDELEJEW_HOLDOUT_FULL_NaK_onesided.md) |
+| **S8** | #1d / GPU | nadal: retrieval + wyraźna przewaga, nie ε z szerokiego g |
 | **B** | Classical Softmax loader | TODO w TRANSCODE §2 — dziś Softmax=twin-on-Φ |
 | **B** | Multi-seed stabilność G2 / bogatszy korpus | bez claimu „lepsi niż NN” |
 | **C** | hologram-E (period×group×block overlay) | po FULL lub równolegle short |
-| **C** | Track `hologram-znaki-raport.md` w git | nadal `??` untracked |
+| **C** | Track `hologram-znaki-raport.md` w git | przeniesiony do `docs/` |
 | **D** | JoannaM X-ray/radio + ablacja gwiazdy @8.8″ | spektroskopia NO MATCH już DONE |
 | **D** | Qumran | później |
 | — | DESI | zawieszone (gate FAIL; bloker T/COLD był, seal DONE — skala korpusu) |
@@ -58,7 +72,7 @@
 
 ```powershell
 cd "C:\Users\drwis\model Ai"
-python phimost_learn.py --src struktura_atomow.csv --no-warm --no-promote
+python phimost_learn.py --src archiwum/dane/struktura_atomow.csv --no-warm --no-promote
 python phimost_learn.py --src dumps/from_struktura --skip-load --skip-train --recall-id C/2p/m-1/up
 python phimost_day.py --query main -k 5 --skip-export
 ```
@@ -74,12 +88,12 @@ python run_mendelejew_full.py --most-only
 Zdrowie lab:
 
 ```powershell
-python test_not_flat.py
-python test_mask.py
-python test_memory_bus.py
-python test_decorrelate.py
-python test_bubblefs_import.py
-pytest test_karmazyn_lingua.py
+python doswiadczenie/testy/test_not_flat.py
+python doswiadczenie/testy/test_mask.py
+python doswiadczenie/testy/test_memory_bus.py
+python doswiadczenie/testy/test_decorrelate.py
+python doswiadczenie/testy/test_bubblefs_import.py
+python -m pytest doswiadczenie/testy/test_karmazyn_lingua.py
 ```
 
 ## Zakazy

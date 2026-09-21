@@ -24,7 +24,7 @@ from recall_model import PhiBridgeEncoder, PhiSoftmaxEncoder, train_encoder, rec
 from scalar_r import eval_scalar_R, eval_cosine_only
 
 ROOT = Path(__file__).resolve().parent
-HISTORIA = ROOT / "historia"
+HISTORIA = ROOT / "archiwum" / "historia"
 DUMP = ROOT / "dumps" / "textfile_phi"
 
 
@@ -297,7 +297,7 @@ def main():
                 "- `phi_dump.py` — loader PhiJSON",
                 "- `dump_recall.py` — recall z bind",
                 "- `bench_dump.py` — Softmax|Most|ZERO|R",
-                "- `historia/WYNIKI_FAZA_D.md`, `historia/phi_most_faza_d.png`",
+                "- `archiwum/archiwum/historia/WYNIKI_FAZA_D.md`, `archiwum/historia/phi_most_faza_d.png`",
                 "- case: `dumps/textfile_phi/CASE_TEXT.md`, `CASE_RUNTIME.md`",
                 "",
                 "## Acceptance",

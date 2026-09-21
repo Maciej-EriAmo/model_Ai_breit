@@ -175,7 +175,7 @@ Handoff **nie** jest datasetem do CE — najwyżej wskazuje *który dump / któr
 | `dumps/<name>/` | M2 mirror | PhiJSON: atoms + edges + case |
 | Karmazyn Store | M2 live | prawda operacyjna; Most tylko czyta (flaga) |
 | `holon_memory` | M3 | ciągłość **agenta**, nie sieci |
-| Wykresy / `historia/WYNIKI_*.md` | meta | empiria — karmienie naukowe, nie runtime |
+| Wykresy / `archiwum/historia/WYNIKI_*.md` | meta | empiria — karmienie naukowe, nie runtime |
 
 **Epizod vs fakt (w M2, nie w Softmax-stylu chat log):**
 

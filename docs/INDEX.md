@@ -28,25 +28,31 @@
 | 11 | [`WYNIKI.md`](WYNIKI.md) | skrót tabel PASS/FAIL |
 | 12 | [`MODULY.md`](MODULY.md) | mapa plików `.py` |
 | 13 | [`PLAN_NEXT.md`](PLAN_NEXT.md) | plan / backlog |
-| 14 | [`../plan.txt`](../plan.txt) | plan faz A–E + decyzje |
+| 14 | [`plan.txt`](plan.txt) | plan faz A–E + decyzje |
+| 15 | [`kryteria_sukcesu.txt`](kryteria_sukcesu.txt) · [`KRYTERIA_SUKCESU_MAPA.md`](KRYTERIA_SUKCESU_MAPA.md) | #5–#1c DONE · mid-probe FAIL · GPU nie z trendu |
+| 20 | recenzja / knobs / [`SIGNED_DELTA_NOTE.md`](SIGNED_DELTA_NOTE.md) · [`../doswiadczenie/glify/ATOMS_DELTA_ABLATION.md`](../doswiadczenie/glify/ATOMS_DELTA_ABLATION.md) | ΔE: LM vs atomy FULL118 |
+| 19 | [`../doswiadczenie/glify/LM_TINY_1B.md`](../doswiadczenie/glify/LM_TINY_1B.md) · [`LM_MEDIUM_1C.md`](../doswiadczenie/glify/LM_MEDIUM_1C.md) | tiny + medium LM Most vs SM |
+| 18 | [`../doswiadczenie/glify/MENDELEJEW_BASELINES_COMPARE.md`](../doswiadczenie/glify/MENDELEJEW_BASELINES_COMPARE.md) | Most vs SM/ZERO · timing/RSS |
+| 16 | [`../runs/README.md`](../runs/README.md) · `runlog.py` · `precision.py` | run-dir + BF16 autocast/finite-check |
+| 17 | [`../doswiadczenie/glify/BF16_GATE.md`](../doswiadczenie/glify/BF16_GATE.md) | gate #2 PASS (Most bf16, FULL dump) |
 
 ## Fazy (szczegóły)
 
 | Faza | Doc | Wyniki |
 |------|------|--------|
-| A–B | (README + testy) | [`../historia/WYNIKI_FAZA_B.md`](../historia/WYNIKI_FAZA_B.md) |
-| C | — | [`../historia/WYNIKI_RECALL.md`](../historia/WYNIKI_RECALL.md) |
-| D | [`FAZA_D.md`](FAZA_D.md) | [`../historia/WYNIKI_FAZA_D.md`](../historia/WYNIKI_FAZA_D.md) |
-| E | [`FAZA_E.md`](FAZA_E.md) | [`../historia/WYNIKI_FAZA_E.md`](../historia/WYNIKI_FAZA_E.md) |
-| Fizyka | — | [`../historia/WYNIKI_NBODY.md`](../historia/WYNIKI_NBODY.md) |
+| A–B | (README + testy) | [`../archiwum/historia/WYNIKI_FAZA_B.md`](../archiwum/historia/WYNIKI_FAZA_B.md) |
+| C | — | [`../archiwum/historia/WYNIKI_RECALL.md`](../archiwum/historia/WYNIKI_RECALL.md) |
+| D | [`FAZA_D.md`](FAZA_D.md) | [`../archiwum/historia/WYNIKI_FAZA_D.md`](../archiwum/historia/WYNIKI_FAZA_D.md) |
+| E | [`FAZA_E.md`](FAZA_E.md) | [`../archiwum/historia/WYNIKI_FAZA_E.md`](../archiwum/historia/WYNIKI_FAZA_E.md) |
+| Fizyka | — | [`../archiwum/historia/WYNIKI_NBODY.md`](../archiwum/historia/WYNIKI_NBODY.md) |
 | **Glify G0–G2** | [`GLYPHS.md`](GLYPHS.md) | G0/G1/G2 w [`../doswiadczenie/glify/`](../doswiadczenie/glify/) · labnote [`LABNOTE_GLYPHS_2026-09-10.md`](../doswiadczenie/glify/LABNOTE_GLYPHS_2026-09-10.md) |
 | **Holo-Φ P5.1** | [`HOLO_P5_TOR_DESI.md`](HOLO_P5_TOR_DESI.md) | [`../doswiadczenie/glify/HOLO_P5_1.md`](../doswiadczenie/glify/HOLO_P5_1.md) — **FAIL 0/8** holdout |
-| **Mendelejew** | [`JUTRO_MENDELEJEW_FULL.md`](../doswiadczenie/glify/JUTRO_MENDELEJEW_FULL.md) | P0 [`MENDELEJEW_P0.md`](../doswiadczenie/glify/MENDELEJEW_P0.md) · hold-out Na · FULL dump gotowy |
+| **Mendelejew** | [`MENDELEJEW_FULL.md`](../doswiadczenie/glify/MENDELEJEW_FULL.md) | P0 · FULL **DONE** · hold-out Na/K **FAIL** ([`MENDELEJEW_HOLDOUT_FULL_NaK.md`](../doswiadczenie/glify/MENDELEJEW_HOLDOUT_FULL_NaK.md)) |
 | **Lingua / znaki** | [`AUDYT_HOLOGRAM_ZNAKI.md`](../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md) | warstwa DONE; Kana P1 negatyw; P1b Most≈SM |
 
 ## Doświadczenie (osobny katalog)
 
-Hub: [`../doswiadczenie/README.md`](../doswiadczenie/README.md) · checklist: [`../doswiadczenie/CHECKLIST.md`](../doswiadczenie/CHECKLIST.md) · mapa glify: [`../doswiadczenie/glify/README.md`](../doswiadczenie/glify/README.md)
+Hub: [`../doswiadczenie/README.md`](../doswiadczenie/README.md) · checklist: [`../doswiadczenie/CHECKLIST.md`](../doswiadczenie/CHECKLIST.md) · mapa glify: [`../doswiadczenie/glify/README.md`](../doswiadczenie/glify/README.md) · testy: [`../doswiadczenie/testy/`](../doswiadczenie/testy/)
 
 | Tor | Wejście | Wyniki / notatki |
 |-----|---------|------------------|
@@ -54,9 +60,9 @@ Hub: [`../doswiadczenie/README.md`](../doswiadczenie/README.md) · checklist: [`
 | **DESI / niebo** | [`../doswiadczenie/desi/`](../doswiadczenie/desi/) | `WYNIKI_DESI*.md`, holdout, BH/AGN, [`AUDYT_2026-09-10.md`](../doswiadczenie/desi/AUDYT_2026-09-10.md) — **zawieszone** |
 | **Glify / transkodowanie** | [`TRANSCODE.md`](TRANSCODE.md) · [`GLYPHS.md`](GLYPHS.md) | [`../doswiadczenie/glify/`](../doswiadczenie/glify/) · wnioski [`AUDYT_WNIOSKI.md`](../doswiadczenie/glify/AUDYT_WNIOSKI.md) |
 | **Mendelejew / struktura** | P0 + FULL | parity CV · FULL118 kolejka |
-| **Lingua hologram-znaki** | `karmazyn_lingua.py` | audyt 2026-09-15; raport root `hologram-znaki-raport.md` (**untracked**) |
+| **Lingua hologram-znaki** | `archiwum/skrypty/karmazyn_lingua.py` | audyt 2026-09-15; raport [`hologram-znaki-raport.md`](hologram-znaki-raport.md) |
 
-> `historia/` = artefakty faz A–E + n-ciał + learn. Tor nieba i glify → `doswiadczenie/`.
+> `archiwum/historia/` = artefakty faz A–E + n-ciał + learn. Tor nieba i glify → `doswiadczenie/`.
 
 ## Case study „plik ≠ płaski”
 
@@ -65,7 +71,7 @@ Hub: [`../doswiadczenie/README.md`](../doswiadczenie/README.md) · checklist: [`
 
 ## Case study glify / alfabety
 
-- Kontrakt: [`../ZdjęcieW/GLYPH_ATOMS.md`](../ZdjęcieW/GLYPH_ATOMS.md) · oś T: [`../ZdjęcieW/1d_do_2d.txt`](../ZdjęcieW/1d_do_2d.txt)
+- Kontrakt: [`../archiwum/ZdjęcieW/GLYPH_ATOMS.md`](../archiwum/ZdjęcieW/GLYPH_ATOMS.md) · oś T: [`../archiwum/ZdjęcieW/1d_do_2d.txt`](../archiwum/ZdjęcieW/1d_do_2d.txt)
 - Dump: [`../dumps/from_glyphs/CASE_GLYPHS.md`](../dumps/from_glyphs/CASE_GLYPHS.md)
 - Metoda (dla badaczy): [`GLYPHS.md`](GLYPHS.md)
 
@@ -79,7 +85,7 @@ Hub: [`../doswiadczenie/README.md`](../doswiadczenie/README.md) · checklist: [`
 
 ## Status / backlog / plan
 
-[`STATUS.md`](STATUS.md) · [`PLAN_NEXT.md`](PLAN_NEXT.md) · artefakty faz: [`../historia/`](../historia/)
+[`STATUS.md`](STATUS.md) · [`PLAN_NEXT.md`](PLAN_NEXT.md) · artefakty faz: [`../archiwum/historia/`](../archiwum/historia/)
 
 ## External code review
 

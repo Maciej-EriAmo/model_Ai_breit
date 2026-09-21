@@ -1,0 +1,7 @@
+Bez spekulacji, twarde kryteria sukcesu do weryfikacji w pętli:
+
+1. **Skalowanie błędu (100M-300M):** Krzywa loss spada co najmniej tak stromo, jak w zoptymalizowanym modelu referencyjnym (Llama-style) przy tej samej ilości danych.
+2. **Stabilność BF16:** Architektura nie generuje wartości NaN i nie wymaga ucieczki do precyzji FP32.
+3. **Ujawniony kompromis sprzętowy:** Mniejsza przepustowość kernela względem FlashAttention jest wymiernie rekompensowana niższym zużyciem VRAM (np. dzięki lepszej kompresji KV cache).
+4. **Długi kontekst (16k+):** Zdany test "Needle in a Haystack", dowodzący braku amnezji w środku przetwarzanego tekstu.
+5. **Minimalny dowód:** Działający kod w PyTorch rozwiązujący problem oraz logi z treningu gotowe do odtworzenia.

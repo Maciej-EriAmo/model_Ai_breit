@@ -39,7 +39,7 @@ P0–P2 + U1–U3 zamknięte.
 
 ## External review — 4 bugs (naprawione)
 
-Zob. `REVIEW_EXTERNAL.md`. Fixy: Moon vs giant, dump `atom_content_vec` + strip, mazur→encoder, live fail-closed. Test: `test_review_fixes.py`.
+Zob. `REVIEW_EXTERNAL.md`. Fixy: Moon vs giant, dump `atom_content_vec` + strip, mazur→encoder, live fail-closed. Test: `doswiadczenie/testy/test_review_fixes.py`.
 
 ## P1 / P2 (zamknięte)
 
@@ -53,7 +53,7 @@ Zob. `REVIEW_EXTERNAL.md`. Fixy: Moon vs giant, dump `atom_content_vec` + strip,
 
 ## Walidacja n-ciał / Układ Słoneczny
 
-Zob. `historia/WYNIKI_NBODY.md` — **PASS 2/2 (mocny)**:
+Zob. `archiwum/historia/WYNIKI_NBODY.md` — **PASS 2/2 (mocny)**:
 
 | zadanie | Softmax | Most | ZERO | Most−SM |
 |---------|---------|------|------|---------|
@@ -63,8 +63,8 @@ Zob. `historia/WYNIKI_NBODY.md` — **PASS 2/2 (mocny)**:
 Content bez masy/hierarchii (te osie tylko w tracerze) — inaczej Softmax „oszukuje”.
 
 *Liczby zweryfikowane 2026-09-13 (poprzednia wersja tej tabeli, +20.6/+40.0 pkt,
-nie zgadzała się z `historia/WYNIKI_NBODY.md` — rozjazd sprzed audytu seala,
-patrz sekcja „Audyt seal (2026-09-13)” niżej). Zgodność z `historia/WYNIKI_NBODY.md`
+nie zgadzała się z `archiwum/historia/WYNIKI_NBODY.md` — rozjazd sprzed audytu seala,
+patrz sekcja „Audyt seal (2026-09-13)” niżej). Zgodność z `archiwum/historia/WYNIKI_NBODY.md`
 potwierdzona bit-do-bitu po naprawie.*
 
 ## Audyt seal (2026-09-13)
@@ -84,7 +84,7 @@ przez globalny default `CANON.t_attn_seal=True` — bez świadomości, że:
 (domyślnie `None` = zachowanie z `CANON`, bez zmian dla Holo/kanonicznych benchy);
 `bench_nbody.py` i `bench_phi.py` (zamknięte, audytowane przed powstaniem seala)
 jawnie ustawiają `t_seal=False`. Zweryfikowano: 17/17 testów zielone,
-`historia/WYNIKI_NBODY.md` po naprawie bit-identyczny z wersją już w git.
+`archiwum/historia/WYNIKI_NBODY.md` po naprawie bit-identyczny z wersją już w git.
 
 ### Drugi bug seala: ZERO-tracer martwy przez hard floor (2026-09-13, P5.1)
 

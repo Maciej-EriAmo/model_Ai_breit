@@ -61,7 +61,7 @@ To są decyzje, których tutorial „fine-tune LLaMA” **nie wymusza**.
 |-----------|--------|
 | Zrozumieć uwagę, ΔE, ablacje, kontrakt danych | **Własny PhiMost** |
 | Szybki produkt chat / skala / RLHF | cudzy stack (API / otwarty LLM) |
-| Intuicja „co psuje Most” (ZERO, flat, EMA-S) | **Własny** — masz już FAIL/PASS w `historia/` |
+| Intuicja „co psuje Most” (ZERO, flat, EMA-S) | **Własny** — masz już FAIL/PASS w `archiwum/historia/` |
 | Publikacja / reprodukcja paperów NLP | cudze baseline’y + Twoje ablacje obok |
 
 **Rekomendacja dla Ciebie:**  

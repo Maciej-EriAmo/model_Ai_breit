@@ -1,0 +1,221 @@
+# Plan: Model AI (Most) nad n-D przestrzenią KarmazynOs
+
+**Docs hub:** `docs/INDEX.md` · **Status:** `docs/STATUS.md` · **Pamięć:** `docs/PAMIEC_I_KARMIENIE.md`  
+**Stan faz A–E + n-ciał:** PASS (2026-09-09)
+
+**Cel:** zaprojektować i zbudować model oparty o **transformer z zamkiem Lorentza (Most)**, którego natywnym wejściem nie jest płaski plik tekstowy, lecz **przestrzeń informacji KarmazynOs** — atomy `(S, E, T)`, bańki, hologramy, stany HOT/WARM/COLD.
+
+**Teza:** Most działa tylko przy niezerowej geometrii obserwatora (`ΔE`). KarmazynOs dostarcza tę geometrię „za darmo”: plik tekstowy w Φ to **zbiór atomów + relacji + energii**, nie ciąg bajtów. Model ma czytać osie, nie Unix fiction.
+
+---
+
+## 0. Kanony i zakazy (żeby nie zepsuć torów)
+
+| Tak | Nie |
+|-----|-----|
+| Czysty Most softplus×2 + tracer (`mcps/moje badania/most.py`) | EMA-S / Most+S / obs-in-S (odrzucone 2026-09-08/09) |
+| Adapter offline: BubbleFS / KAFD / `list_atoms` | Natychmiastowe wpinanie w Holon SE / `holon_memory` |
+| Osobne komory: badania modelu vs runtime Karmazyn | Mieszanie edycji Holon ↔ KarmazynOs ↔ lab Most |
+| Softmax twin + ZERO (degeneracja bez τ) | Softmax-only „bo prościej”; traktowanie τ jako handicap |
+| Treść z `E`/payload; **τ = warunek Mostu** | Wrzuć T/S/E do jednego toru tokenów jak w GPT |
+
+**Istniejący most produktowy (nie mylić z modelem):** `KarmazynOs/software/mazur_crystal/` — skalarne \(R = g V^2/(g^2+d_E^2)\) do retencji/recall. Lab Most to **neural attention**; Mazur to **GC/recall**. Plan łączy je warstwowo, nie zastępuje jednego drugim.
+
+---
+
+## 1. Wizja architektury
+
+```text
+                    Karmazyn space (offline dump lub live Store)
+                    ┌─────────────────────────────────────────┐
+                    │ atoms A=(S,E,T,state)  bubbles  holograms│
+                    │ edges: bind / parent / root / env_of     │
+                    └──────────────────┬──────────────────────┘
+                                       │
+                         Φ-Adapter (nowy pakiet)
+                                       │
+              ┌────────────────────────┴────────────────────────┐
+              ▼                                                 ▼
+     Content tokens x[N,d_x]                          Tracer τ[N,n]
+     (E / payload text / embed_E)                     (T, state, bubble-
+                                                       depth, hologram
+                                                       coords, Mazur probe)
+              └────────────────────────┬────────────────────────┘
+                                       ▼
+                     BridgeTransformer (softplus×L)
+                     Q,K,V ← x ;  A = γ C / (γ² + ΔE(τ)²)
+                                       │
+                         ┌─────────────┼─────────────┐
+                         ▼             ▼             ▼
+                      Recall        Classify      (później)
+                      / ranking     bubble/task   Generative
+                      head          head          LM head
+```
+
+**Kluczowa różnica vs LLM:** pozycja w sekwencji ≠ główna geometria. Główna geometria = **osie Φ** (T, warstwa termiczna, głębokość bańki, projekcja hologramu). Sekwencja tokenów tekstu to tylko lokalny payload w atomie HOT — opcjonalny, nie kanon.
+
+---
+
+## 2. Mapowanie: osie Karmazyn → kanały Most
+
+| Oś Karmazyn | Rola w modelu | Kanał |
+|-------------|---------------|-------|
+| `E` (emanacja / treść / path) | semantyka | **content `x`** (embed lub tokeny) |
+| `S` (sygnatura strukturalna) | tożsamość / typ | content (oddzielny slot lub concat) |
+| `T`, FSM HOT/WARM/COLD/TOMB | energia / dostępność | **tracer** (skalar + one-hot stanu) |
+| Głębokość bańki / parent chain | „warstwa drzewa” jak w labie | **tracer** (warstwy) |
+| Bind / root / reach | graf relacji | maska uwagi lub krawędzie w tracerze |
+| Hologram generators / weights | globalne pole korelacji | kontekst CLS / osobny token pola |
+| Mazur `tracer` metadata | sonda energetyczna już w Store | **tracer** (wprost) |
+| Payload tekstu (`__main__`, A_RAW) | lokalne bajty | content tylko gdy HOT + text MIME |
+
+Analogia do wygranego labu (`tree_tracer_nd`): warstwy drzewa → warstwy bańki / T-bins; PE pozycji → opcjonalnie kolejność bindów; ZERO tracer → kontrola „bez Φ = Softmax”.
+
+---
+
+## 3. Zakres produktu (rekomendacja domyślna)
+
+**MVP = encoder Most do recall/rankingu nad atomami** (naturalne przedłużenie Mazur `recall` + empiria Most).  
+**Nie od razu** pełny generative LLM — to faza późniejsza, gdy encoder bije Softmax na Φ-zadaniach.
+
+Uzasadnienie: lab Most wygrywa na klasyfikacji ze strukturą; Mazur już rankinguje po \(R\); pierwszy dowód wartości = „Most-neural > Softmax i > skalarne R na tym samym dumpie Φ”.
+
+---
+
+## 4. Lokalizacja kodu
+
+| Element | Ścieżka |
+|---------|---------|
+| **Katalog roboczy** | **`C:\Users\drwis\model Ai`** (kanon projektu) |
+| Lift zamka | `bridge.py` ← lab `mcps/moje badania/most.py` (softplus×2) |
+| Kontrakt Φ | `phi_schema.py` + `synthetic_phi.py` |
+| Atomstore / Store | **opcjonalny adapter later — nie kanoniczne** |
+| Live Store (faza 3+) | cienki klient `NativeStore` / `HostAPI` — bez zmiany prawa slab |
+| Docs wyników | tu + komora `Most_Lorentz` |
+| Integracja produktowa | po PASS: opcjonalny head w `mazur_crystal` |
+
+Komora SE: badania → `Most_Lorentz`; zmiany w runtime Store → `Karmazyn` (osobno).
+
+---
+
+## 5. Fazy wdrożenia (PR DAG)
+
+### Faza A — Kontrakt danych Φ (bez treningu)
+**Wynik:** stabilny tensorowy widok „nie-płaskiego pliku”.
+
+1. Zdefiniować `PhiObject` / `PhiGraphBatch`:
+   - `ids`, `S_feat`, `E_feat` / text ids, `T`, `state`, `bubble_id`, `depth`, `edges`
+2. Exporter:
+   - v1: syntetyczny graf bańek (jak `generate_tree_data`, ale z osiami Φ)
+   - v2: czytnik BubbleFS (`extras/bubblefs.py`) + KAFD atom table
+3. `build_tracer(phi) → [B,N,n]` + `build_content(phi) → [B,N,d_x]`
+4. Test: ten sam tekst materializowany jako Unix `.txt` vs jako Φ-graph → **różne** tensory (assert „nie płaski”).
+
+**Acceptance:** unit testy adaptera; dokument mapowania osi.
+
+### Faza B — Baseline Most na syntetycznym Φ-drzewie
+**Wynik:** powtórka empirii na osiach nazwanych jak Karmazyn.
+
+1. Lift `BridgeTransformer` + `SoftmaxTransformer` (softplus×2, L≥2).
+2. Generator: bańki zagnieżdżone, atomy z `(S,E,T)`, etykieta z interakcji wewnątrz warstw T/depth.
+3. Bench: Softmax | Most | Most ZERO na n∈{1,3,6,8}.
+4. Kryterium przeniesione z labu: Most − Softmax ≥ **+3 pkt** na ≥2 n; ZERO ≈ Softmax.
+
+**Acceptance:** tabela + wykres w `PhiMost/`; FAIL = stop, nie skalować.
+
+### Faza C — Zadanie produktowe: recall / ranking — **PASS 2026-09-09**
+**Wynik:** head użyteczny obok Mazur. Gate r@1: Most−SM **+71 pkt**, Most≈R (+0.5).  
+Pliki: `bench_recall.py`, `WYNIKI_RECALL.md`, `phi_most_faza_c.png`.
+
+1. Dataset: query atom / kontekst → top-k kandydatów z bańki (pozytyw = bind/reach/hologram neighbor).
+2. Loss: InfoNCE / listwise rank; Most vs Softmax vs skalarne `mazur_crystal` \(R\).
+3. Ablacje: bez T, bez depth, ZERO tracer, payload-only (płaski tekst).
+4. Kryterium: Most bije Softmax o ≥+2 pkt recall@k **oraz** nie jest gorszy od skalarnego R o >2 pkt (albo bije R — wtedy sukces mocny).
+
+**Acceptance:** `WYNIKI_RECALL.md`; decyzja go/no-go na live Store.
+
+### Faza D — Offline real dump Karmazyn — **PASS 2026-09-09**
+**Wynik:** dump `dumps/textfile_phi` (PhiJSON); Most−SM r@1 **+2.3 pkt**, Most−R **+12 pkt**.  
+Case: `CASE_TEXT.md` / `CASE_RUNTIME.md`. Docs: `docs/FAZA_D.md`.
+
+1. Export BubbleFS / `:ls` snapshot z sandboxu Karmazyn.
+2. Pipeline: dump → `PhiGraphBatch` → tren/ewal (mały model d=32…128).
+3. Sanity: HOT vs WARM (WARM bez payload — model musi działać na S/E/T).
+4. Dokument „nawet plik tekstowy nie jest płaski”: case study jednego `__main__` + peer atoms.
+
+**Acceptance:** case study + metryki na real dumpie.
+
+### Faza E — Live + generative + λ_neural — **PASS 2026-09-09**
+1. `live_store.py` read-only (dump/mock; HostAPI tylko przy `PHIMOST_LIVE=1`).
+2. `gen_head.py` — E-embedding warunkowany tracerem; API za `PHIMOST_GEN`.
+3. `mazur_crystal/neural_lambda.py` + hook w `relevance()` — `PHIMOST_NEURAL_LAMBDA` OFF default.
+4. `mazur_crystal.test_bridge` — **OK** (6 tests); prawo GC nietknięte.
+
+**Acceptance:** flagi off domyślnie; regresja Mazur zielona.
+
+### Kanon pamięci i karmienia — **spisany**
+Docs: `docs/PAMIEC_I_KARMIENIE.md`  
+M1 wagi Most NN · M2 przestrzeń Φ · M3 Holon SE. Karmienie: `x`≠`τ`. Softmax = świadek.  
+Dalej: P1 dump content, `checkpoints/`, cienki MemoryBus.
+
+---
+
+## 6. Szkielet API (docelowy kontrakt)
+
+```python
+# PhiMost/model.py (szkic)
+class PhiBridgeEncoder(nn.Module):
+    def forward(self, content: Tensor, tracer: Tensor, attn_mask: Tensor | None = None):
+        # content: [B,N,d_x]  tracer: [B,N,n]
+        # returns: cls [B,d], token_h [B,N,d], extras{dE, w}
+        ...
+
+class PhiRecallHead(nn.Module):
+    def score(self, q_cls, cand_h) -> Tensor: ...
+```
+
+Kontrole obowiązkowe w każdym benchu: **SoftmaxTwin**, **ZeroTracer**.
+
+---
+
+## 7. Metryki sukcesu (całość)
+
+| Poziom | Warunek |
+|--------|---------|
+| Nauka (B) | Most ≥ Softmax +3 pkt na Φ-syntezie; ZERO ≈ Softmax |
+| Produkt (C) | Most recall@k ≥ Softmax +2; ablacja płaskiego tekstu gorsza |
+| Ontologia (A/D) | Test „text file ≠ flat”: Φ-graph ≠ bytes tokenize |
+| Bezpieczeństwo torów | Zero zmian w `karmazyn_slab` prawie GC; Mazur/Store tylko za flagą |
+
+Negatyw (jak Most+S): zapisujemy i **nie forsujemy** — wracamy do czystego Most+tracer.
+
+---
+
+## 8. Ryzyka
+
+| Ryzyko | Mitygacja |
+|--------|-----------|
+| Tracer źle wyrównany do zadania → Most ≈ Softmax | Zaczynać od syntezy z kontrolowaną geometrią (jak drzewo) |
+| Spłaszczenie do tokenów „bo LLM” | Acceptance A: assert różnicy Φ vs flat |
+| Pomyłka Most neural ↔ Mazur skalar | Dwa pakiety; wspólna tylko formuła ΔE / docs |
+| Skala sekwencji (duże bańki) | Truncation po T/reach; hierarchiczny CLS bańki |
+| EMA-S nostalgia | Zakaz w kanonie; link do RAPORT §10 |
+
+---
+
+## 9. Pierwszy tydzień (backlog)
+
+1. Katalog `C:\Users\drwis\model Ai` + `README.md` — **done**
+2. Faza A: `phi_schema.py`, `synthetic_phi.py`, `doswiadczenie/testy/test_not_flat.py`
+3. `bridge.py` softplus×2 (bez S)
+4. Faza B: `bench_phi.py` → `WYNIKI_FAZA_B.md`
+5. Handoff `Most_Lorentz`
+
+---
+
+## 10. Decyzje (zaakceptowane / domyślne)
+
+1. **MVP = recall/ranking** (nie od razu LM).
+2. **Kod w** `C:\Users\drwis\model Ai` (nie `mcps/.../PhiMost`, nie pod `software/` na start).
+3. Atomstore: **dopuszczalny adapter, nie kanon**.
+4. Synteza Φ do PASS B; real dump w Fazie D.

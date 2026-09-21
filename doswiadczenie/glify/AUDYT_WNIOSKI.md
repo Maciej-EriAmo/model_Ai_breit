@@ -37,7 +37,7 @@ Zimne atomy przebijały filtr. Kod: `most_seal.py` → `apply_t_key_seal` w `bri
 | `t_attn_exp_k=12` | siła kary |
 | `t_attn_seal=True` | włącznik (ablacja: False) |
 
-CLS zawsze otwarty jako key. Test: `test_most_seal.py`.
+CLS zawsze otwarty jako key. Test: `doswiadczenie/testy/test_most_seal.py`.
 
 ### 2. Ewaluacja hipotezy: ciągłe `T`
 

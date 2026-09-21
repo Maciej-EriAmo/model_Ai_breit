@@ -35,7 +35,7 @@ JSONL `episodes.jsonl` = **ślad**, nie baza wiedzy.
 cd "C:\Users\drwis\model Ai"
 
 # struktura atomów
-python phimost_learn.py --src struktura_atomow.csv --no-warm --no-promote
+python phimost_learn.py --src archiwum/dane/struktura_atomow.csv --no-warm --no-promote
 
 # literatura
 python phimost_learn.py --src .\moja_ksiazka.md --no-warm --no-promote
@@ -85,7 +85,7 @@ python phimost_learn.py --preset textfile --no-warm --no-promote
 | Kanon pamięci | `docs/PAMIEC_I_KARMIENIE.md` |
 | Porównanie z LLM | `docs/POROWNANIE_MODELE.md` |
 | Status | `docs/STATUS.md` |
-| Wyniki faz | `docs/WYNIKI.md`, `historia/` |
+| Wyniki faz | `docs/WYNIKI.md`, `archiwum/historia/` |
 | Konfiguracja | `config.py`, `phimost_flags.py` |
 
 ---
@@ -120,12 +120,12 @@ Leżą w `checkpoints/` (gitignore).
 ## 7. Diagnostyka
 
 ```powershell
-python test_not_flat.py
-python test_mask.py
-python test_memory_bus.py
-python test_decorrelate.py
-python test_bubblefs_import.py
-python test_review_fixes.py
+python doswiadczenie/testy/test_not_flat.py
+python doswiadczenie/testy/test_mask.py
+python doswiadczenie/testy/test_memory_bus.py
+python doswiadczenie/testy/test_decorrelate.py
+python doswiadczenie/testy/test_bubblefs_import.py
+python doswiadczenie/testy/test_review_fixes.py
 ```
 
 Mazur (KarmazynOs):
