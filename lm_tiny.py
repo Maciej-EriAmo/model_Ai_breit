@@ -1,7 +1,7 @@
-"""Tiny causal LM — Most vs Softmax (kryterium #1b smoke ≪1M params).
+"""Tiny causal LM — jądro Breita–Wignera vs Softmax.
 
-Uwaga Most: softplus² + ΔE(tracer); Softmax: klasyczny causal attn.
-Tracer LM: cechy pozycji (+ lekki rzut z embedów) — nie Φ-dump.
+Most-1: C = softplus²(QK), delta_E z pozycji, gamma = gamma0 * (1 + beta * max(C/sum C)).
+Softmax: klasyczny causal attn.
 """
 
 from __future__ import annotations
@@ -14,26 +14,23 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from breit_kernel import breit_wigner_rows
+
 
 @dataclass(frozen=True)
 class MostKnobs:
-    """Gałki zamka Lorentza (strojenie wag uwagi, nie lr).
+    """Gałki Most-1. beta_raw=0 daje beta = softplus(0) ≈ 0.69.
 
-    Bazowo: A = g * softplus(S/τ)^2 / (g^2 + (e_scale*dE)^2)
-    dE[i,j] = E_i - E_j (query i → key j). E z Linear może być ujemne,
-    ale sam mianownik dE² **gubi znak** — stąd delta_mode.
+    dE[i,j] = E_i - E_j. Do wagi wchodzi dE². delta_mode poza 'square' jest odrzucony.
     """
 
-    gamma_init: float = 0.0  # init log_gamma; softplus(0)≈0.69
+    gamma_init: float = 0.0  # init log_gamma0; softplus(0)≈0.69
+    beta_init: float = 0.0  # init beta_raw
     e_scale: float = 1.0  # skala ΔE po projekcji e()
     couple_temp: float = 1.0  # τ: softplus(S/τ); >1 → gładsze C
-    # signed ΔE — A≥0 przed normalizacją
-    # square: klasyczny Lorentz (bez znaku)
-    # directed: * (bias + (1-bias)*σ(α·dE)) — dE>0 = E_q>E_k = w dół energii
-    # onesided: g_eff = g·(1+softplus(α·dE)) — szerszy zamek „w dół”
-    delta_mode: str = "square"  # square|directed|onesided
+    delta_mode: str = "square"
     delta_alpha: float = 1.0
-    directed_bias: float = 0.25  # podłoga masy pod górę energii
+    directed_bias: float = 0.25
 
 
 @dataclass(frozen=True)
@@ -84,7 +81,7 @@ class TinyLMConfig:
         # qkv + o + ln + ff
         per = (d * 3 * d) + (d * d) + (2 * d) + (d * (self.ff_mult * d) * 2)
         if attn == "most":
-            per += nd * h + h  # e + log_gamma
+            per += nd * h + h + h  # e + log_gamma0 + beta
         head = d * V
         return emb + L * per + head
 
@@ -144,7 +141,7 @@ class _SoftmaxCausalBlock(nn.Module):
 
 
 class _MostCausalBlock(nn.Module):
-    """Zamek Lorentza + maska przyczynowa (bez zerowania diagonali — LM)."""
+    """Most-1 Breita–Wignera + maska przyczynowa (bez zerowania diagonali — LM)."""
 
     def __init__(self, cfg: TinyLMConfig):
         super().__init__()
@@ -157,8 +154,10 @@ class _MostCausalBlock(nn.Module):
         self.delta_mode = str(kn.delta_mode)
         self.delta_alpha = float(kn.delta_alpha)
         self.directed_bias = float(min(max(kn.directed_bias, 0.0), 1.0))
-        if self.delta_mode not in ("square", "directed", "onesided"):
-            raise ValueError(f"delta_mode={self.delta_mode!r}")
+        if self.delta_mode != "square":
+            raise ValueError(
+                "ten fork ma jądro Breita–Wignera: delta_mode musi być 'square'"
+            )
         self.n1 = nn.LayerNorm(d)
         self.qkv = nn.Linear(d, 3 * d, bias=False)
         self.o = nn.Linear(d, d, bias=False)
@@ -166,6 +165,7 @@ class _MostCausalBlock(nn.Module):
         nn.init.ones_(self.e.weight)
         nn.init.zeros_(self.e.bias)
         self.log_gamma = nn.Parameter(torch.full((h, 1, 1), float(kn.gamma_init)))
+        self.beta_raw = nn.Parameter(torch.full((h, 1, 1), float(kn.beta_init)))
         self.ff = nn.Sequential(
             nn.LayerNorm(d),
             nn.Linear(d, cfg.ff_mult * d),
@@ -174,24 +174,11 @@ class _MostCausalBlock(nn.Module):
         )
 
     def _most_weights(self, S: torch.Tensor, dE: torch.Tensor) -> torch.Tensor:
-        """A≥0 z opcjonalnym znakiem ΔE (directed/onesided)."""
-        g0 = F.softplus(self.log_gamma) + 1e-3
+        """C z QK, potem Most-1. Przyszłe klucze są zerem zanim liczone jest kappa."""
         C = F.softplus(S / self.couple_temp).square()
-        if self.delta_mode == "square":
-            g = g0
-            A = g * C / (g.square() + dE.square() + 1e-12)
-        elif self.delta_mode == "onesided":
-            # dE>0 (E_q>E_k): szerszy g → grubszy ogon „w dół” energii
-            g = g0 * (1.0 + F.softplus(self.delta_alpha * dE))
-            A = g * C / (g.square() + dE.square() + 1e-12)
-        else:  # directed
-            g = g0
-            base = g * C / (g.square() + dE.square() + 1e-12)
-            # σ(α·dE): większa waga gdy key ma niższą energię niż query
-            gate = torch.sigmoid(self.delta_alpha * dE)
-            b = self.directed_bias
-            A = base * (b + (1.0 - b) * gate)
-        return A
+        blocked = causal_mask(S.shape[-1], S.device).view(1, 1, S.shape[-1], S.shape[-1])
+        C = C.masked_fill(blocked, 0.0)
+        return breit_wigner_rows(C, dE, self.log_gamma, self.beta_raw)
 
     def forward(self, x: torch.Tensor, tracer: torch.Tensor, return_attn: bool = False):
         B, N, _ = x.shape
@@ -201,7 +188,6 @@ class _MostCausalBlock(nn.Module):
         E = self.e(tracer).transpose(1, 2).unsqueeze(-1)  # [B,h,N,1] — może być ujemne
         dE = self.e_scale * (E - E.transpose(-2, -1))
         A = self._most_weights(S, dE)
-        A = A.masked_fill(causal_mask(N, x.device).view(1, 1, N, N), 0.0)
         w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
         from precision import assert_finite
 

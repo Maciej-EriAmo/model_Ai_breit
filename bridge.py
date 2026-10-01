@@ -1,10 +1,9 @@
 """
-Most Lorentza — czysty zamek (softplus×2) pod PhiMost.
+Fork jądra Breita–Wignera (Most-1) pod tym samym szkieletem PhiMost.
 
-Lift z lab: mcps/moje badania/most.py
-Bez EMA-S / superpozycji (odrzucone 2026-09-08/09).
-
-QK z content; A = γ C / (γ² + ΔE(tracer)²)
+QK daje C = softplus². Tracer daje delta_E.
+gamma = gamma0 * (1 + beta * max(C/sum C)).
+A = gamma * C / (gamma² + delta_E²).
 """
 
 from __future__ import annotations
@@ -16,12 +15,13 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from breit_kernel import breit_wigner_rows
 from most_seal import apply_t_key_seal
 from phi_schema import PhiGraphBatch
 
 
 class BridgeTransformer(nn.Module):
-    """QK z x, zamek Lorentz na tracerze n-D, values z treści."""
+    """QK z x, jądro Breita–Wignera na tracerze n-D, values z treści."""
 
     def __init__(
         self,
@@ -67,6 +67,9 @@ class BridgeTransformer(nn.Module):
         self.log_gammas = nn.ParameterList(
             [nn.Parameter(torch.zeros(h, 1, 1)) for _ in range(num_layers)]
         )
+        self.beta_raw = nn.ParameterList(
+            [nn.Parameter(torch.zeros(h, 1, 1)) for _ in range(num_layers)]
+        )
         self.head = nn.Linear(d, n_classes)
 
     def _couple(self, S: torch.Tensor) -> torch.Tensor:
@@ -108,16 +111,13 @@ class BridgeTransformer(nn.Module):
 
             E = layer["e"](tracer).transpose(1, 2).unsqueeze(-1)
             dE = E - E.transpose(-2, -1)
-            g = F.softplus(self.log_gammas[li]) + 1e-3
 
             C = self._couple(S)
-            A = g * C / (g.square() + dE.square() + 1e-12)
-            A = A.masked_fill(
-                torch.eye(N, device=x.device, dtype=torch.bool), 0.0
-            )
-            A = apply_t_key_seal(A, tracer, enabled=self.t_seal)
+            C = C.masked_fill(torch.eye(N, device=x.device, dtype=torch.bool), 0.0)
+            C = apply_t_key_seal(C, tracer, enabled=self.t_seal)
             if key_pad is not None:
-                A = A.masked_fill(key_pad, 0.0)
+                C = C.masked_fill(key_pad, 0.0)
+            A = breit_wigner_rows(C, dE, self.log_gammas[li], self.beta_raw[li])
             w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
 
             from precision import assert_finite

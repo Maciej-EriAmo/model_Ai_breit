@@ -1,18 +1,29 @@
-# PhiMost — Most Lorentza nad przestrzenią Φ (KarmazynOs)
+# Fork — jądro Breita–Wignera (Most-1)
 
-**Katalog roboczy:** `C:\Users\drwis\model Ai`  
+To jest fork `C:\Users\drwis\model Ai` z commita `592bf00`. Tamten katalog nie jest ruszany. Zdalnego remote tu nie ma.
+
+Waga uwagi:
+
+\[
+\gamma = \gamma_0\,(1 + \beta\,\kappa),\quad \kappa = \max_j S0_{ij},\quad S0 = C / \sum C
+\]
+
+\[
+A_{ij} = \frac{\gamma_i\, C_{ij}}{\gamma_i^2 + \Delta E_{ij}^2}
+\]
+
+`C` dalej jest `softplus(QK)²`. `ΔE` dalej pochodzi z tracera. Do wagi wchodzi `ΔE²`. `beta_raw = 0` daje `beta = softplus(0) ≈ 0.69`, więc szerokość od razu zależy od szczytu wiersza. Tryby `directed` i `onesided` są odrzucone.
+
+# PhiMost — szkielet nad przestrzenią Φ
+
+**Katalog tego forka:** `C:\Users\drwis\model_Ai_breit`  
 **Indeks docs:** [`docs/INDEX.md`](docs/INDEX.md) · **Status:** [`docs/STATUS.md`](docs/STATUS.md)
 
 ## Teza
 
-Most (transformer z zamkiem Lorentza) **powstaje dopiero przy niezerowym** \(\Delta E\) z tracera — τ to **warunek mostu**, nie handicap względem Softmaxu.  
-Bez tracera most się nie formuje / jest niestabilny (degeneracja). Softmax to uwagi bez tej geometrii; porównanie ZERO pokazuje brak warunku, nie „fair fight”.  
-W KarmazynOs „plik tekstowy” **nie jest płaski** — atomy `(S, E, T)` + bańki + HOT/WARM/COLD. Silnik = **NN Most**.
-
-\[
-A_{ij} = \frac{\gamma\, C_{ij}}{\gamma^2 + \Delta E_{ij}^2}
-\quad (C=\mathrm{softplus}(QK^\top/\sqrt{d})^2;\ \Delta E \text{ z tracera})
-\]
+Szkielet zostaje: waga powstaje przy niezerowym \(\Delta E\) z tracera. Softmax jest bliźniakiem bez tej geometrii.  
+W tym forku szerokość wiersza to \(\gamma_0(1+\beta\kappa)\), a \(\kappa\) jest szczytem \(C\) w tym wierszu. Wzór jest na górze pliku.  
+`C` bierze się z `softplus(QK)²`, `ΔE` z tracera.
 
 ## Kanon
 

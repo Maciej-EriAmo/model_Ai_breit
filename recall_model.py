@@ -10,6 +10,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from breit_kernel import breit_wigner_rows
 from most_seal import apply_t_key_seal
 from recall_data import RecallBatch
 
@@ -32,7 +33,7 @@ def _key_padding(
 
 
 class PhiBridgeEncoder(nn.Module):
-    """Most softplus — zwraca embeddingi tokenów [B,N,d] (bez CLS w output)."""
+    """Most-1 Breita–Wignera. Zwraca embeddingi tokenów [B,N,d] (bez CLS)."""
 
     def __init__(
         self,
@@ -52,8 +53,10 @@ class PhiBridgeEncoder(nn.Module):
         directed_bias: float = 0.25,
     ):
         super().__init__()
-        if delta_mode not in ("square", "directed", "onesided"):
-            raise ValueError(delta_mode)
+        if delta_mode != "square":
+            raise ValueError(
+                "ten fork ma jądro Breita–Wignera: delta_mode musi być 'square'"
+            )
         self.h, self.dh = h, d // h
         self.d = d
         self.coupling = coupling
@@ -93,6 +96,9 @@ class PhiBridgeEncoder(nn.Module):
                 for _ in range(num_layers)
             ]
         )
+        self.beta_raw = nn.ParameterList(
+            [nn.Parameter(torch.zeros(h, 1, 1)) for _ in range(num_layers)]
+        )
         self.out_norm = nn.LayerNorm(d)
 
     def _couple(self, S: torch.Tensor) -> torch.Tensor:
@@ -102,22 +108,6 @@ class PhiBridgeEncoder(nn.Module):
         if self.coupling == "relu":
             return F.relu(S).square()
         raise ValueError(self.coupling)
-
-    def _most_A(self, S: torch.Tensor, dE: torch.Tensor, li: int) -> torch.Tensor:
-        g0 = F.softplus(self.log_gammas[li]) + 1e-3
-        C = self._couple(S)
-        if self.delta_mode == "square":
-            g = g0
-            return g * C / (g.square() + dE.square() + 1e-12)
-        if self.delta_mode == "onesided":
-            g = g0 * (1.0 + F.softplus(self.delta_alpha * dE))
-            return g * C / (g.square() + dE.square() + 1e-12)
-        # directed: prefer E_key < E_query (dE = E_q - E_k > 0)
-        g = g0
-        base = g * C / (g.square() + dE.square() + 1e-12)
-        gate = torch.sigmoid(self.delta_alpha * dE)
-        b = self.directed_bias
-        return base * (b + (1.0 - b) * gate)
 
     def forward(
         self,
@@ -143,13 +133,12 @@ class PhiBridgeEncoder(nn.Module):
             S = q @ k.transpose(-2, -1) / math.sqrt(self.dh)
             E = layer["e"](tracer).transpose(1, 2).unsqueeze(-1)
             dE = self.e_scale * (E - E.transpose(-2, -1))
-            A = self._most_A(S, dE, li)
-            A = A.masked_fill(
-                torch.eye(N, device=x.device, dtype=torch.bool), 0.0
-            )
-            A = apply_t_key_seal(A, tracer, enabled=self.t_seal)
+            C = self._couple(S)
+            C = C.masked_fill(torch.eye(N, device=x.device, dtype=torch.bool), 0.0)
+            C = apply_t_key_seal(C, tracer, enabled=self.t_seal)
             if key_pad is not None:
-                A = A.masked_fill(key_pad, 0.0)
+                C = C.masked_fill(key_pad, 0.0)
+            A = breit_wigner_rows(C, dE, self.log_gammas[li], self.beta_raw[li])
             w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
             from precision import assert_finite
 
