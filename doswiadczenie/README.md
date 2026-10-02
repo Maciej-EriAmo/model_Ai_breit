@@ -18,7 +18,7 @@
 |-----|---------|----------------|
 | **JoannaM** | [`joannam/`](joannam/) | RA120 Dec+5; weryfikacja **DOMKNIĘTA** (flaga=gwiazda); [`CROSSMATCH.md`](joannam/CROSSMATCH.md) |
 | **Asia** | [`joannam/ASIA.md`](joannam/ASIA.md) | RA142.5 Dec+6.5; p=0.974→0.80 po masce; [`CROSSMATCH_C2.md`](joannam/CROSSMATCH_C2.md) |
-| **DESI / niebo** | [`desi/`](desi/) | bench + holdout + BH/AGN + audyt; **zawieszone** (gate FAIL) |
+| **DESI / niebo** | [`archiwum/desi/`](../archiwum/desi/) | bench + holdout + BH/AGN + audyt; **zawieszone** (gate FAIL) |
 | **Glify / transkodowanie** | [`glify/`](glify/) | G0+G1 PASS; G2 best-seed; kanon [`docs/TRANSCODE.md`](../docs/TRANSCODE.md) |
 | **Holo-Φ** | [`glify/`](glify/) (`HOLO_*`) | P5.1 **FAIL** holdout 0/8 |
 | **Lingua / hologram-znaki** | [`glify/`](glify/) + `karmazyn_lingua.py` | warstwa **DONE**; Kana P1 negatyw |

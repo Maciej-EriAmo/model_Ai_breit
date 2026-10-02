@@ -88,7 +88,7 @@ jawnie ustawiają `t_seal=False`. Zweryfikowano: 17/17 testów zielone,
 
 ### Drugi bug seala: ZERO-tracer martwy przez hard floor (2026-09-13, P5.1)
 
-Podczas P5.1 (`doswiadczenie/glify/HOLO_P5_1.md`) audyt kodu transformera
+Podczas P5.1 (`archiwum/holo/HOLO_P5_1.md`) audyt kodu transformera
 wykrył kolejny efekt tej samej rodziny bugów: `RecallBatch.ablate(zero_tracer=True)`
 / `bridge.batch_to_xy(zero_tracer=True)` zerują CAŁY wektor tracera (nie tylko T)
 jako kontrolę ablacyjną ("Most bez τ"). Ponieważ T=0 jest zawsze < `t_attn_floor`

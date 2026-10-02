@@ -2,7 +2,7 @@
 
 **Data przebiegu:** 2026-09-11, 18:12–18:48
 **Skrypty:** `run_holo_p1.py` · `run_holo_p2.py` · `run_holo_p3.py` · `run_holo_p4a.py` (bez zmian w kodzie od czasu wcześniejszego przebiegu tego samego dnia)
-**Założenia:** [`../../docs/HOLO_ZALOZENIA.md`](../../docs/HOLO_ZALOZENIA.md)
+**Założenia:** [`../../docs/HOLO_ZALOZENIA.md`](HOLO_ZALOZENIA.md)
 **Wcześniejszy przebieg (ten sam dzień, wcześniej):** [`HOLO_WNIOSKI.md`](HOLO_WNIOSKI.md)
 
 > Ten dokument to **druga, niezależna replikacja** P1→P4a na identycznym kodzie i identycznych seedach co `HOLO_WNIOSKI.md`. Liczby **różnią się** między przebiegami mimo `torch.manual_seed(seed)` — patrz §5 (reprodukowalność). Werdykt końcowy (FAIL) jest **spójny** w obu przebiegach; konkretne PASS-y na poszczególnych seedach — nie.

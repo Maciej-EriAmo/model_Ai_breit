@@ -37,7 +37,7 @@ from make_dump_holo_v2 import (
 from recall_model import PhiBridgeEncoder, PhiSoftmaxEncoder, recall_metrics
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT_DIR = ROOT / "doswiadczenie" / "glify"
+OUT_DIR = ROOT / "archiwum" / "holo"
 SEEDS = [0, 1, 2, 7, 11, 17, 23, 42]
 EPOCHS = 60  # train_r1 (in-distribution) plateauje ~ep45 przy 100% — patrz HOLO_P5_1.md
 TRAIN_BATCH_SIZE = 16

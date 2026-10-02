@@ -120,7 +120,7 @@ Notatki badawcze: [`GLYPHS.md`](GLYPHS.md).
 ## 7. Metoda 2: hologramy znaków (Holo-Φ)
 
 **Status:** pierwsza próba labowa **FAIL gate** (2026-09-11) — Most > ZERO, ale Softmax-twin ≥ Most.  
-**Założenia w jednym:** [`HOLO_ZALOZENIA.md`](HOLO_ZALOZENIA.md) · wyniki: [`../doswiadczenie/glify/HOLOGRAMY.md`](../doswiadczenie/glify/HOLOGRAMY.md).
+**Założenia w jednym:** [`HOLO_ZALOZENIA.md`](../archiwum/holo/HOLO_ZALOZENIA.md) · wyniki: [`../doswiadczenie/glify/HOLOGRAMY.md`](../archiwum/holo/HOLOGRAMY.md).
 
 - litery / kana / kanji jako **fale** \(A e^{i\varphi}\),
 - **słowo** = interferencja Σ,

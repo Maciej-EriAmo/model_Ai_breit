@@ -1,7 +1,7 @@
 # Holo-Φ — metoda 2 (próba labowa)
 
 **Status:** pierwsza próba empiryczna **FAIL gate** (2026-09-11)  
-**Założenia:** [`../../docs/HOLO_ZALOZENIA.md`](../../docs/HOLO_ZALOZENIA.md) · **wnioski P0–P2:** [`HOLO_WNIOSKI.md`](HOLO_WNIOSKI.md)  
+**Założenia:** [`../../docs/HOLO_ZALOZENIA.md`](HOLO_ZALOZENIA.md) · **wnioski P0–P2:** [`HOLO_WNIOSKI.md`](HOLO_WNIOSKI.md)  
 **Skrót w produkcie:** [`../../docs/TRANSCODE.md`](../../docs/TRANSCODE.md) §7  
 **Kod:** `holo_phi.py` · `make_dump_holo.py` · dump `dumps/from_holo` · ckpt `checkpoints/most_holo.pt`
 
@@ -38,7 +38,7 @@ Mapowanie do Mostu: Φ + `mazur_tracer=φ/2π` + `blend_holo=0.4` + `most_seal`.
 
 1. Holo-Φ **działa jako nośnik** (Most > ZERO wszędzie).
 2. **Nie bije Softmax-twina** — FAIL gate.
-3. Audyt założeń: [`../../docs/ocena_holo.txt`](../../docs/ocena_holo.txt) → wchłonięty do [`HOLO_ZALOZENIA.md`](../../docs/HOLO_ZALOZENIA.md) (A=placeholder, 3≠5 seedów, ablacja 女 tautologiczna, blend bez sweepu, ziarnistość r@1).
+3. Audyt założeń: [`../../docs/ocena_holo.txt`](ocena_holo.txt) → wchłonięty do [`HOLO_ZALOZENIA.md`](HOLO_ZALOZENIA.md) (A=placeholder, 3≠5 seedów, ablacja 女 tautologiczna, blend bez sweepu, ziarnistość r@1).
 
 **Kolejność:** P0–**P4a DONE** ([`HOLO_WNIOSKI.md`](HOLO_WNIOSKI.md) · [`HOLO_P4a.md`](HOLO_P4a.md): **FAIL 1/8** @0.6) → opcjonalnie P4b skalowanie.
 

@@ -30,7 +30,7 @@ from image_batch import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-DOSWIADCZENIE_DESI = ROOT / "doswiadczenie" / "desi"
+DOSWIADCZENIE_DESI = ROOT / "archiwum" / "desi"
 CKPT_DIR = ROOT / "checkpoints"
 
 

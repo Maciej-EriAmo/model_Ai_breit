@@ -13,11 +13,11 @@
 | 3 | [`INSTRUKCJA.md`](INSTRUKCJA.md) | **obsługa** — co klikać na co dzień |
 | 4 | [`LEARN.md`](LEARN.md) | ładowanie danych + nauka (`phimost_learn`) |
 | 5 | [`TRANSCODE.md`](TRANSCODE.md) | **produkt** — transkodowanie alfabetów; lat=słowo vs CJK=znak; gate vs Softmax |
-| 5b | [`HOLO_ZALOZENIA.md`](HOLO_ZALOZENIA.md) | **Holo-Φ** — założenia |
-| 5c | [`../doswiadczenie/glify/HOLO_WNIOSKI.md`](../doswiadczenie/glify/HOLO_WNIOSKI.md) | wnioski P0–P2 (blend **0.6**) |
-| 5d | [`HOLO_P5_TOR_DESI.md`](HOLO_P5_TOR_DESI.md) | **projekt P5** — τ z Unihan (stroke/radical) wzorem DESI |
-| 5e | [`HOLO_P5_PLAN_IMPLEMENTACJI.md`](HOLO_P5_PLAN_IMPLEMENTACJI.md) | plan P5; **P5.0–P5.1 zrobione** → FAIL holdout |
-| 5f | [`../doswiadczenie/glify/MENDELEJEW_P0.md`](../doswiadczenie/glify/MENDELEJEW_P0.md) | **parity Most≈SM** (CV) · FULL: [`JUTRO_MENDELEJEW_FULL.md`](../doswiadczenie/glify/JUTRO_MENDELEJEW_FULL.md) |
+| 5b | [`HOLO_ZALOZENIA.md`](../archiwum/holo/HOLO_ZALOZENIA.md) | **Holo-Φ** — założenia |
+| 5c | [`../doswiadczenie/glify/HOLO_WNIOSKI.md`](../archiwum/holo/HOLO_WNIOSKI.md) | wnioski P0–P2 (blend **0.6**) |
+| 5d | [`HOLO_P5_TOR_DESI.md`](../archiwum/holo/HOLO_P5_TOR_DESI.md) | **projekt P5** — τ z Unihan (stroke/radical) wzorem DESI |
+| 5e | [`HOLO_P5_PLAN_IMPLEMENTACJI.md`](../archiwum/holo/HOLO_P5_PLAN_IMPLEMENTACJI.md) | plan P5; **P5.0–P5.1 zrobione** → FAIL holdout |
+| 5f | [`../doswiadczenie/glify/MENDELEJEW_P0.md`](../doswiadczenie/glify/MENDELEJEW_P0.md) | **parity Most≈SM** (CV) · FULL: [`JUTRO_MENDELEJEW_FULL.md`](../archiwum/historia/JUTRO_MENDELEJEW_FULL.md) |
 | 5g | [`../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md`](../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md) | lingua 6/6 DONE · mapa torów (nie mylić z Holo-Φ) |
 | 5h | [`../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md`](../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md) | one-liner pod CV / portfolio |
 | 6 | [`GLYPHS.md`](GLYPHS.md) | notatki badawcze G0/G1 (lab) |
@@ -46,7 +46,7 @@
 | E | [`FAZA_E.md`](FAZA_E.md) | [`../archiwum/historia/WYNIKI_FAZA_E.md`](../archiwum/historia/WYNIKI_FAZA_E.md) |
 | Fizyka | — | [`../archiwum/historia/WYNIKI_NBODY.md`](../archiwum/historia/WYNIKI_NBODY.md) |
 | **Glify G0–G2** | [`GLYPHS.md`](GLYPHS.md) | G0/G1/G2 w [`../doswiadczenie/glify/`](../doswiadczenie/glify/) · labnote [`LABNOTE_GLYPHS_2026-09-10.md`](../doswiadczenie/glify/LABNOTE_GLYPHS_2026-09-10.md) |
-| **Holo-Φ P5.1** | [`HOLO_P5_TOR_DESI.md`](HOLO_P5_TOR_DESI.md) | [`../doswiadczenie/glify/HOLO_P5_1.md`](../doswiadczenie/glify/HOLO_P5_1.md) — **FAIL 0/8** holdout |
+| **Holo-Φ P5.1** | [`HOLO_P5_TOR_DESI.md`](../archiwum/holo/HOLO_P5_TOR_DESI.md) | [`../doswiadczenie/glify/HOLO_P5_1.md`](../archiwum/holo/HOLO_P5_1.md) — **FAIL 0/8** holdout |
 | **Mendelejew** | [`MENDELEJEW_FULL.md`](../doswiadczenie/glify/MENDELEJEW_FULL.md) | P0 · FULL **DONE** · hold-out Na/K **FAIL** ([`MENDELEJEW_HOLDOUT_FULL_NaK.md`](../doswiadczenie/glify/MENDELEJEW_HOLDOUT_FULL_NaK.md)) |
 | **Lingua / znaki** | [`AUDYT_HOLOGRAM_ZNAKI.md`](../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md) | warstwa DONE; Kana P1 negatyw; P1b Most≈SM |
 
@@ -57,7 +57,7 @@ Hub: [`../doswiadczenie/README.md`](../doswiadczenie/README.md) · checklist: [`
 | Tor | Wejście | Wyniki / notatki |
 |-----|---------|------------------|
 | **JoannaM** (kandydat optyczny) | [`../doswiadczenie/joannam/JOANNAM.md`](../doswiadczenie/joannam/JOANNAM.md) | weryfikacja [`WERYFIKACJA.md`](../doswiadczenie/joannam/WERYFIKACJA.md) · forum EN [`FORUM_EN.md`](../doswiadczenie/joannam/FORUM_EN.md) |
-| **DESI / niebo** | [`../doswiadczenie/desi/`](../doswiadczenie/desi/) | `WYNIKI_DESI*.md`, holdout, BH/AGN, [`AUDYT_2026-09-10.md`](../doswiadczenie/desi/AUDYT_2026-09-10.md) — **zawieszone** |
+| **DESI / niebo** | [`../archiwum/desi/`](../archiwum/desi/) | `WYNIKI_DESI*.md`, holdout, BH/AGN, [`AUDYT_2026-09-10.md`](../archiwum/desi/AUDYT_2026-09-10.md) — **zawieszone** |
 | **Glify / transkodowanie** | [`TRANSCODE.md`](TRANSCODE.md) · [`GLYPHS.md`](GLYPHS.md) | [`../doswiadczenie/glify/`](../doswiadczenie/glify/) · wnioski [`AUDYT_WNIOSKI.md`](../doswiadczenie/glify/AUDYT_WNIOSKI.md) |
 | **Mendelejew / struktura** | P0 + FULL | parity CV · FULL118 kolejka |
 | **Lingua hologram-znaki** | `archiwum/skrypty/karmazyn_lingua.py` | audyt 2026-09-15; raport [`hologram-znaki-raport.md`](hologram-znaki-raport.md) |
@@ -89,5 +89,5 @@ Hub: [`../doswiadczenie/README.md`](../doswiadczenie/README.md) · checklist: [`
 
 ## External code review
 
-[`REVIEW_EXTERNAL.md`](REVIEW_EXTERNAL.md) · [`REVIEW_SUMMARY.md`](REVIEW_SUMMARY.md)  
+[`REVIEW_EXTERNAL.md`](../archiwum/historia/review/REVIEW_EXTERNAL.md) · [`REVIEW_SUMMARY.md`](../archiwum/historia/review/REVIEW_SUMMARY.md)  
 (od `/review` na katalogu — 4 bugs / 6 suggestions / 2 nits)

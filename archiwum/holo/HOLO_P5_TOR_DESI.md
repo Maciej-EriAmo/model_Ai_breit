@@ -1,7 +1,7 @@
 # Holo-Φ P5 — tor nauki wzorowany na DESI (τ = obserwator)
 
-**Status:** projekt (nie uruchomione) — odpowiedź na P4a FAIL ([`HOLO_ZALOZENIA.md`](HOLO_ZALOZENIA.md) §8b, [`../doswiadczenie/glify/HOLO_WNIOSKI.md`](../doswiadczenie/glify/HOLO_WNIOSKI.md))
-**Wzór:** [`../doswiadczenie/desi/`](../doswiadczenie/desi/) — jedyny tor, na którym Most realnie pokonał Softmax-twin (holdout +5,6 pkt)
+**Status:** projekt (nie uruchomione) — odpowiedź na P4a FAIL ([`HOLO_ZALOZENIA.md`](HOLO_ZALOZENIA.md) §8b, [`HOLO_WNIOSKI.md`](HOLO_WNIOSKI.md))
+**Wzór:** [`../archiwum/desi/`](../desi/) — jedyny tor, na którym Most realnie pokonał Softmax-twin (holdout +5,6 pkt)
 **Zasada:** [[tracer-musi-byc-obserwatorem]] — τ musi być niezależnym pomiarem, nie f(hash(S/E))
 
 ---

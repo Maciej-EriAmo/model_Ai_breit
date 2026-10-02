@@ -23,7 +23,7 @@ import torch
 
 # Determinizm run-to-run: manual_seed(seed) sam nie wystarcza — wielowątkowy
 # CPU matmul/attention ma niedeterministyczną kolejność redukcji fp (patrz
-# doswiadczenie/glify/HOLO_WNIOSKIab.md §5: ten sam seed dawał różne r@1
+# archiwum/holo/HOLO_WNIOSKIab.md §5: ten sam seed dawał różne r@1
 # między przebiegami identycznego kodu).
 torch.set_num_threads(1)
 torch.use_deterministic_algorithms(True, warn_only=True)
@@ -35,7 +35,7 @@ from phimost_learn import build_model
 from recall_model import PhiBridgeEncoder, PhiSoftmaxEncoder, train_encoder
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT_DIR = ROOT / "doswiadczenie" / "glify"
+OUT_DIR = ROOT / "archiwum" / "holo"
 
 BLENDS = [0.0, 0.2, 0.4, 0.6, 0.8]
 SEEDS = [0, 1, 17, 23, 42]  # 5 seedów: PASS(23) + typowe FAIL

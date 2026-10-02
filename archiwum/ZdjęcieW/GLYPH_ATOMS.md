@@ -2,7 +2,7 @@
 
 Kontrakt: **tekst/zdjęcie → atomy → nauka ze stanu**, nie z bitmapy.  
 Kanon osi: `1d_do_2d.txt` — litera ma **T** (hot/cold).  
-Produkt / asymetria skryptów: [`../docs/TRANSCODE.md`](../docs/TRANSCODE.md) (`glyph_unit_v2`).
+Produkt / asymetria skryptów: [`../docs/TRANSCODE.md`](../../docs/TRANSCODE.md) (`glyph_unit_v2`).
 
 ## Atom
 

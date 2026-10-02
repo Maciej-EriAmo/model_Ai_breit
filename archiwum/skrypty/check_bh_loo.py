@@ -37,7 +37,7 @@ from config import CANON
 from desi_cutouts import CACHE, load_cached
 from image_batch import _augment_flip, _pack_batches, cutout_to_tokens
 
-DOSWIADCZENIE = ROOT / "doswiadczenie" / "desi"
+DOSWIADCZENIE = ROOT / "archiwum" / "desi"
 SEED = 0
 VAL_FRAC_NON = 0.3
 EPOCHS = 40

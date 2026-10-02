@@ -168,7 +168,7 @@ Gdy będzie paper: przenieść §1–5 + tabele z `doswiadczenie/glify/WYNIKI_GL
 | `dumps/from_glyphs/` | M2 (G0) |
 | `dumps/from_photo/` | M2 (G1 demo/transkrypcja) |
 | `archiwum/ZdjęcieW/demo/demo_lat.png` | demo G1 (tylko łacina) |
-| `doswiadczenie/desi/AUDYT_2026-09-10.md` | audyt + lista fixów B1–M8 |
+| `archiwum/desi/AUDYT_2026-09-10.md` | audyt + lista fixów B1–M8 |
 | `checkpoints/most_glyphs.pt` | M1 (G0) |
 | `checkpoints/most_glyphs_photo.pt` | M1 (G1, jeśli trenowano) |
 | `doswiadczenie/glify/WYNIKI_GLYPHS.md` | wynik empiryczny G0 |

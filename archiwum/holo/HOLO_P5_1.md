@@ -1,8 +1,8 @@
 # Holo-Φ P5.1 — kontrola na τ=Unihan (stroke_count), holdout=radykał
 
 **Data:** 2026-09-13
-**Plan:** [`../../docs/HOLO_P5_PLAN_IMPLEMENTACJI.md`](../../docs/HOLO_P5_PLAN_IMPLEMENTACJI.md) ·
-[`../../docs/HOLO_P5_TOR_DESI.md`](../../docs/HOLO_P5_TOR_DESI.md)
+**Plan:** [`../../docs/HOLO_P5_PLAN_IMPLEMENTACJI.md`](HOLO_P5_PLAN_IMPLEMENTACJI.md) ·
+[`../../docs/HOLO_P5_TOR_DESI.md`](HOLO_P5_TOR_DESI.md)
 **Kod:** `unihan_tracer.py`, `make_dump_holo_v2.py`, `bench_holo_v2.py`
 
 ---

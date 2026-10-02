@@ -17,6 +17,6 @@ Zamknięte wyniki empiryczne **A–E + n-ciał + learn**, logi konsoli i wykresy
 | `dumps/_test_export_e/` | testowy eksport Fazy E |
 
 Benchy faz zapisują tu ponownie przy re-run (`bench_phi` / `bench_recall` / `bench_dump` / `bench_nbody` / …).  
-Benchy nieba → `doswiadczenie/desi/`.
+Benchy nieba → `archiwum/desi/`.
 
 Skrót żywy: [`../docs/WYNIKI.md`](../../docs/WYNIKI.md) · hub doświadczenia: [`../doswiadczenie/README.md`](../../doswiadczenie/README.md).

@@ -43,7 +43,7 @@
 ### A. Lab Φ (teraz) — kryteria lokalne
 - Nonflat ≫ flat; Most formuje się przy τ≠0  
 - Parity / gate vs Softmax **tylko** gdy `--baselines` i jasny protokół  
-- FULL118 (gdy ruszy): Most-only, `above_floor` vs chance, krzywe r@1 — wg [`../doswiadczenie/glify/JUTRO_MENDELEJEW_FULL.md`](../doswiadczenie/glify/JUTRO_MENDELEJEW_FULL.md)
+- FULL118 (gdy ruszy): Most-only, `above_floor` vs chance, krzywe r@1 — wg [`../doswiadczenie/glify/JUTRO_MENDELEJEW_FULL.md`](../archiwum/historia/JUTRO_MENDELEJEW_FULL.md)
 
 ### B. Skala LLM (później) — `kryteria_sukcesu.txt`
 Kolejność sensowna po zamknięciu fundamentu Φ:

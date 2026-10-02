@@ -1,8 +1,8 @@
 # Holo-Φ — wnioski (P0 → P2)
 
 **Data:** 2026-09-11  
-**Założenia:** [`../../docs/HOLO_ZALOZENIA.md`](../../docs/HOLO_ZALOZENIA.md)  
-**Audyt:** [`../../docs/ocena_holo.txt`](../../docs/ocena_holo.txt) (audytor 1+2)
+**Założenia:** [`../../docs/HOLO_ZALOZENIA.md`](HOLO_ZALOZENIA.md)  
+**Audyt:** [`../../docs/ocena_holo.txt`](ocena_holo.txt) (audytor 1+2)
 
 ---
 
@@ -42,7 +42,7 @@
 | **0.6** | **3/5** | **+0.020** |
 | 0.8 | 2/5 | +0.010 |
 
-**Wnioski (po recenzji [`założenia.txt`](założenia.txt)):**
+**Wnioski (po recenzji [`założenia.txt`](../../doswiadczenie/glify/założenia.txt)):**
 
 1. **FAIL P1 był częściowo od hiperparametru** — właściwe słowo: *częściowo*. `0.6` nie „naprawia metody” (3/5 < 4/5); pokazuje, że **P1 nie był wystarczającym testem potencjału** (konfiguracja nieoptymalna).  
 2. **`blend_holo = 0.6`** = **lab default / pre-registered dla P4**, nie wartość „udowodniona optymalna”. Nie dostrajać dalej 0.55/0.65 przed P4.  
@@ -79,7 +79,7 @@ Design: phase± × binds±; klucz **++ vs −+** (binds stałe). blend=0.6. Szcz
 
 ---
 
-## P4 — dwa poziomy oceny (z [`założenia.txt`](założenia.txt))
+## P4 — dwa poziomy oceny (z [`założenia.txt`](../../doswiadczenie/glify/założenia.txt))
 
 ### A. Gate lokalny (P4a) — **FAIL**
 

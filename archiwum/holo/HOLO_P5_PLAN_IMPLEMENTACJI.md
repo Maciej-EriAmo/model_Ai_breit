@@ -1,7 +1,7 @@
 # Holo-Φ P5 — plan implementacji i testów
 
 **Status:** P5.0 + P5.1 **zrobione** → **FAIL holdout 0/8** (2026-09-13). P5.2+ wstrzymane (brak sygnału).  
-**Plan bazowy:** [`HOLO_P5_TOR_DESI.md`](HOLO_P5_TOR_DESI.md) · wynik: [`../doswiadczenie/glify/HOLO_P5_1.md`](../doswiadczenie/glify/HOLO_P5_1.md)  
+**Plan bazowy:** [`HOLO_P5_TOR_DESI.md`](HOLO_P5_TOR_DESI.md) · wynik: [`HOLO_P5_1.md`](HOLO_P5_1.md)  
 **Sesja planu:** 2026-09-11 · **Sesja wyniku:** 2026-09-13 (opcja A graf-per-radykał; 2 bugi seal/negatywy naprawione w trakcie)
 
 ---
@@ -80,4 +80,4 @@ Rekomendacja: **A** — bo to dokładnie ten sam wzorzec co `image_batch.py::loa
 
 Ta sesja: **plan zapisany** (ten plik + `HOLO_P5_TOR_DESI.md`), **kod nie napisany**. Następna sesja zaczyna od P5.0 (`unihan_tracer.py` + jego testy) po rozstrzygnięciu §0.
 
-Powiązane: [[tracer-musi-byc-obserwatorem]], [[holo-phi-p1-p4a-wnioski]], `HOLO_P5_TOR_DESI.md`, `doswiadczenie/desi/AUDYT_2026-09-10.md` (wzorzec audytu przecieku/maski, do powtórzenia dla opcji A).
+Powiązane: [[tracer-musi-byc-obserwatorem]], [[holo-phi-p1-p4a-wnioski]], `HOLO_P5_TOR_DESI.md`, `archiwum/desi/AUDYT_2026-09-10.md` (wzorzec audytu przecieku/maski, do powtórzenia dla opcji A).

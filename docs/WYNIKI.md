@@ -35,8 +35,8 @@ Kanon silnika: **softplus × 2**, Softmax twin + **ZERO**, bez EMA-S.
 
 | Eksperyment | Gate / metryka | Werdykt | Doc |
 |-------------|----------------|---------|-----|
-| DESI smoke (geometry) | Most−ZERO | **FAIL** (zachowane) | [`../doswiadczenie/desi/WYNIKI_DESI.md`](../doswiadczenie/desi/WYNIKI_DESI.md) |
-| DESI demo / holdout | Most−ZERO | zob. pliki | [`../doswiadczenie/desi/`](../doswiadczenie/desi/) |
+| DESI smoke (geometry) | Most−ZERO | **FAIL** (zachowane) | [`../archiwum/desi/WYNIKI_DESI.md`](../archiwum/desi/WYNIKI_DESI.md) |
+| DESI demo / holdout | Most−ZERO | zob. pliki | [`../archiwum/desi/`](../archiwum/desi/) |
 | **JoannaM** RA120 Dec+5 | p_cluster≈0.980 | kandydat optyczny, **nie** BH | [`../doswiadczenie/joannam/JOANNAM.md`](../doswiadczenie/joannam/JOANNAM.md) |
 
 \* Na dumpie D Most ZERO ≈ Most (słabsza przewaga tracera niż w C) — odnotowane w audycie.  
@@ -83,7 +83,7 @@ Kanon silnika: **softplus × 2**, Softmax twin + **ZERO**, bez EMA-S.
 | `doswiadczenie/glify/KANA_P1B.md` | kana P1b Most≈SM |
 | `doswiadczenie/glify/CV_BLURB_MOST_PARITY.md` | one-liner CV |
 | `doswiadczenie/glify/LABNOTE_GLYPHS_2026-09-10.md` | dziennik lab / decyzje |
-| `doswiadczenie/desi/` | DESI / holdout / BH-AGN / audyt |
+| `archiwum/desi/` | DESI / holdout / BH-AGN / audyt |
 | `doswiadczenie/joannam/` | JoannaM + weryfikacja + forum EN |
 | `archiwum/historia/phi_most_*.png` | wykresy faz A–E / n-ciał |
 | `docs/GLYPHS.md` | metoda + teza (kanwa pod opis badawczy) |

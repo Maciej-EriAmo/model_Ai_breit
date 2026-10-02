@@ -5,9 +5,11 @@ Silnik A–E, `docs/`, `doswiadczenie/`, `dumps/`, `checkpoints/`, `transcode/` 
 
 | Katalog | Zawartość |
 |---------|-----------|
-| [`historia/`](historia/) | Artefakty faz A–E / n-ciał / learn (wyniki, wykresy) |
+| [`historia/`](historia/) | Artefakty faz A–E / n-ciał / learn (wyniki, wykresy); `review/` — zamknięta recenzja zewnętrzna |
 | [`ZdjęcieW/`](ZdjęcieW/) | Cutouty DESI, kontrakt glifów, skrypty pobierania |
 | [`skrypty/`](skrypty/) | Tory boczne: DESI, Holo, glify, lingua/kana, solar, Mendelejew, one-shoty, `run_*` / `bench_*` torów |
+| [`desi/`](desi/) | Tor DESI / niebo — wyniki, holdout, BH/AGN (**zawieszony**, gate FAIL) |
+| [`holo/`](holo/) | Tor Holo-Φ P0–P5.1 — założenia, plany, wyniki (**zamknięty**, FAIL holdout) |
 | [`dane/`](dane/) | Luźne CSV/JSON wejściowe (`struktura_atomow*`, `solar_names_data.json`) |
 
 ## Importy

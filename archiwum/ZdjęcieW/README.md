@@ -1,8 +1,8 @@
 # ZdjęcieW — szkice wejścia wizualnego → Φ
 
 Materiały robocze pod tor **zdjęcie → atomy** oraz cutouty nieba.  
-**Kanoniczne notatki badawcze (glify):** [`../docs/GLYPHS.md`](../docs/GLYPHS.md).  
-**Hub doświadczeń:** [`../doswiadczenie/README.md`](../doswiadczenie/README.md).
+**Kanoniczne notatki badawcze (glify):** [`../docs/GLYPHS.md`](../../docs/GLYPHS.md).  
+**Hub doświadczeń:** [`../doswiadczenie/README.md`](../../doswiadczenie/README.md).
 
 | Plik | Treść |
 |------|--------|
@@ -14,7 +14,7 @@ Materiały robocze pod tor **zdjęcie → atomy** oraz cutouty nieba.
 | `demo/JoannaM.png` | **JoannaM** — nazwany kandydat (RA 120°, Dec +5°) |
 | `pobieranie.py` | DESI Legacy → zapis do `demo/` |
 | `zdjęcieW.txt` | DESI Legacy — *późniejszy* test geometrii nieba |
-| [`../doswiadczenie/joannam/JOANNAM.md`](../doswiadczenie/joannam/JOANNAM.md) | metryka i dedykacja nazwy |
+| [`../doswiadczenie/joannam/JOANNAM.md`](../../doswiadczenie/joannam/JOANNAM.md) | metryka i dedykacja nazwy |
 
 Trening Most na cutoutach z `demo/`:
 
@@ -23,7 +23,7 @@ cd /d "C:\Users\drwis\model_Ai_breit"
 python bench_desi.py --demo-only --epochs 20 --augment 8
 ```
 
-Wynik: `doswiadczenie/desi/WYNIKI_DESI_DEMO.md`.
+Wynik: `archiwum/desi/WYNIKI_DESI_DEMO.md`.
 
 **Nie mylić:** screenshot Lunety ≠ dane treningowe Mostu.  
 Nauka glifów: stan atomu → `dumps/from_glyphs` → `phimost_learn`.

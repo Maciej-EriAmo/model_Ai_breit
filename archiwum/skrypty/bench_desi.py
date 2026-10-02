@@ -28,7 +28,7 @@ from config import CANON, assert_canon_model_kwargs
 from image_batch import ImageBatch, load_desi_train_val
 
 ROOT = Path(__file__).resolve().parents[2]
-DOSWIADCZENIE_DESI = ROOT / "doswiadczenie" / "desi"
+DOSWIADCZENIE_DESI = ROOT / "archiwum" / "desi"
 
 
 def train_eval_image(

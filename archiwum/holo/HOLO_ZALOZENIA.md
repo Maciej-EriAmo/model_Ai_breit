@@ -4,9 +4,9 @@
 **Status empirii (2026-09-11):** pierwsza próba **FAIL gate** Softmax\|Most\|ZERO (best ΔSM≈+0.003)  
 **Kod:** `holo_phi.py` · `make_dump_holo.py`  
 **Dump / ckpt:** `dumps/from_holo` · `checkpoints/most_holo.pt`  
-**Wyniki lab:** [`../doswiadczenie/glify/HOLOGRAMY.md`](../doswiadczenie/glify/HOLOGRAMY.md)  
+**Wyniki lab:** [`HOLOGRAMY.md`](HOLOGRAMY.md)  
 **Audyt założeń:** [`ocena_holo.txt`](ocena_holo.txt) — audytor 1 + **audytor 2** (8,5/10); przyjęte  
-**Powiązane:** [`TRANSCODE.md`](TRANSCODE.md) §7 · [`PAMIEC_I_KARMIENIE.md`](PAMIEC_I_KARMIENIE.md) · `most_seal.py`
+**Powiązane:** [`TRANSCODE.md`](../../docs/TRANSCODE.md) §7 · [`PAMIEC_I_KARMIENIE.md`](../../docs/PAMIEC_I_KARMIENIE.md) · `most_seal.py`
 
 > Recenzja **nie** mówi „Holo-Φ jest złe”. Mówi: FAIL jest uczciwy, ale eksperyment **jeszcze nie pozwala powiedzieć dlaczego**. Kolejność napraw: **P0→P4** (§8b).
 
@@ -176,8 +176,8 @@ Nie robić od razu dużego eksperymentu / pełnego gate.
 
 **Najmocniejsze punkty obu audytów (nie gubić):** seedy 3≠5 · ablacja 女 · blend bez sweepu · brak krzywej loss · **`A`/`T` fundamentalne** · ziarnistość r@1 przy N=73.
 
-**P0–P4a DONE.** Wnioski: [`../doswiadczenie/glify/HOLO_WNIOSKI.md`](../doswiadczenie/glify/HOLO_WNIOSKI.md).  
-**P4a FAIL:** 1/8 PASS @ blend=0.6 pre-registered ([`HOLO_P4a.md`](../doswiadczenie/glify/HOLO_P4a.md)) — sygnał P2 nie utrzymał się na 8 seedach.  
+**P0–P4a DONE.** Wnioski: [`HOLO_WNIOSKI.md`](HOLO_WNIOSKI.md).  
+**P4a FAIL:** 1/8 PASS @ blend=0.6 pre-registered ([`HOLO_P4a.md`](HOLO_P4a.md)) — sygnał P2 nie utrzymał się na 8 seedach.  
 Dalej opcjonalnie: **P4b** skalowanie alfabetów (bez udawania lokalnego gate).
 
 ---
@@ -198,5 +198,5 @@ python phimost_learn.py --src dumps/from_holo --skip-load --no-warm --no-promote
 |------|------|
 | **Ten plik** | założenia + odpowiedzi na audyt |
 | [`ocena_holo.txt`](ocena_holo.txt) | ocena zewnętrzna v0.1 |
-| [`../doswiadczenie/glify/HOLOGRAMY.md`](../doswiadczenie/glify/HOLOGRAMY.md) | dziennik wyników |
+| [`HOLOGRAMY.md`](HOLOGRAMY.md) | dziennik wyników |
 | `holo_phi.py` | implementacja |
