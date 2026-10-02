@@ -28,6 +28,8 @@
 | 5f9 | [`../doswiadczenie/glify/MENDELEJEW_COMPREL.md`](../doswiadczenie/glify/MENDELEJEW_COMPREL.md) | kompozycja + relacja grupy (5 seedów; skorygowane przez 5f10) |
 | 5f10 | [`../doswiadczenie/glify/MENDELEJEW_COMPREL_FROZEN.md`](../doswiadczenie/glify/MENDELEJEW_COMPREL_FROZEN.md) | zamrożony protokół, 20 przebiegów, Holm — połączenie +0.06…+0.14 (utrzymuje się); Most > SM/ZERO, ≈ MLP na nowych; kompozycja na znanych Most > wszyscy 17–20/20 |
 | 5f11 | [`../doswiadczenie/glify/MENDELEJEW_KERNEL_ABLATION.md`](../doswiadczenie/glify/MENDELEJEW_KERNEL_ABLATION.md) | **czysta ablacja jądra** (te same parametry/dane/procedura, 20 przebiegów) — przewaga Mostu w serii to głównie informacja ΔE, nie jądro; jądro BW +0.07…+0.11 tylko w comp+rel·PoE |
+| 5f12 | [`../doswiadczenie/glify/MENDELEJEW_RELATION_SHARE.md`](../doswiadczenie/glify/MENDELEJEW_RELATION_SHARE.md) | udział struktury relacyjnej przy stałym jądrze (Shapley) — relacja grupy (PoE) 32–68% poprawy na nowych pierwiastkach, w każdym jądrze i w MLP; na znanych 0 |
+| 5f13 | [`../doswiadczenie/glify/MENDELEJEW_KERNEL_TOK.md`](../doswiadczenie/glify/MENDELEJEW_KERNEL_TOK.md) | τ w tokenach — Softmax ≥ Most (13/15), jądro bez znaczenia (30/30 n.s.); najlepsze: comp+mix z τ w tokenach, dowolne jądro |
 | 5g | [`../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md`](../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md) | lingua 6/6 DONE · mapa torów (nie mylić z Holo-Φ) |
 | 5h | [`../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md`](../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md) | one-liner pod CV / portfolio |
 | 6 | [`GLYPHS.md`](GLYPHS.md) | notatki badawcze G0/G1 (lab) |
