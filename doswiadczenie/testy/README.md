@@ -6,7 +6,7 @@ Testy żyją tu (`doswiadczenie/testy/`), silnik zostaje w root labu.
 ## Uruchomienie
 
 ```powershell
-cd "C:\Users\drwis\model Ai"
+cd "C:\Users\drwis\model_Ai_breit"
 
 # pojedynczy plik (python)
 python doswiadczenie/testy/test_not_flat.py

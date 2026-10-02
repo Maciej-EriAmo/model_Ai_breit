@@ -20,7 +20,7 @@ Pełny „Softmax na samej sekwencji liter” = TODO (osobny loader).
 ## Testy kontraktu
 
 ```bat
-cd /d "C:\Users\drwis\model Ai"
+cd /d "C:\Users\drwis\model_Ai_breit"
 python doswiadczenie/testy/test_transcode_contract.py
 python make_dump_glyphs.py
 ```

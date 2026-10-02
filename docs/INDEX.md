@@ -66,13 +66,13 @@ Hub: [`../doswiadczenie/README.md`](../doswiadczenie/README.md) · checklist: [`
 
 ## Case study „plik ≠ płaski”
 
-- [`../dumps/textfile_phi/CASE_TEXT.md`](../dumps/textfile_phi/CASE_TEXT.md)
-- [`../dumps/textfile_phi/CASE_RUNTIME.md`](../dumps/textfile_phi/CASE_RUNTIME.md)
+- `dumps/textfile_phi/CASE_TEXT.md` *(generowany, poza repo)*
+- `dumps/textfile_phi/CASE_RUNTIME.md` *(generowany, poza repo)*
 
 ## Case study glify / alfabety
 
 - Kontrakt: [`../archiwum/ZdjęcieW/GLYPH_ATOMS.md`](../archiwum/ZdjęcieW/GLYPH_ATOMS.md) · oś T: [`../archiwum/ZdjęcieW/1d_do_2d.txt`](../archiwum/ZdjęcieW/1d_do_2d.txt)
-- Dump: [`../dumps/from_glyphs/CASE_GLYPHS.md`](../dumps/from_glyphs/CASE_GLYPHS.md)
+- Dump: `dumps/from_glyphs/CASE_GLYPHS.md` *(generowany, poza repo)*
 - Metoda (dla badaczy): [`GLYPHS.md`](GLYPHS.md)
 
 ## Powiązane poza repo

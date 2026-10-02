@@ -1,6 +1,6 @@
 """Świeży cutout JoannaM (niezależny download) → score + ablacja vs stary FITS.
 
-  cd "C:\\Users\\drwis\\model Ai"
+  cd "C:\\Users\\drwis\\model_Ai_breit"
   python doswiadczenie/joannam/reproduce_fresh_cutout.py
 """
 from __future__ import annotations

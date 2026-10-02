@@ -3,7 +3,7 @@
 Zamknięte wyniki empiryczne **A–E + n-ciał + learn**, logi konsoli i wykresy.  
 **Nie są wymagane do runtime** — to dowody PASS i materiał naukowy kanonu.
 
-> **Doświadczenia terenowe / tory boczne** (DESI, JoannaM, glify) → [`../doswiadczenie/`](../doswiadczenie/).
+> **Doświadczenia terenowe / tory boczne** (DESI, JoannaM, glify) → [`../doswiadczenie/`](../../doswiadczenie/).
 
 | Plik | Faza |
 |------|------|
@@ -19,4 +19,4 @@ Zamknięte wyniki empiryczne **A–E + n-ciał + learn**, logi konsoli i wykresy
 Benchy faz zapisują tu ponownie przy re-run (`bench_phi` / `bench_recall` / `bench_dump` / `bench_nbody` / …).  
 Benchy nieba → `doswiadczenie/desi/`.
 
-Skrót żywy: [`../docs/WYNIKI.md`](../docs/WYNIKI.md) · hub doświadczenia: [`../doswiadczenie/README.md`](../doswiadczenie/README.md).
+Skrót żywy: [`../docs/WYNIKI.md`](../../docs/WYNIKI.md) · hub doświadczenia: [`../doswiadczenie/README.md`](../../doswiadczenie/README.md).

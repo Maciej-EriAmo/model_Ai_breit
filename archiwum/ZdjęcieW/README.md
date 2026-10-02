@@ -19,7 +19,7 @@ Materiały robocze pod tor **zdjęcie → atomy** oraz cutouty nieba.
 Trening Most na cutoutach z `demo/`:
 
 ```bat
-cd /d "C:\Users\drwis\model Ai"
+cd /d "C:\Users\drwis\model_Ai_breit"
 python bench_desi.py --demo-only --epochs 20 --augment 8
 ```
 

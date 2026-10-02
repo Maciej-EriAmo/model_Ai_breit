@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 
 def _on(name: str, default: str = "0") -> bool:
@@ -30,7 +31,7 @@ def lambda_neural_weight() -> float:
 
 
 def phimost_root() -> str:
-    return os.environ.get("PHIMOST_ROOT", r"C:\Users\drwis\model Ai")
+    return os.environ.get("PHIMOST_ROOT", str(Path(__file__).resolve().parent))
 
 
 def bf16_enabled() -> bool:

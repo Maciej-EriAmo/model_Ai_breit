@@ -14,7 +14,7 @@ zwodnicza (trywialny 'zawsze 0' klasyfikator dostaje ~93%). Uzywam:
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(r"C:\Users\drwis\model Ai")))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import numpy as np
 import torch

@@ -32,7 +32,7 @@ JSONL `episodes.jsonl` = **ślad**, nie baza wiedzy.
 ### 3.1 Nauka z Twoich danych
 
 ```powershell
-cd "C:\Users\drwis\model Ai"
+cd "C:\Users\drwis\model_Ai_breit"
 
 # struktura atomów
 python phimost_learn.py --src archiwum/dane/struktura_atomow.csv --no-warm --no-promote

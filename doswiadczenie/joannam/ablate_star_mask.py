@@ -1,6 +1,6 @@
 """Ablacja JoannyM: zamaskuj gwiazdę Gaia @~8.8\" i sprawdź Δ p_cluster.
 
-  cd "C:\\Users\\drwis\\model Ai"
+  cd "C:\\Users\\drwis\\model_Ai_breit"
   python doswiadczenie/joannam/ablate_star_mask.py
 """
 from __future__ import annotations

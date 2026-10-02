@@ -71,7 +71,7 @@
 ## Komendy dnia
 
 ```powershell
-cd "C:\Users\drwis\model Ai"
+cd "C:\Users\drwis\model_Ai_breit"
 python phimost_learn.py --src archiwum/dane/struktura_atomow.csv --no-warm --no-promote
 python phimost_learn.py --src dumps/from_struktura --skip-load --skip-train --recall-id C/2p/m-1/up
 python phimost_day.py --query main -k 5 --skip-export

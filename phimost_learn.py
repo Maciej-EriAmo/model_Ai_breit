@@ -10,7 +10,7 @@ Uniwersalny loader + nauka Most (PowerShell-friendly).
 
 Przykłady (PowerShell):
 
-  cd "C:\\Users\\drwis\\model Ai"
+  cd "C:\\Users\\drwis\\model_Ai_breit"
 
   python phimost_learn.py --src struktura_atomow.csv --no-warm --no-promote
   python phimost_learn.py --src rozdzial.md --no-warm --no-promote

@@ -78,7 +78,7 @@ Skrót:
 Komendy:
 
 ```powershell
-cd "C:\Users\drwis\model Ai"
+cd "C:\Users\drwis\model_Ai_breit"
 # G0 — ręczny dump
 python make_dump_glyphs.py
 python phimost_learn.py --src dumps/from_glyphs --no-warm --no-promote --baselines

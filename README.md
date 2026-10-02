@@ -1,4 +1,9 @@
-# Fork — jądro Breita–Wignera (Most-1)
+# PhiMost — szkielet nad przestrzenią Φ
+
+**Katalog tego forka:** `C:\Users\drwis\model_Ai_breit`  
+**Indeks docs:** [`docs/INDEX.md`](docs/INDEX.md) · **Status:** [`docs/STATUS.md`](docs/STATUS.md)
+
+## Fork — jądro Breita–Wignera (Most-1)
 
 To jest fork `C:\Users\drwis\model Ai` z commita `592bf00`. Tamten katalog nie jest ruszany. Zdalnego remote tu nie ma.
 
@@ -13,11 +18,6 @@ A_{ij} = \frac{\gamma_i\, C_{ij}}{\gamma_i^2 + \Delta E_{ij}^2}
 \]
 
 `C` dalej jest `softplus(QK)²`. `ΔE` dalej pochodzi z tracera. Do wagi wchodzi `ΔE²`. `beta_raw = 0` daje `beta = softplus(0) ≈ 0.69`, więc szerokość od razu zależy od szczytu wiersza. Tryby `directed` i `onesided` są odrzucone.
-
-# PhiMost — szkielet nad przestrzenią Φ
-
-**Katalog tego forka:** `C:\Users\drwis\model_Ai_breit`  
-**Indeks docs:** [`docs/INDEX.md`](docs/INDEX.md) · **Status:** [`docs/STATUS.md`](docs/STATUS.md)
 
 ## Teza
 
@@ -80,7 +80,7 @@ Pełna mapa: [`docs/MODULY.md`](docs/MODULY.md)
 ## Start (PowerShell)
 
 ```powershell
-cd "C:\Users\drwis\model Ai"
+cd "C:\Users\drwis\model_Ai_breit"
 python phimost_learn.py --src archiwum/dane/struktura_atomow.csv --no-warm --no-promote
 python phimost_learn.py --src dumps/from_struktura --skip-load --skip-train --recall-id C/2p/m-1/up
 python doswiadczenie/testy/test_not_flat.py; python doswiadczenie/testy/test_mask.py; python doswiadczenie/testy/test_memory_bus.py
