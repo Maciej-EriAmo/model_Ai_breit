@@ -32,6 +32,7 @@
 | 5f13 | [`../doswiadczenie/glify/MENDELEJEW_KERNEL_TOK.md`](../doswiadczenie/glify/MENDELEJEW_KERNEL_TOK.md) | τ w tokenach — Softmax ≥ Most (13/15), jądro bez znaczenia (30/30 n.s.); najlepsze: comp+mix z τ w tokenach, dowolne jądro |
 | 5f14 | [`../doswiadczenie/glify/CROSSDOMAIN_COMP.md`](../doswiadczenie/glify/CROSSDOMAIN_COMP.md) | kompozycja na 3 dziedzinach (pierwiastki / kana / muzyka), ścisłe rozdzielenie — relacja kolumny (PoE) przenosi się (muzyka +0.07…+0.17, 5/5 ramion), nie w kanie (cechy bez struktury); jądro BW 0 wszędzie |
 | 5f15 | [`../doswiadczenie/glify/MENDELEJEW_KERNEL_EQUIV.md`](../doswiadczenie/glify/MENDELEJEW_KERNEL_EQUIV.md) | **TOST ±5 pkt** — Most równoważny Softmaxowi przy τ w tokenach (26/30, 0 gorszych); przy τ tylko przez ΔE zależnie od dziedziny |
+| 5f16 | [`ARTYKUL_POPULARNY.md`](ARTYKUL_POPULARNY.md) | **artykuł popularnonaukowy** — podsumowanie całej serii Mendelejewa (eksport z dokumentu Claude) |
 | 5g | [`../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md`](../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md) | lingua 6/6 DONE · mapa torów (nie mylić z Holo-Φ) |
 | 5h | [`../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md`](../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md) | one-liner pod CV / portfolio |
 | 6 | [`GLYPHS.md`](GLYPHS.md) | notatki badawcze G0/G1 (lab) |
