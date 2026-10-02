@@ -27,6 +27,7 @@
 | 5f8 | [`../doswiadczenie/glify/MENDELEJEW_COMP.md`](../doswiadczenie/glify/MENDELEJEW_COMP.md) | relacje kompozycyjne dół/prawo — złożenia nieuczone na znanych: Most 0.74–0.93 (5/5 vs SM/ZERO/MLP); na lukach ~0.3, Tc→Mo/Ru/Nb |
 | 5f9 | [`../doswiadczenie/glify/MENDELEJEW_COMPREL.md`](../doswiadczenie/glify/MENDELEJEW_COMPREL.md) | kompozycja + relacja grupy (5 seedów; skorygowane przez 5f10) |
 | 5f10 | [`../doswiadczenie/glify/MENDELEJEW_COMPREL_FROZEN.md`](../doswiadczenie/glify/MENDELEJEW_COMPREL_FROZEN.md) | zamrożony protokół, 20 przebiegów, Holm — połączenie +0.06…+0.14 (utrzymuje się); Most > SM/ZERO, ≈ MLP na nowych; kompozycja na znanych Most > wszyscy 17–20/20 |
+| 5f11 | [`../doswiadczenie/glify/MENDELEJEW_KERNEL_ABLATION.md`](../doswiadczenie/glify/MENDELEJEW_KERNEL_ABLATION.md) | **czysta ablacja jądra** (te same parametry/dane/procedura, 20 przebiegów) — przewaga Mostu w serii to głównie informacja ΔE, nie jądro; jądro BW +0.07…+0.11 tylko w comp+rel·PoE |
 | 5g | [`../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md`](../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md) | lingua 6/6 DONE · mapa torów (nie mylić z Holo-Φ) |
 | 5h | [`../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md`](../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md) | one-liner pod CV / portfolio |
 | 6 | [`GLYPHS.md`](GLYPHS.md) | notatki badawcze G0/G1 (lab) |

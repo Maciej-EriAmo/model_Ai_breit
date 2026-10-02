@@ -87,6 +87,8 @@ Kolumny: wariant × arm.
 
 > **KOREKTA (2026-10-02, protokół zamrożony, 20 przebiegów — [`MENDELEJEW_COMPREL_FROZEN.md`](MENDELEJEW_COMPREL_FROZEN.md)):** efekty połączenia utrzymują się, ale są mniejsze: krok „dół” z testem 0.31 → 0.38 (mix) / 0.39 (PoE), nie 0.32 → 0.48. `mix` ≈ `PoE` poza łańcuchami dół∘dół (tam PoE lepsze). Przewaga Mostu nad Softmax i ZERO utrzymuje się, nad MLP **nie** (w PoE MLP lepszy w kroku „dół”) — twierdzenie „5/5 wobec wszystkich modeli” poniżej było artefaktem 5 seedów.
 
+> **KOREKTA (2026-10-02, czysta ablacja jądra — [`MENDELEJEW_KERNEL_ABLATION.md`](MENDELEJEW_KERNEL_ABLATION.md)):** bliźniak Softmax w tym raporcie nie dostawał informacji z tracera (ΔE), więc porównanie Most vs Softmax mierzy „jądro + ΔE vs brak ΔE”. Przy tej samej informacji Softmax dorównuje Mostowi w kompozycji na znanych pierwiastkach; czysty zysk jądra BW występuje tylko w wariancie comp+rel·PoE na nowych pierwiastkach (+0.07…+0.11).
+
 ## Wnioski
 
 **Zastrzeżenia:** 5 seedów. Zapytań „dół” z pierwiastkiem testowym jest ~20 na seed (1 trafienie ≈ 5 pkt). Liczę się tylko ze stałym znakiem efektu. `comp` odtwarza wynik z COMP (A_dół 0.32 vs 0.33), co jest kontrolą spójności.

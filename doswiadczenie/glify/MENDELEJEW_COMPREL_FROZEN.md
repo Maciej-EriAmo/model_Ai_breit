@@ -135,6 +135,8 @@ Liczba zapytań (średnio na przebieg): A_dół=36.1, B_te=126.0, B_te_dd=35.0.
 | prawo∘dół(Mg)=Sc | 3 [2–14] · 0/20 | 3 [2–17] · 0/20 | 3 [2–17] · 0/20 | 3 [2–6] · 5/20 |
 | dół∘prawo(Al)=Ge | 7 [3–31] · 2/20 | 4 [2–58] · 2/20 | 4 [2–58] · 2/20 | 11 [3–38] · 4/20 |
 
+> **KOREKTA (2026-10-02, czysta ablacja jądra — [`MENDELEJEW_KERNEL_ABLATION.md`](MENDELEJEW_KERNEL_ABLATION.md)):** bliźniak Softmax w tym raporcie nie dostawał informacji z tracera (ΔE), więc porównanie Most vs Softmax mierzy „jądro + ΔE vs brak ΔE”. Przy tej samej informacji Softmax dorównuje Mostowi w kompozycji na znanych pierwiastkach; czysty zysk jądra BW występuje tylko w wariancie comp+rel·PoE na nowych pierwiastkach (+0.07…+0.11).
+
 ## Wnioski
 
 **Protokół:**

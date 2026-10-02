@@ -73,6 +73,8 @@ Liczba zapytań B (seed 0): treningowe=52, dotykające testu=138.
 | prawo∘dół(Mg)=Sc | 7.6 | 0/5 | K, Ar, Ca | nie |
 | dół∘prawo(Al)=Ge | 31.0 | 0/5 | Pb, C, Os | tak |
 
+> **KOREKTA (2026-10-02, czysta ablacja jądra — [`MENDELEJEW_KERNEL_ABLATION.md`](MENDELEJEW_KERNEL_ABLATION.md)):** bliźniak Softmax w tym raporcie nie dostawał informacji z tracera (ΔE), więc porównanie Most vs Softmax mierzy „jądro + ΔE vs brak ΔE”. Przy tej samej informacji Softmax dorównuje Mostowi w kompozycji na znanych pierwiastkach; czysty zysk jądra BW występuje tylko w wariancie comp+rel·PoE na nowych pierwiastkach (+0.07…+0.11).
+
 ## Wnioski
 
 **Zastrzeżenia:** 5 seedów. Zapytań złożonych z samymi pierwiastkami treningowymi jest ~50 na seed, dotykających testu ~140. „Prawo” (Z+1) jest łatwe, bo Z jest wprost w τ. Właściwy test to „dół”.
