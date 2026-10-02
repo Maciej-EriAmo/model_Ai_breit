@@ -23,6 +23,7 @@
 | 5f4 | [`../doswiadczenie/glify/MENDELEJEW_ML3_ZC.md`](../doswiadczenie/glify/MENDELEJEW_ML3_ZC.md) | FULL118 tylko Z+konfiguracja — okres wyłania się, grupa nie; SL „ta sama grupa” po korekcie przecieku Most 0.45 vs SM 0.31 (4/5); odkrycie konfiguracji: tylko Sc |
 | 5f5 | [`../doswiadczenie/glify/MENDELEJEW_SEMI.md`](../doswiadczenie/glify/MENDELEJEW_SEMI.md) | semi-supervised Z+konfiguracja — K=54 zrównoważone pary: Most 0.32 vs SM 0.10 / ZERO 0.05 / MLP 0.15 (5/5); dane bez etykiet szkodzą (poziome) |
 | 5f6 | [`../doswiadczenie/glify/MENDELEJEW_ACTIVE.md`](../doswiadczenie/glify/MENDELEJEW_ACTIVE.md) | aktywny dobór 20 par — strategie oparte na podobieństwie < losowe (zbierają blok f); wyrocznia po grupach Most 0.16 |
+| 5f7 | [`../doswiadczenie/glify/MENDELEJEW_REL.md`](../doswiadczenie/glify/MENDELEJEW_REL.md) | nauka relacyjna — osobne głowice: Most rel_Z hit@1¬f 0.41 / NMI 0.78 (najlepsze w serii, 5/5 vs SM, MLP); zlanie relacji (mix) niszczy grupę |
 | 5g | [`../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md`](../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md) | lingua 6/6 DONE · mapa torów (nie mylić z Holo-Φ) |
 | 5h | [`../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md`](../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md) | one-liner pod CV / portfolio |
 | 6 | [`GLYPHS.md`](GLYPHS.md) | notatki badawcze G0/G1 (lab) |
