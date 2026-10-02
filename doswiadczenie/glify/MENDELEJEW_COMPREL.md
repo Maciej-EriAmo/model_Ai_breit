@@ -85,6 +85,8 @@ Kolumny: wariant × arm.
 | prawo∘dół(Mg)=Sc | 7.6 (0) · K, Ar, Ca | 4.2 (0) · K, Ca, Ar | 4.2 (0) · K, Ca, Ar | 3.0 (2) · Ca, K, Sc |
 | dół∘prawo(Al)=Ge | 31.0 (0) · Pb, C, Os | 19.8 (0) · Si, B, C | 19.8 (0) · Si, B, C | 33.8 (1) · Si, B, Ba |
 
+> **KOREKTA (2026-10-02, protokół zamrożony, 20 przebiegów — [`MENDELEJEW_COMPREL_FROZEN.md`](MENDELEJEW_COMPREL_FROZEN.md)):** efekty połączenia utrzymują się, ale są mniejsze: krok „dół” z testem 0.31 → 0.38 (mix) / 0.39 (PoE), nie 0.32 → 0.48. `mix` ≈ `PoE` poza łańcuchami dół∘dół (tam PoE lepsze). Przewaga Mostu nad Softmax i ZERO utrzymuje się, nad MLP **nie** (w PoE MLP lepszy w kroku „dół”) — twierdzenie „5/5 wobec wszystkich modeli” poniżej było artefaktem 5 seedów.
+
 ## Wnioski
 
 **Zastrzeżenia:** 5 seedów. Zapytań „dół” z pierwiastkiem testowym jest ~20 na seed (1 trafienie ≈ 5 pkt). Liczę się tylko ze stałym znakiem efektu. `comp` odtwarza wynik z COMP (A_dół 0.32 vs 0.33), co jest kontrolą spójności.

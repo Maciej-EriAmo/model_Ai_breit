@@ -25,7 +25,8 @@
 | 5f6 | [`../doswiadczenie/glify/MENDELEJEW_ACTIVE.md`](../doswiadczenie/glify/MENDELEJEW_ACTIVE.md) | aktywny dobór 20 par — strategie oparte na podobieństwie < losowe (zbierają blok f); wyrocznia po grupach Most 0.16 |
 | 5f7 | [`../doswiadczenie/glify/MENDELEJEW_REL.md`](../doswiadczenie/glify/MENDELEJEW_REL.md) | nauka relacyjna — osobne głowice: Most rel_Z hit@1¬f 0.41 / NMI 0.78 (najlepsze w serii, 5/5 vs SM, MLP); zlanie relacji (mix) niszczy grupę |
 | 5f8 | [`../doswiadczenie/glify/MENDELEJEW_COMP.md`](../doswiadczenie/glify/MENDELEJEW_COMP.md) | relacje kompozycyjne dół/prawo — złożenia nieuczone na znanych: Most 0.74–0.93 (5/5 vs SM/ZERO/MLP); na lukach ~0.3, Tc→Mo/Ru/Nb |
-| 5f9 | [`../doswiadczenie/glify/MENDELEJEW_COMPREL.md`](../doswiadczenie/glify/MENDELEJEW_COMPREL.md) | kompozycja + relacja grupy — indukcja „dół” 0.32→0.48, Most 5/5 vs SM/ZERO/MLP; Tc 5., Sc 3. miejsce |
+| 5f9 | [`../doswiadczenie/glify/MENDELEJEW_COMPREL.md`](../doswiadczenie/glify/MENDELEJEW_COMPREL.md) | kompozycja + relacja grupy (5 seedów; skorygowane przez 5f10) |
+| 5f10 | [`../doswiadczenie/glify/MENDELEJEW_COMPREL_FROZEN.md`](../doswiadczenie/glify/MENDELEJEW_COMPREL_FROZEN.md) | zamrożony protokół, 20 przebiegów, Holm — połączenie +0.06…+0.14 (utrzymuje się); Most > SM/ZERO, ≈ MLP na nowych; kompozycja na znanych Most > wszyscy 17–20/20 |
 | 5g | [`../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md`](../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md) | lingua 6/6 DONE · mapa torów (nie mylić z Holo-Φ) |
 | 5h | [`../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md`](../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md) | one-liner pod CV / portfolio |
 | 6 | [`GLYPHS.md`](GLYPHS.md) | notatki badawcze G0/G1 (lab) |
