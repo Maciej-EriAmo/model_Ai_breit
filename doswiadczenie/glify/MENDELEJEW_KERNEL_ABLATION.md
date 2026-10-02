@@ -151,6 +151,8 @@ Zmienia się **wyłącznie funkcja wag uwagi**. Te same dane (zamrożona specyfi
 
 > **UZUPEŁNIENIE (2026-10-02, [`MENDELEJEW_KERNEL_TOK.md`](MENDELEJEW_KERNEL_TOK.md)):** gdy Softmax dostaje τ w tokenach (standardowo) zamiast kary −ΔE²/γ², jest lepszy lub równy kanonicznemu Mostowi w 13/15 porównań, a różnica jąder przy τ w tokenach wynosi 0 (30/30 nieistotnych). Zysk jądra BW w PoE opisany niżej dotyczy wyłącznie słabego sposobu podania ΔE Softmaxowi.
 
+> **UZUPEŁNIENIE 2 ([`CROSSDOMAIN_COMP.md`](CROSSDOMAIN_COMP.md)):** w ścisłym protokole (cechy elementów testowych niewidoczne w treningu) zysk jądra BW w PoE znika także w układzie okresowym (+0.003); w muzyce Softmax jest lepszy.
+
 ## Wnioski
 
 **Ważność porównania:**
