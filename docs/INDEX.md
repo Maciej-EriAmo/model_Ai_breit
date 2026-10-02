@@ -18,6 +18,10 @@
 | 5d | [`HOLO_P5_TOR_DESI.md`](../archiwum/holo/HOLO_P5_TOR_DESI.md) | **projekt P5** — τ z Unihan (stroke/radical) wzorem DESI |
 | 5e | [`HOLO_P5_PLAN_IMPLEMENTACJI.md`](../archiwum/holo/HOLO_P5_PLAN_IMPLEMENTACJI.md) | plan P5; **P5.0–P5.1 zrobione** → FAIL holdout |
 | 5f | [`../doswiadczenie/glify/MENDELEJEW_P0.md`](../doswiadczenie/glify/MENDELEJEW_P0.md) | **parity Most≈SM** (CV) · FULL: [`JUTRO_MENDELEJEW_FULL.md`](../archiwum/historia/JUTRO_MENDELEJEW_FULL.md) |
+| 5f2 | [`../doswiadczenie/glify/MENDELEJEW_ML3.md`](../doswiadczenie/glify/MENDELEJEW_ML3.md) | SL / UL / RL na 8 pierwiastkach — parity; Most+ tylko w UL(n) 5/5 |
+| 5f3 | [`../doswiadczenie/glify/MENDELEJEW_ML3_FULL.md`](../doswiadczenie/glify/MENDELEJEW_ML3_FULL.md) | FULL118 SL/UL/RL + szukanie luk (Sc/Ga/Ge/Tc) — Most+ w UL (blok +0.21, 5/5); odkrycie FAIL (AUC≈0.5, reguła siatki 1.0) |
+| 5f4 | [`../doswiadczenie/glify/MENDELEJEW_ML3_ZC.md`](../doswiadczenie/glify/MENDELEJEW_ML3_ZC.md) | FULL118 tylko Z+konfiguracja — okres wyłania się, grupa nie; SL „ta sama grupa” po korekcie przecieku Most 0.45 vs SM 0.31 (4/5); odkrycie konfiguracji: tylko Sc |
+| 5f5 | [`../doswiadczenie/glify/MENDELEJEW_SEMI.md`](../doswiadczenie/glify/MENDELEJEW_SEMI.md) | semi-supervised Z+konfiguracja — K=54 zrównoważone pary: Most 0.32 vs SM 0.10 / ZERO 0.05 / MLP 0.15 (5/5); dane bez etykiet szkodzą (poziome) |
 | 5g | [`../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md`](../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md) | lingua 6/6 DONE · mapa torów (nie mylić z Holo-Φ) |
 | 5h | [`../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md`](../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md) | one-liner pod CV / portfolio |
 | 6 | [`GLYPHS.md`](GLYPHS.md) | notatki badawcze G0/G1 (lab) |
