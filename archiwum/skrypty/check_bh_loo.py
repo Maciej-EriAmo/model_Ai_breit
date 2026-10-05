@@ -274,6 +274,7 @@ def main(argv: list[str] | None = None) -> int:
                     dim_tracer=CANON.n_dim,
                     num_layers=CANON.num_layers,
                     coupling=CANON.coupling,
+                    t_seal=False,  # oś 3 to barwa, nie temperatura archiwum
                 )
             tp, fp, fn, tn = train_eval_weighted(
                 model,

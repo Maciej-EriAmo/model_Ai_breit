@@ -87,6 +87,7 @@ def main() -> int:
         dim_tracer=CANON.n_dim,
         num_layers=CANON.num_layers,
         coupling=CANON.coupling,
+        t_seal=bool(blob.get("t_seal", True)),
     )
     model.load_state_dict(blob["model"])
     model.eval()

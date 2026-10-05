@@ -140,6 +140,27 @@ class BridgeTransformer(nn.Module):
         return logits, w_last, dE_last
 
 
+def masked_softmax(
+    scores: torch.Tensor,
+    eye: torch.Tensor,
+    key_pad: torch.Tensor | None = None,
+) -> torch.Tensor:
+    """Softmax bez przekątnej i bez padu.
+
+    Przekątna wypada przed softmaxem. Wycięcie jej dopiero po softmaxie
+    przy ogromnym wyniku własnym zeruje cały wiersz w float32.
+    """
+    scores = scores.masked_fill(eye, -1e9)
+    if key_pad is not None:
+        scores = scores.masked_fill(key_pad, -1e9)
+    w = F.softmax(scores, dim=-1)
+    w = w.masked_fill(eye, 0.0)
+    if key_pad is not None:
+        w = w.masked_fill(key_pad, 0.0)
+    live = w.sum(dim=-1, keepdim=True)
+    return torch.where(live > 0, w / live.clamp_min(1e-12), torch.zeros_like(w))
+
+
 class SoftmaxTransformer(nn.Module):
     """Ten sam szkielet co Bridge, ale wagi = softmax(QK). Tracer ignorowany."""
 
@@ -200,14 +221,8 @@ class SoftmaxTransformer(nn.Module):
                 t.view(B, N, self.h, self.dh).transpose(1, 2) for t in (q, k, v)
             ]
             S = q @ k.transpose(-2, -1) / math.sqrt(self.dh)
-            if key_pad is not None:
-                S = S.masked_fill(key_pad, -1e9)
             eye = torch.eye(N, device=x.device, dtype=torch.bool)
-            w = F.softmax(S, dim=-1)
-            w = w.masked_fill(eye, 0.0)
-            if key_pad is not None:
-                w = w.masked_fill(key_pad, 0.0)
-            w = w / w.sum(-1, keepdim=True).clamp_min(1e-12)
+            w = masked_softmax(S, eye, key_pad)
 
             y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
             x = x + layer["o"](y)

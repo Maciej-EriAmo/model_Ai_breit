@@ -137,9 +137,10 @@ print(r_sm)
 
 print("\n=== Most (Bridge, tracer) ===")
 torch.manual_seed(SEED)
+# t_seal=False: oś 3 to barwa, nie temperatura archiwum.
 most = BridgeTransformer(input_dim=CANON.d_x, d=CANON.d_model, h=CANON.n_heads,
                           n_classes=n_classes, dim_tracer=CANON.n_dim, num_layers=CANON.num_layers,
-                          coupling=CANON.coupling)
+                          coupling=CANON.coupling, t_seal=False)
 r_most = train_eval_weighted(most, train_b, val_b)
 print(r_most)
 
@@ -147,7 +148,7 @@ print("\n=== ZERO (Most z tau=0) ===")
 torch.manual_seed(SEED)
 most0 = BridgeTransformer(input_dim=CANON.d_x, d=CANON.d_model, h=CANON.n_heads,
                            n_classes=n_classes, dim_tracer=CANON.n_dim, num_layers=CANON.num_layers,
-                           coupling=CANON.coupling)
+                           coupling=CANON.coupling, t_seal=False)
 r_zero = train_eval_weighted(most0, train_b, val_b, zero_tracer=True)
 print(r_zero)
 

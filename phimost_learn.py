@@ -232,10 +232,23 @@ def load_preset(name: str) -> Path:
 # Train
 # ---------------------------------------------------------------------------
 
-def build_model(*, warm: bool) -> PhiBridgeEncoder:
+# Oś 3 bywa energią orbitalu albo barwą zdjęcia, nie temperaturą archiwum.
+_ENERGY_OR_COLOR_T = frozenset({"struktura", "qm", "glyphs_photo"})
+
+
+def seal_for_source(name: str) -> bool | None:
+    """None zostawia kanon (seal włączony). False: nie traktuj osi 3 jak archiwum."""
+    if name in _ENERGY_OR_COLOR_T:
+        return False
+    return None
+
+
+def build_model(*, warm: bool, t_seal: bool | None = None) -> PhiBridgeEncoder:
     if warm and DEFAULT_MOST.is_file():
         model, meta = load_encoder(DEFAULT_MOST)
         print(f"[train] warm-start ← {DEFAULT_MOST} meta_r@1={meta.get('r@1')}")
+        if t_seal is not None:
+            model.t_seal = t_seal
         return model  # type: ignore[return-value]
     print("[train] cold start (CANON)")
     return PhiBridgeEncoder(
@@ -244,6 +257,7 @@ def build_model(*, warm: bool) -> PhiBridgeEncoder:
         num_layers=CANON.num_layers,
         d=CANON.d_model,
         coupling=CANON.coupling,
+        t_seal=t_seal,
     )
 
 
@@ -261,6 +275,7 @@ def run_seed(
     restrict_prefix: bool,
     baselines: bool = False,
     amp_dtype: torch.dtype | None = None,
+    t_seal: bool | None = None,
 ) -> dict:
     """
     domyślnie tylko Most (szybka nauka).
@@ -286,7 +301,7 @@ def run_seed(
         blend_holo_proto=blend_holo,
         restrict_same_prefix=restrict_prefix,
     )
-    most = build_model(warm=warm)
+    most = build_model(warm=warm, t_seal=t_seal)
     torch.manual_seed(seed)
     most_m = train_encoder(
         most,
@@ -320,6 +335,7 @@ def run_seed(
             num_layers=CANON.num_layers,
             d=CANON.d_model,
             coupling=CANON.coupling,
+            t_seal=t_seal,
         )
         z_m = train_encoder(
             most_z,
@@ -372,11 +388,13 @@ def train_dump(
     run_name: str | None = None,
     argv: list[str] | None = None,
     amp_dtype: torch.dtype | None = None,
+    t_seal: bool | None = None,
 ) -> dict:
     mode = "Most+SM+ZERO" if baselines else "Most-only (szybki)"
     print(
         f"[train] {mode} dump={dump} seeds={seeds} epochs={epochs} "
-        f"pair={pair_mode} blend_holo={blend_holo} restrict_prefix={restrict_prefix}"
+        f"pair={pair_mode} blend_holo={blend_holo} restrict_prefix={restrict_prefix} "
+        f"t_seal={t_seal}"
     )
     from dataclasses import asdict
 
@@ -400,6 +418,7 @@ def train_dump(
             "promote": promote,
             "baselines": baselines,
             "amp_dtype": str(amp_dtype) if amp_dtype is not None else "fp32",
+            "t_seal": t_seal,
             "canon": asdict(CANON),
         },
         extra_meta={
@@ -428,6 +447,7 @@ def train_dump(
             restrict_prefix=restrict_prefix,
             baselines=baselines,
             amp_dtype=amp_dtype,
+            t_seal=t_seal,
         )
         if baselines:
             print(
@@ -746,6 +766,7 @@ def main(argv: list[str] | None = None) -> int:
             run_name=f"phimost_learn_{name}",
             argv=sys.argv,
             amp_dtype=amp_dtype,
+            t_seal=seal_for_source(name),
         )
         if args.baselines and not report["gate_pass"]:
             print("WERDYKT: FAIL (gate ΔSM)")

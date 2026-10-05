@@ -60,6 +60,15 @@ def main():
         return _orig(*a, **kw)
 
     ft.make_dump_loaders = _loaders  # type: ignore[assignment]
+    _orig_build = ft.build_model
+
+    def _build(*, warm: bool):
+        # T orbitalu to energia, nie temperatura archiwum. Seal zostaje dla Karmazyna.
+        model = _orig_build(warm=warm)
+        model.t_seal = False
+        return model
+
+    ft.build_model = _build  # type: ignore[assignment]
 
     argv = [
         "finetune_karmazyn_live.py",

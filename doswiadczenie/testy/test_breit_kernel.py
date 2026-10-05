@@ -6,8 +6,9 @@ import torch
 import torch.nn.functional as F
 
 from breit_kernel import breit_wigner_rows
+from bridge import SoftmaxTransformer, masked_softmax
 from lm_tiny import MostKnobs, TinyLM, TinyLMConfig
-from recall_model import PhiBridgeEncoder
+from recall_model import PhiBridgeEncoder, PhiSoftmaxEncoder
 
 
 def test_row_matches_the_closed_form_and_ignores_the_sign():
@@ -75,9 +76,38 @@ def test_sign_modes_are_rejected_and_a_forward_stays_finite():
     assert MostKnobs().delta_mode == "square"
 
 
+def test_softmax_twin_survives_a_huge_self_score():
+    n = 6
+    eye = torch.eye(n, dtype=torch.bool)
+    scores = torch.zeros(1, 1, n, n)
+    scores[..., range(n), range(n)] = 80.0
+    got = masked_softmax(scores, eye)
+    assert torch.isfinite(got).all()
+    assert float(got[0, 0, 0, 0]) == 0.0
+    assert torch.allclose(got[0, 0, 0, 1:], torch.full((n - 1,), 1.0 / (n - 1)))
+    assert torch.allclose(got.sum(-1), torch.ones(1, 1, n))
+
+    plain = torch.randn(2, 2, n, n)
+    pre = torch.softmax(plain.masked_fill(eye, -1e9), dim=-1)
+    pre = pre.masked_fill(eye, 0.0)
+    pre = pre / pre.sum(-1, keepdim=True)
+    assert torch.allclose(masked_softmax(plain, eye), pre, atol=1e-5)
+
+    sm = SoftmaxTransformer(input_dim=8, d=32, h=2, n_classes=2, dim_tracer=6, num_layers=1)
+    enc = PhiSoftmaxEncoder(input_dim=8, dim_tracer=6, num_layers=1, d=32, h=2)
+    x = torch.randn(2, 5, 8)
+    tr = torch.randn(2, 5, 6)
+    logits, w, _ = sm(x, tr)
+    tok, _ = enc(x, tr)
+    assert torch.isfinite(logits).all() and torch.isfinite(w).all()
+    assert torch.isfinite(tok).all()
+    assert torch.allclose(w.sum(-1), torch.ones_like(w.sum(-1)), atol=1e-5)
+
+
 if __name__ == "__main__":
     test_row_matches_the_closed_form_and_ignores_the_sign()
     test_a_larger_beta_lowers_the_peak_share()
     test_blocked_key_stays_zero_and_does_not_set_kappa()
     test_sign_modes_are_rejected_and_a_forward_stays_finite()
+    test_softmax_twin_survives_a_huge_self_score()
     print("ok")

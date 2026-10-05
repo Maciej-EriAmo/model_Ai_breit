@@ -188,10 +188,12 @@ def main() -> int:
     r_sm_val = _eval(sm, val_b)
     r_sm_new = _eval(sm, hold_b) if hold_b else {"acc": 0, "loss": 0, "mean_dE": 0, "n": 0}
 
+    # t_seal=False: oś 3 to barwa (percentyl g−r), nie temperatura archiwum.
     torch.manual_seed(args.seed)
     most = BridgeTransformer(
         input_dim=d_x, d=CANON.d_model, h=CANON.n_heads, n_classes=n_classes,
         dim_tracer=n_dim, num_layers=CANON.num_layers, coupling=CANON.coupling,
+        t_seal=False,
     )
     _train(most, train_b, epochs=args.epochs)
     r_most_val = _eval(most, val_b)
@@ -201,6 +203,7 @@ def main() -> int:
     zero = BridgeTransformer(
         input_dim=d_x, d=CANON.d_model, h=CANON.n_heads, n_classes=n_classes,
         dim_tracer=n_dim, num_layers=CANON.num_layers, coupling=CANON.coupling,
+        t_seal=False,
     )
     _train(zero, train_b, zero_tracer=True, epochs=args.epochs)
     r_z_val = _eval(zero, val_b, zero_tracer=True)
@@ -209,7 +212,7 @@ def main() -> int:
     CKPT_DIR.mkdir(parents=True, exist_ok=True)
     ckpt = CKPT_DIR / "most_desi_color.pt"
     torch.save(
-        {"model": most.state_dict(), "n_classes": n_classes, "canon": "color_T"},
+        {"model": most.state_dict(), "n_classes": n_classes, "canon": "color_T", "t_seal": False},
         ckpt,
     )
 

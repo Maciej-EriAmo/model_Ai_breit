@@ -11,6 +11,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from breit_kernel import breit_wigner_rows
+from bridge import masked_softmax
 from most_seal import apply_t_key_seal
 from recall_data import RecallBatch
 
@@ -212,13 +213,7 @@ class PhiSoftmaxEncoder(nn.Module):
             ]
             S = q @ k.transpose(-2, -1) / math.sqrt(self.dh)
             eye = torch.eye(N, device=x.device, dtype=torch.bool)
-            if key_pad is not None:
-                S = S.masked_fill(key_pad, -1e9)
-            w = F.softmax(S, dim=-1)
-            w = w.masked_fill(eye, 0.0)
-            if key_pad is not None:
-                w = w.masked_fill(key_pad, 0.0)
-            w = w / w.sum(-1, keepdim=True).clamp_min(1e-12)
+            w = masked_softmax(S, eye, key_pad)
             y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
             x = x + layer["o"](y)
             x = x + layer["ff"](x)

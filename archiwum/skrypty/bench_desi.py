@@ -150,6 +150,7 @@ def main() -> int:
     )
     r_sm = train_eval_image(sm, train, val, epochs=args.epochs)
 
+    # t_seal=False: oś 3 to barwa (percentyl g−r), nie temperatura archiwum.
     torch.manual_seed(42)
     most = BridgeTransformer(
         input_dim=d_x,
@@ -159,6 +160,7 @@ def main() -> int:
         dim_tracer=n_dim,
         num_layers=CANON.num_layers,
         coupling=CANON.coupling,
+        t_seal=False,
     )
     r_most = train_eval_image(most, train, val, epochs=args.epochs)
 
@@ -171,6 +173,7 @@ def main() -> int:
         dim_tracer=n_dim,
         num_layers=CANON.num_layers,
         coupling=CANON.coupling,
+        t_seal=False,
     )
     r_zero = train_eval_image(
         most0, train, val, zero_tracer=True, epochs=args.epochs
