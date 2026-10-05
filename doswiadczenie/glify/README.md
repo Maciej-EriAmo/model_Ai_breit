@@ -48,6 +48,10 @@
 ### Inne
 - `SOLAR_NAMES_V2.md` · `założenia.txt` · `KANA_LEARNING_DIAG.md`
 
+### Jądro (2026-10-05)
+- `JADRO_OGOLNE.md` — wnioski i program testów T0–T3
+- `NBODY_COMP.md` — relacja na katalogu słonecznym i trójce hierarchicznej
+
 ## Co pominięte / otwarte (higiena)
 
 Zob. [`../CHECKLIST.md`](../CHECKLIST.md) § „Luki 2026-09-16” oraz [`../../docs/STATUS.md`](../../docs/STATUS.md).
