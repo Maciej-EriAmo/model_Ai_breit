@@ -5,8 +5,9 @@ import _labroot  # noqa: F401
 import torch
 import torch.nn.functional as F
 
-from breit_kernel import breit_wigner_rows
-from bridge import SoftmaxTransformer, masked_softmax
+from breit_kernel import breit_wigner_rows, breit_wigner_weights
+from bridge import BridgeTransformer, SoftmaxTransformer, masked_softmax
+from most_seal import apply_t_key_seal
 from lm_tiny import MostKnobs, TinyLM, TinyLMConfig
 from recall_model import PhiBridgeEncoder, PhiSoftmaxEncoder
 
@@ -111,3 +112,65 @@ if __name__ == "__main__":
     test_sign_modes_are_rejected_and_a_forward_stays_finite()
     test_softmax_twin_survives_a_huge_self_score()
     print("ok")
+
+
+def test_weights_equal_normalised_rows():
+    torch.manual_seed(0)
+    coupling = F.softplus(torch.randn(3, 2, 5, 7, dtype=torch.float64)).square()
+    coupling[0, 0, 1] = 0.0  # wiersz bez kluczy zostaje zerem
+    delta = torch.randn(3, 2, 5, 7, dtype=torch.float64)
+    log_gamma0 = torch.randn(2, 1, 1, dtype=torch.float64)
+    beta_raw = torch.randn(2, 1, 1, dtype=torch.float64)
+    A = breit_wigner_rows(coupling, delta, log_gamma0, beta_raw)
+    ref = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
+    got = breit_wigner_weights(coupling, delta, log_gamma0, beta_raw)
+    assert torch.allclose(got, ref, atol=1e-12)
+    assert torch.all(got[0, 0, 1] == 0)
+
+
+def _bridge_reference(model, x_raw, tracer, mask):
+    """Dawna ścieżka forward: maski i seal w każdej warstwie, potem A / sum A."""
+    B, N0, _ = x_raw.shape
+    x = torch.cat([model.cls.expand(B, 1, -1), model.embed(x_raw)], dim=1)
+    tracer = torch.cat([torch.zeros(B, 1, tracer.shape[-1]), tracer], dim=1)
+    N = x.shape[1]
+    full = torch.cat([torch.ones(B, 1), mask], dim=1)
+    key_pad = (full < 0.5).view(B, 1, 1, N)
+    for li, layer in enumerate(model.layers):
+        q, k, v = layer["qkv"](layer["n1"](x)).chunk(3, dim=-1)
+        q, k, v = [t.view(B, N, model.h, model.dh).transpose(1, 2) for t in (q, k, v)]
+        S = q @ k.transpose(-2, -1) / model.dh**0.5
+        E = layer["e"](tracer).transpose(1, 2).unsqueeze(-1)
+        dE = E - E.transpose(-2, -1)
+        C = model._couple(S).masked_fill(torch.eye(N, dtype=torch.bool), 0.0)
+        C = apply_t_key_seal(C, tracer, enabled=model.t_seal)
+        C = C.masked_fill(key_pad, 0.0)
+        A = breit_wigner_rows(C, dE, model.log_gammas[li], model.beta_raw[li])
+        w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
+        y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
+        x = x + layer["o"](y)
+        x = x + layer["ff"](x)
+    return model.head(x[:, 0]), w
+
+
+def test_bridge_matches_per_layer_masking():
+    torch.manual_seed(1)
+    B, N, dx, nd = 3, 9, 8, 6
+    x = torch.randn(B, N, dx)
+    tracer = torch.rand(B, N, nd)
+    tracer[:, 2, 3] = 0.05  # TOMB — twarde odcięcie
+    tracer[:, 4, 3] = 0.30  # COLD — kara
+    mask = torch.ones(B, N)
+    mask[1, 6:] = 0.0
+    model = BridgeTransformer(input_dim=dx, dim_tracer=nd, n_classes=3, t_seal=True)
+    for p in model.parameters():
+        p.data.add_(0.1 * torch.randn_like(p))
+    logits, w, _ = model(x, tracer, mask)
+    ref_logits, ref_w = _bridge_reference(model, x, tracer, mask)
+    assert torch.allclose(logits, ref_logits, atol=1e-5)
+    assert torch.allclose(w, ref_w, atol=1e-6)
+    logits.sum().backward()
+    g = model.log_gammas[0].grad.clone()
+    model.zero_grad()
+    ref_logits.sum().backward()
+    assert torch.allclose(g, model.log_gammas[0].grad, atol=1e-5)

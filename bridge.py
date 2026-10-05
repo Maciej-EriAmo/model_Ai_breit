@@ -15,9 +15,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from breit_kernel import breit_wigner_rows
+from breit_kernel import breit_wigner_weights
 from most_seal import apply_t_key_seal
 from phi_schema import PhiGraphBatch
+from precision import assert_finite
 
 
 class BridgeTransformer(nn.Module):
@@ -89,9 +90,7 @@ class BridgeTransformer(nn.Module):
         B, N0, _ = x_raw.shape
         x = self.embed(x_raw)
         x = torch.cat([self.cls.expand(B, 1, -1), x], dim=1)
-        tracer = torch.cat(
-            [torch.zeros(B, 1, tracer.shape[-1], device=x.device), tracer], dim=1
-        )
+        tracer = torch.cat([tracer.new_zeros(B, 1, tracer.shape[-1]), tracer], dim=1)
         N = x.shape[1]
         key_pad = None
         if mask is not None:
@@ -99,6 +98,7 @@ class BridgeTransformer(nn.Module):
             cls = torch.ones(B, 1, device=x.device, dtype=m.dtype)
             full = torch.cat([cls, m], dim=1)
             key_pad = (full < 0.5).view(B, 1, 1, N)
+        keep = key_keep(tracer, key_pad, N, self.t_seal, x.dtype)
         dE_last = None
         w_last = None
 
@@ -112,20 +112,12 @@ class BridgeTransformer(nn.Module):
             E = layer["e"](tracer).transpose(1, 2).unsqueeze(-1)
             dE = E - E.transpose(-2, -1)
 
-            C = self._couple(S)
-            C = C.masked_fill(torch.eye(N, device=x.device, dtype=torch.bool), 0.0)
-            C = apply_t_key_seal(C, tracer, enabled=self.t_seal)
-            if key_pad is not None:
-                C = C.masked_fill(key_pad, 0.0)
-            A = breit_wigner_rows(C, dE, self.log_gammas[li], self.beta_raw[li])
-            w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
-
-            from precision import assert_finite
+            C = self._couple(S) * keep
+            w = breit_wigner_weights(C, dE, self.log_gammas[li], self.beta_raw[li])
 
             assert_finite(S, f"bridge.S[L{li}]")
             assert_finite(C, f"bridge.C[L{li}]")
             assert_finite(dE, f"bridge.dE[L{li}]")
-            assert_finite(A, f"bridge.A[L{li}]")
             assert_finite(w, f"bridge.w[L{li}]")
 
             y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
@@ -134,10 +126,30 @@ class BridgeTransformer(nn.Module):
             dE_last, w_last = dE.detach(), w
 
         logits = self.head(x[:, 0])
-        from precision import assert_finite
-
         assert_finite(logits, "bridge.logits")
         return logits, w_last, dE_last
+
+
+def key_keep(
+    tracer: torch.Tensor,
+    key_pad: torch.Tensor | None,
+    N: int,
+    t_seal: bool | None,
+    dtype: torch.dtype,
+) -> torch.Tensor:
+    """Mnożnik C [B,1,N,N]: bez przekątnej, bez padu, z seal.
+
+    Zależy tylko od tracera i maski, więc liczy się raz na forward,
+    a nie w każdej warstwie.
+    """
+    B = tracer.shape[0]
+    keys = apply_t_key_seal(
+        tracer.new_ones(B, 1, 1, N, dtype=dtype), tracer, enabled=t_seal
+    )
+    if key_pad is not None:
+        keys = keys.masked_fill(key_pad, 0.0)
+    eye = torch.eye(N, device=tracer.device, dtype=torch.bool)
+    return keys.masked_fill(eye, 0.0)
 
 
 def masked_softmax(
@@ -257,7 +269,7 @@ def train_eval(
         for batch in train_batches:
             x, y, tracer = batch_to_xy(batch, zero_tracer=zero_tracer)
             opt.zero_grad()
-            logits, _, _ = model(x, tracer)
+            logits, _, _ = model(x, tracer, batch.mask)
             loss = crit(logits, y)
             loss.backward()
             opt.step()
@@ -268,7 +280,7 @@ def train_eval(
     with torch.no_grad():
         for batch in val_batches:
             x, y, tracer = batch_to_xy(batch, zero_tracer=zero_tracer)
-            logits, _, dE = model(x, tracer)
+            logits, _, dE = model(x, tracer, batch.mask)
             loss = crit(logits, y)
             pred = logits.argmax(1)
             total_loss += loss.item() * x.shape[0]

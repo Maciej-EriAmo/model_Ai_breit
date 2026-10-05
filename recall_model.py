@@ -10,9 +10,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from breit_kernel import breit_wigner_rows
-from bridge import masked_softmax
-from most_seal import apply_t_key_seal
+from breit_kernel import breit_wigner_weights
+from bridge import key_keep, masked_softmax
 from recall_data import RecallBatch
 
 
@@ -119,12 +118,11 @@ class PhiBridgeEncoder(nn.Module):
         B, N0, _ = x_raw.shape
         x = self.embed(x_raw)
         x = torch.cat([self.cls.expand(B, 1, -1), x], dim=1)
-        tracer = torch.cat(
-            [torch.zeros(B, 1, tracer.shape[-1], device=x.device), tracer], dim=1
-        )
+        tracer = torch.cat([tracer.new_zeros(B, 1, tracer.shape[-1]), tracer], dim=1)
         N = x.shape[1]
         dE_last = None
         key_pad = _key_padding(mask, B, N0, x.device)  # [B,1,1,N] True=pad
+        keep = key_keep(tracer, key_pad, N, self.t_seal, x.dtype)
 
         for li, layer in enumerate(self.layers):
             q, k, v = layer["qkv"](layer["n1"](x)).chunk(3, dim=-1)
@@ -134,18 +132,12 @@ class PhiBridgeEncoder(nn.Module):
             S = q @ k.transpose(-2, -1) / math.sqrt(self.dh)
             E = layer["e"](tracer).transpose(1, 2).unsqueeze(-1)
             dE = self.e_scale * (E - E.transpose(-2, -1))
-            C = self._couple(S)
-            C = C.masked_fill(torch.eye(N, device=x.device, dtype=torch.bool), 0.0)
-            C = apply_t_key_seal(C, tracer, enabled=self.t_seal)
-            if key_pad is not None:
-                C = C.masked_fill(key_pad, 0.0)
-            A = breit_wigner_rows(C, dE, self.log_gammas[li], self.beta_raw[li])
-            w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
+            C = self._couple(S) * keep
+            w = breit_wigner_weights(C, dE, self.log_gammas[li], self.beta_raw[li])
             from precision import assert_finite
 
             assert_finite(S, f"enc.S[L{li}]")
             assert_finite(dE, f"enc.dE[L{li}]")
-            assert_finite(A, f"enc.A[L{li}]")
             assert_finite(w, f"enc.w[L{li}]")
             y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
             x = x + layer["o"](y)
