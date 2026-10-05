@@ -119,3 +119,17 @@ Stan żywy: [`STATUS.md`](STATUS.md) · mapa empirii: [`../doswiadczenie/glify/R
 | 10 | Qumran | później |
 
 **Świadomie nie mylić torów:** lingua-znaki (warstwa Store) ≠ Holo-Φ (τ Unihan) ≠ Mendelejew (struktura Φ) ≠ DESI.
+
+---
+
+## Kolejka 2026-10-05 (przegląd kodu Mostu, commit 24afb2a)
+
+Zrobione: κ = max(C)/ΣC, `breit_wigner_weights` (γ w liczniku skraca się w normalizacji), maski i seal raz na forward (`key_keep` w `bridge.py`, używane też w `recall_model.py`), `train_eval` podaje `batch.mask`. Wagi zgodne ze starą ścieżką (test w `test_breit_kernel.py`), forward+backward CPU 590 → 423 ms.
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | CLS ma własną energię (tracer 0 → E_CLS = bias `e`), Softmax nie — opisać przy porównaniach albo zablokować bias dla CLS i sprawdzić TOST | otwarte |
+| 2 | Ostatnia warstwa: tylko wiersz CLS (≈ połowa uwagi przy 2 warstwach) — za flagą, bo `w_last` jest używane w testach | otwarte |
+| 3 | `torch.compile` na jądrze (elementwise N² ≈ ¾ czasu) — na Windows/CPU wymaga kompilatora C++ | do sprawdzenia |
+| 4 | `lm_tiny.py` dalej woła `breit_wigner_rows` + ręczną normalizację — przejść na `breit_wigner_weights` | drobne |
+| 5 | `w_last` nie jest `detach()` (`dE_last` jest); `mean_dE` uśrednia przekątną, CLS i pad | drobne |
