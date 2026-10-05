@@ -41,6 +41,8 @@ Na istniejących przebiegach z τ w tokenach (`kernel_tok_runs.jsonl`, analiza j
 
 **Odczyt:** jeśli wyraźnie mniej niż 26/30 zostaje w ±2, zdanie „wzory są zamienne” obowiązuje przy ±5, nie ciaśniej. Nowego treningu tu nie ma.
 
+**Wynik (2026-10-05):** [`JADRO_T0.md`](JADRO_T0.md). Kontrola ±5 odtwarza 26/30. Przy ±2 zostaje 7/30, 0 wychodzi poza próg, 23 nierozstrzygnięte. Zamienność wzoru zostaje przy ±5.
+
 ### T1 — notacja muzyczna jako dodatkowe zmienne
 
 Dotychczasowa muzyka to 84 nuty i widmo ośmiu harmonicznych. Klasa wysokości jest w widmie w całości (1-NN ta sama kolumna 100%), więc relacja kolumny tylko wzmacniała brzmienie.
