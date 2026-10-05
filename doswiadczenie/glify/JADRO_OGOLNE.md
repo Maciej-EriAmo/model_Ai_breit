@@ -5,6 +5,8 @@
 **Komora:** `Most_Lorentz`  
 **Stoi na:** [`MENDELEJEW_KERNEL_TOK.md`](MENDELEJEW_KERNEL_TOK.md) · [`MENDELEJEW_KERNEL_EQUIV.md`](MENDELEJEW_KERNEL_EQUIV.md) · [`CROSSDOMAIN_COMP.md`](CROSSDOMAIN_COMP.md) · [`NBODY_COMP.md`](NBODY_COMP.md) · [`../../docs/ARTYKUL_POPULARNY.md`](../../docs/ARTYKUL_POPULARNY.md)
 
+Całość w jednym dokumencie: [`../../docs/PODSUMOWANIE_JADRA.md`](../../docs/PODSUMOWANIE_JADRA.md).
+
 ## Wnioski
 
 1. **Tracer jest częścią Mostu.** Wiąże most przez niezerowe ΔE z τ. Bez niego Most rozpada się do zwykłej uwagi. Treść i tracer zostają na osobnych kanałach.
@@ -78,6 +80,8 @@ Przed seedem 0 specyfikacja zamraża trzy warunki i margines straty:
 Dodatkowa zmienna w B nie może wynikać z sąsiedztwa tokenów. Kandydat do zamrożenia w specyfikacji: etykieta, której nie ma w ciągu (źródło albo znacznik składniowy trzymany z boku). Jeśli korpus tiny jej nie ma, T2 czeka na zadeklarowany zbiór. Nie dobieramy etykiety po wyniku.
 
 Margines straty wpisany w specyfikację przed pierwszym seedem. Odczyt równoważności wzoru: 90% CI różnicy średniej straty (B oraz osobno A) w całości w tym marginesie. Odczyt pluginu: Softmax z B ma niższą stratę niż Softmax z A.
+
+**Wynik (2026-10-05):** [`JADRO_T2.md`](JADRO_T2.md). Margines zamrożony ±0,05. A: Δ = +0,0009, CI w marginesie. B: Δ = −0,0016, CI w marginesie. Plugin: Softmax·tok − Softmax·0 = −0,0075, CI cały pod zerem. C (mieszane): Most kanoniczny wyżej o +0,0045. T3: wszystkie przebiegi schodzą, Most 2,15×. Średniego LM nie było.
 
 ### T3 — koszt i stabilność, przy okazji T1 i T2
 

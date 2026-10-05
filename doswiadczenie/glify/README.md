@@ -50,6 +50,7 @@
 
 ### Jądro (2026-10-05)
 - `JADRO_OGOLNE.md` — wnioski i program testów T0–T3
+- `../../docs/PODSUMOWANIE_JADRA.md` — jedno podsumowanie Most i Softmax
 - `NBODY_COMP.md` — relacja na katalogu słonecznym i trójce hierarchicznej
 
 ## Co pominięte / otwarte (higiena)

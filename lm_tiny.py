@@ -43,6 +43,7 @@ class TinyLMConfig:
     ff_mult: int = 4
     max_seq: int = 128
     dropout: float = 0.0
+    side_sources: int = 0  # 0 = brak pluginu źródła w tokenie
     most: MostKnobs = MostKnobs()
 
     @staticmethod
@@ -212,6 +213,8 @@ class TinyLM(nn.Module):
         self.attn = attn
         self.tok = nn.Embedding(cfg.vocab_size, cfg.d)
         self.pos = nn.Embedding(cfg.max_seq, cfg.d)
+        n_side = int(getattr(cfg, "side_sources", 0) or 0)
+        self.side = nn.Embedding(n_side, cfg.d) if n_side else None
         if attn == "most":
             self.blocks = nn.ModuleList([_MostCausalBlock(cfg) for _ in range(cfg.num_layers)])
             self.tracer_mix = nn.Linear(cfg.d + cfg.n_dim, cfg.n_dim)
@@ -222,17 +225,28 @@ class TinyLM(nn.Module):
         self.head = nn.Linear(cfg.d, cfg.vocab_size, bias=False)
         self.head.weight = self.tok.weight  # weight tie
 
-    def forward(self, idx: torch.Tensor, return_attn: bool = False):
-        """idx [B,N] → logits [B,N,V]; opcjonalnie lista wag [B,h,N,N] per warstwa."""
+    def forward(self, idx: torch.Tensor, return_attn: bool = False, side: torch.Tensor | None = None, zero_de: bool = False):
+        """idx [B,N] → logits [B,N,V]; opcjonalnie lista wag [B,h,N,N] per warstwa.
+
+        side: numer źródła [B,N], dodawany do tokenu. zero_de: Most bez ΔE (tracer zerowy).
+        Domyślnie zachowanie dotychczasowe.
+        """
         B, N = idx.shape
         if N > self.cfg.max_seq:
             raise ValueError(f"seq {N} > max_seq {self.cfg.max_seq}")
         pos = torch.arange(N, device=idx.device).unsqueeze(0).expand(B, N)
         x = self.tok(idx) + self.pos(pos)
+        if side is not None:
+            if self.side is None:
+                raise ValueError("side podane, a model nie ma embeddingu źródła")
+            x = x + self.side(side)
         attn_ws: list[torch.Tensor] = []
         if self.attn == "most":
-            tr0 = position_tracer(pos, self.cfg.n_dim)
-            tracer = self.tracer_mix(torch.cat([x, tr0], dim=-1))
+            if zero_de:
+                tracer = torch.zeros(B, N, self.cfg.n_dim, device=idx.device)
+            else:
+                tr0 = position_tracer(pos, self.cfg.n_dim)
+                tracer = self.tracer_mix(torch.cat([x, tr0], dim=-1))
             for blk in self.blocks:
                 if return_attn:
                     x, w = blk(x, tracer, return_attn=True)
