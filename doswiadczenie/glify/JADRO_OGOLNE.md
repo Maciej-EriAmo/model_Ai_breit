@@ -61,6 +61,8 @@ Testy zadeklarowane z góry:
 
 **Odczyt negatywny:** kolumna notacji nie niesie sygnału i PoE nic nie daje (jak kana), albo notacja jest już całym sąsiedztwem i mix obniża wynik (jak trójka). T1 zamyka lukę reguły zmiennych na jednej dziedzinie. Nie zamyka języka ani kosztu.
 
+**Wynik (2026-10-05):** [`JADRO_T1.md`](JADRO_T1.md). Na samym widmie pisownia 0%, oktawa 100%. N2: jądra z τ w tokenie zamienne (Δ ≈ 0, w ±5). N3: token bije karę ΔE o +0,11…+0,31. N1: PoE pomaga tylko ramionom, które pisownię już dostają (ΔE i MLP), nie Mostowi i Softmaxowi bez tracera. T3: wszystkie przebiegi schodzą, Most 1,12×.
+
 ### T2 — język, ta sama informacja dla obu jąder
 
 Punkt startu: istniejący tiny LM ([`../../archiwum/skrypty/run_lm_tiny_smoke.py`](../../archiwum/skrypty/run_lm_tiny_smoke.py), [`../../lm_tiny.py`](../../lm_tiny.py)), nie nowy stos. Średni LM tylko wtedy, gdy T2 na tiny jest skończone i skończone liczbowo.
