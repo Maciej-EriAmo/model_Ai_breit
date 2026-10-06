@@ -20,7 +20,7 @@
 
 | # | Kryterium | Co to znaczy u Mosta | Stan dziś (lab) | Co trzeba zbudować / zmierzyć |
 |---|-----------|----------------------|-----------------|-------------------------------|
-| **1** | Skalowanie loss 100M–300M vs Llama | Most (softplus×2 + τ) jako **uwaga** w transformerze tej skali; ten sam korpus/tokeny co baseline Softmax/Llama-attn | **CZĘŚCIOWO** — tiny (~116k) + medium (~3.3M) **DONE**; 100–300M **NIE** (brak CUDA) | (a) ten sam `lm_tiny` stack, (b) większy korpus, (c) loss @ 100M+, (d) Llama-attn / NVIDIA |
+| **1** | Skalowanie loss 100M–300M vs Llama | Most (softplus×2 + τ) jako **uwaga** w transformerze tej skali; ten sam korpus/tokeny co baseline Softmax/Llama-attn | **CZĘŚCIOWO** — tiny (~116k) + medium (~3.3M) na notatkach i na WikiText-2 **DONE**; 100–300M **NIE** (brak CUDA) | (a) ten sam `lm_tiny` stack, (b) większy korpus, (c) loss @ 100M+, (d) Llama-attn / NVIDIA |
 | **2** | Stabilność BF16 | Forward/backward zamka Lorentza + softplus² w bf16 bez NaN/Inf | **DONE (gate)** — `precision.py` + autocast bf16 + finite-check; `run_bf16_gate.py` **PASS** na FULL118 (16 ep); testy `test_bf16.py` | Utrzymać gate przy skalowaniu (#1); lab default nadal FP32 |
 | **3** | VRAM vs FlashAttention | Kernel/ścieżka Most nie musi bić FA w tok/s, ale **musi** pokazać niższy VRAM (KV / kompresja / struktura Φ) przy porównywalnym zadaniu | **NIE** — brak kernela FA, brak pomiaru VRAM vs FA | (a) baseline FA (PyTorch SDPA / FA2), (b) Most attn path, (c) tabela: tok/s · peak VRAM · długość kontekstu, (d) jawny „trade accepted” |
 | **4** | Needle 16k+ | Długi kontekst z τ/Φ: igła w środku sekwencji odzyskiwalna | **NIE** — MVP = recall/ranking nad atomami, nie LM 16k | (a) zadanie needle (synthetic lub tekst), (b) sekwencje ≥16k, (c) metryka retrieval @ pozycjach head/mid/tail, (d) ablacje τ=0 vs Most |
@@ -60,13 +60,13 @@ Kolejność sensowna po zamknięciu fundamentu Φ:
 
 | Warstwa | Stan |
 |---------|------|
-| **A** FULL118 Most-only | **DONE** (r@1≈0.57, floor 3/3) |
+| **A** FULL118 Most-only | **DONE** 2026-10-06 Breit (r@1=0,575, floor 3/3) |
 | **A** Hold-out Na/K FULL | **FAIL 2/2** (brak gen. grupy — wynik negatywny OK) |
 | **B #5** run-dir | **DONE** — `runlog.py` + `runs/` |
 | **B #2** BF16 | **DONE (gate)** — `precision.py` · `--bf16` · `BF16_GATE.md` PASS |
 | **B #1a** baselines na skali labu (FULL118) | **DONE** — Most≈SM, gate 0/5, Most wolniejszy; VRAM N/A (CPU) |
 | **B #1b** tiny LM smoke ≪1M | **DONE** — [`LM_TINY_1B.md`](../doswiadczenie/glify/LM_TINY_1B.md) |
-| **B #1c** medium LM ~3.3M | **DONE** — Most 2.715 vs SM 2.657 · descend · 1.34× · [`LM_MEDIUM_1C.md`](../doswiadczenie/glify/LM_MEDIUM_1C.md) |
+| **B #1c** medium LM ~3.3M | **DONE** — notatki: Most 2,416 vs SM 2,353 · WikiText-2 valid/test: Most lekko niżej (Δ +0,047) · [`LM_MEDIUM_WIKITEXT_HOLDOUT.md`](../doswiadczenie/glify/LM_MEDIUM_WIKITEXT_HOLDOUT.md) |
 | **B #1d** 100–300M vs Llama | **BLOCKED** sprzętowo + **brak trendu mid** z probe 3M/2k |
 | **B mech.** lost-in-middle @2k | **FAIL** na default knobs — [`LOST_IN_MIDDLE_PROBE.md`](../doswiadczenie/glify/LOST_IN_MIDDLE_PROBE.md) |
 | **B knobs** γ/e_scale/τ | **PASS cienki** — `ultra_wide` dogania SM ent_mid — [`MOST_KNOBS_SWEEP.md`](../doswiadczenie/glify/MOST_KNOBS_SWEEP.md) |

@@ -20,7 +20,8 @@
 | PL P1b | Most≈SM | `POLISH_P1B.md` |
 | Mendelejew P0 | **parity Most≈SM**, nonflat 3/3 | `MENDELEJEW_P0.md` · CV: `CV_BLURB_MOST_PARITY.md` |
 | Hold-out Na | **negatyw** | `MENDELEJEW_HOLDOUT_Na.md` |
-| Mendelejew FULL 118 | **DONE** Most-only · mean r@1=0.567 · floor 3/3 | `MENDELEJEW_FULL.md` |
+| Mendelejew FULL 118 | **DONE** 2026-10-06 Breit · r@1=0,575 · floor 3/3 | `MENDELEJEW_FULL.md` |
+| Średni LM WikiText-2 | **DONE** Most lekko przed SM na valid i teście | `LM_MEDIUM_WIKITEXT_HOLDOUT.md` |
 | Hold-out Na/K FULL (square) | **FAIL 2/2** | `MENDELEJEW_HOLDOUT_FULL_NaK.md` |
 | Hold-out Na/K **onesided** | Na **PARTIAL** / K **FAIL** | `MENDELEJEW_HOLDOUT_FULL_NaK_onesided.md` |
 | Baselines FULL118 | Most≈SM · gate 0/5 · Most 1.7× wolniejszy | `MENDELEJEW_BASELINES_COMPARE.md` |

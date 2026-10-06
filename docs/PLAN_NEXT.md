@@ -109,7 +109,7 @@ Stan żywy: [`STATUS.md`](STATUS.md) · mapa empirii: [`../doswiadczenie/glify/R
 |---|------|--------|
 | 1 | Mendelejew P0 (parity Most≈SM, nonflat 3/3) | **DONE** |
 | 2 | Hold-out Na (mini) | **DONE negatyw** |
-| 3 | `run_mendelejew_full.py --most-only` (118) | **NEXT** gdy budżet ~1.5–3 h |
+| 3 | `run_mendelejew_full.py --most-only` (118) | **DONE** 2026-10-06 na jądrze Breita · r@1=0,575 · floor 3/3 · 768 s |
 | 4 | Hold-out Na/K na FULL | po #3 |
 | 5 | Classical Softmax loader (nie twin-on-Φ) | **TODO** TRANSCODE §2 |
 | 6 | Multi-seed G2 / bogatszy korpus | otwarte |

@@ -45,10 +45,10 @@ N_VAL = 50
 def ensure_dump() -> None:
     if (DUMP / "atoms.jsonl").is_file():
         return
+    # export sam buduje wiersze. main() z make_periodic_full parsuje sys.argv
+    # i wywraca ten bieg na --most-only, gdy dumpu jeszcze nie ma.
     from export_mendelejew_full import export
-    from make_periodic_full import main as gen
 
-    gen()
     export(DUMP)
 
 

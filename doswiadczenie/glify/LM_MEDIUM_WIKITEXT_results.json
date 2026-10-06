@@ -1,0 +1,98 @@
+{
+  "protocol": "Medium causal LM Most vs Softmax — kryterium #1c",
+  "preset": "medium",
+  "cfg": {
+    "vocab_size": 256,
+    "d": 256,
+    "h": 4,
+    "num_layers": 4,
+    "n_dim": 4,
+    "ff_mult": 4,
+    "max_seq": 256,
+    "dropout": 0.0,
+    "side_sources": 0,
+    "most": {
+      "gamma_init": 0.0,
+      "beta_init": 0.0,
+      "e_scale": 1.0,
+      "couple_temp": 1.0,
+      "delta_mode": "square",
+      "delta_alpha": 1.0,
+      "directed_bias": 0.25
+    }
+  },
+  "steps": 10685,
+  "seeds": [
+    0,
+    1
+  ],
+  "seq_len": 128,
+  "batch_size": 8,
+  "corpus": "C:\\Users\\drwis\\model_Ai_breit\\dane\\wikitext-2-raw-v1\\wikitext-2-raw\\wiki.train.raw",
+  "data_bytes": 10940747,
+  "rows": [
+    {
+      "seed": 0,
+      "most": {
+        "attn": "most",
+        "n_params": 3287684,
+        "wall_s": 1258.815045700001,
+        "steps": 10685,
+        "loss_first": 170.37728881835938,
+        "loss_final": 1.5545684099197388,
+        "ppl_final": 4.733043193817139,
+        "sec_per_step": 0.1178114221525504
+      },
+      "softmax": {
+        "attn": "softmax",
+        "n_params": 3286528,
+        "wall_s": 1179.7305756999995,
+        "steps": 10685,
+        "loss_first": 170.53326416015625,
+        "loss_final": 1.572529911994934,
+        "ppl_final": 4.81882381439209,
+        "sec_per_step": 0.11040997432849785
+      },
+      "delta_final_loss_sm_minus_most": 0.017961502075195312,
+      "time_ratio_most_over_sm": 1.0670360433381803
+    },
+    {
+      "seed": 1,
+      "most": {
+        "attn": "most",
+        "n_params": 3287684,
+        "wall_s": 1496.6433806999994,
+        "steps": 10685,
+        "loss_first": 170.32330322265625,
+        "loss_final": 1.5538841485977173,
+        "ppl_final": 4.729805946350098,
+        "sec_per_step": 0.1400695723631258
+      },
+      "softmax": {
+        "attn": "softmax",
+        "n_params": 3286528,
+        "wall_s": 1231.4150842999952,
+        "steps": 10685,
+        "loss_first": 169.8457489013672,
+        "loss_final": 1.6014559268951416,
+        "ppl_final": 4.960248947143555,
+        "sec_per_step": 0.11524708322882501
+      },
+      "delta_final_loss_sm_minus_most": 0.047571778297424316,
+      "time_ratio_most_over_sm": 1.2153849662729888
+    }
+  ],
+  "aggregate": {
+    "most_loss_final": 1.554226279258728,
+    "sm_loss_final": 1.5869929194450378,
+    "delta_sm_minus_most": 0.032766640186309814,
+    "time_ratio": 1.1412105048055845,
+    "n_params_most": 3287684,
+    "n_params_sm": 3286528
+  },
+  "both_curves_descend": true,
+  "verdict": "#1c medium LM: params=3287684 | mean loss Most=1.554 SM=1.587 Δ(SM−Most)=+0.033 | time≈1.14× | descend=True",
+  "elapsed_s": 5167.154566049576,
+  "run_dir": "C:\\Users\\drwis\\model_Ai_breit\\runs\\20261006_063037_lm_medium_wikitext",
+  "note": "Skala medium (~3M), nie gate 100–300M vs Llama. Korpus to trening WikiText-2, jeden przejazd na seed. Strata jest treningowa, nie na pliku valid/test."
+}

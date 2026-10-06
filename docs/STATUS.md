@@ -34,13 +34,14 @@
 | Priorytet | Item | Czas / uwagi |
 |-----------|------|--------------|
 | **A** | ~~Hold-out Na/K na FULL118~~ | **FAIL 2/2** — brak generalizacji grupy ([`MENDELEJEW_HOLDOUT_FULL_NaK.md`](../doswiadczenie/glify/MENDELEJEW_HOLDOUT_FULL_NaK.md)) |
-| **A′** | ~~`run_mendelejew_full.py --most-only`~~ | **DONE** mean r@1=0.567 floor 3/3 (~15 min CPU) |
+| **A′** | ~~`run_mendelejew_full.py --most-only`~~ | **DONE** 2026-10-06 jądro Breita · r@1=0,575 · floor 3/3 · 768 s · [`MENDELEJEW_FULL.md`](../doswiadczenie/glify/MENDELEJEW_FULL.md) |
 | **B′** | hologram-E (period×group×block) | opcjonalnie; hold-out FAIL zostaje jako negatyw |
 | **S0** | ~~Kryterium #5 run-dir~~ | **DONE** — `runlog.py` · `runs/` · learn + FULL |
 | **S1** | ~~Kryterium #2 BF16~~ | **DONE** — `precision.py` · `--bf16` · gate PASS ([`BF16_GATE.md`](../doswiadczenie/glify/BF16_GATE.md)) |
 | **S2** | Kryterium **#1** — baselines na FULL118 | **DONE (zrzut)** — Most≈SM r@1 (+0.005), gate **0/5**, Most ~1.7× wolniejszy, RSS≈ · [`MENDELEJEW_BASELINES_COMPARE.md`](../doswiadczenie/glify/MENDELEJEW_BASELINES_COMPARE.md) |
 | **S3** | ~~#1b tiny LM smoke~~ | **DONE** — ~116k params · Most loss 0.637 vs SM 0.664 · descend OK · [`LM_TINY_1B.md`](../doswiadczenie/glify/LM_TINY_1B.md) |
-| **S4** | ~~#1c medium LM ~3.3M~~ | **DONE** — loss Most 2.715 vs SM 2.657 · descend OK · 1.34× wolniejszy · [`LM_MEDIUM_1C.md`](../doswiadczenie/glify/LM_MEDIUM_1C.md) |
+| **S4** | ~~#1c medium LM ~3.3M~~ | **DONE** 2026-10-06 notatki z repo · Most 2,416 vs SM 2,353 · 1,32× · [`LM_MEDIUM_1C.md`](../doswiadczenie/glify/LM_MEDIUM_1C.md) |
+| **S4b** | średni model na WikiText-2 | **DONE** valid 1,557/1,604 · test 1,580/1,627 · Most lekko niżej, oba seedy · duży model nadal nie · [`LM_MEDIUM_WIKITEXT_HOLDOUT.md`](../doswiadczenie/glify/LM_MEDIUM_WIKITEXT_HOLDOUT.md) |
 | **S5** | Lost-in-middle probe (recenzja) | **FAIL hipotezy** @3M/2k — SM płaski mid, Most nie wyższy ent_mid · [`LOST_IN_MIDDLE_PROBE.md`](../doswiadczenie/glify/LOST_IN_MIDDLE_PROBE.md) · [`ODPOWIEDZ_RECENZJA_LOST_IN_MIDDLE.md`](ODPOWIEDZ_RECENZJA_LOST_IN_MIDDLE.md) |
 | **S6** | Strojenie gałek zamka (γ/e/τ) | **PASS cienki** — `ultra_wide` (γ=2.5, e=0.1, τ=2) ≈ SM ent_mid · [`MOST_KNOBS_SWEEP.md`](../doswiadczenie/glify/MOST_KNOBS_SWEEP.md) |
 | **S7** | Skierowane ΔE (LM mid) | **PASS cienki** tylko z szerokim g; sam directed ≤ square · [`SIGNED_DELTA_ABLATION.md`](../doswiadczenie/glify/SIGNED_DELTA_ABLATION.md) |

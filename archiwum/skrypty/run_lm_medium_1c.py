@@ -17,10 +17,12 @@ if str(_LAB) not in sys.path:
 
 import argparse
 import json
+import math
 import time
 from pathlib import Path
 
 import torch
+import torch.nn.functional as F
 
 from lm_tiny import (
     TinyLM,
@@ -57,6 +59,41 @@ def run_arm(attn, cfg, batches, *, steps, lr, seed):
         "ppl_final": curve[-1]["ppl"] if curve else float("nan"),
         "curve": curve,
         "sec_per_step": wall / max(1, steps),
+    }, model
+
+
+def load_byte_file(path: Path, vocab_size: int) -> torch.Tensor:
+    raw = path.read_text(encoding="utf-8", errors="replace")
+    return build_char_corpus([raw], vocab_size)
+
+
+@torch.no_grad()
+def eval_lm(model: TinyLM, data: torch.Tensor, *, seq_len: int, batch_size: int) -> dict:
+    """Średnia strata na całym pliku: okna seq_len bez zachodzenia na siebie."""
+    model.eval()
+    starts = list(range(0, data.numel() - seq_len + 1, seq_len))
+    if not starts:
+        raise ValueError(f"plik krótszy niż seq_len={seq_len}")
+    total = 0.0
+    tokens = 0
+    for i in range(0, len(starts), batch_size):
+        chunk = starts[i : i + batch_size]
+        rows = torch.stack([data[s : s + seq_len] for s in chunk])
+        logits = model(rows)
+        total += float(
+            F.cross_entropy(
+                logits[:, :-1].reshape(-1, logits.size(-1)),
+                rows[:, 1:].reshape(-1),
+                reduction="sum",
+            )
+        )
+        tokens += rows[:, 1:].numel()
+    loss = total / tokens
+    return {
+        "loss": loss,
+        "ppl": math.exp(loss),
+        "tokens": tokens,
+        "windows": len(starts),
     }
 
 
@@ -68,22 +105,43 @@ def main(argv=None) -> dict:
     ap.add_argument("--batch-size", type=int, default=8)
     ap.add_argument("--n-batches", type=int, default=60)
     ap.add_argument("--lr", type=float, default=1e-3)
+    ap.add_argument(
+        "--corpus",
+        type=Path,
+        default=None,
+        help="plik tekstu zamiast notatek z repo (np. WikiText train)",
+    )
+    ap.add_argument("--valid", type=Path, default=None, help="plik valid, średnia strata po treningu")
+    ap.add_argument("--test", type=Path, default=None, help="plik test, średnia strata po treningu")
     args = ap.parse_args(argv)
 
     seeds = [int(x) for x in args.seeds.split(",") if x.strip()]
     cfg = TinyLMConfig.preset("medium")
-    texts = load_text_corpus(ROOT, repeat=3)
-    data = build_char_corpus(texts, cfg.vocab_size)
+    if args.corpus is not None:
+        raw = args.corpus.read_text(encoding="utf-8", errors="replace")
+        data = build_char_corpus([raw], cfg.vocab_size)
+        corpus_name = str(args.corpus)
+        out_stem = "LM_MEDIUM_WIKITEXT_HOLDOUT" if (args.valid or args.test) else "LM_MEDIUM_WIKITEXT"
+        run_name = "lm_medium_wikitext_holdout" if (args.valid or args.test) else "lm_medium_wikitext"
+    else:
+        texts = load_text_corpus(ROOT, repeat=3)
+        data = build_char_corpus(texts, cfg.vocab_size)
+        corpus_name = "docs+glify"
+        out_stem = "LM_MEDIUM_1C"
+        run_name = "lm_medium_1c"
+    valid_data = load_byte_file(args.valid, cfg.vocab_size) if args.valid else None
+    test_data = load_byte_file(args.test, cfg.vocab_size) if args.test else None
     n_params = count_params(TinyLM(cfg, attn="most"))
     if not (2_000_000 <= n_params <= 5_000_000):
         print(f"WARN: params={n_params} poza oknem 2–5M (kontynuuję)")
 
     rundir = RunDir.create(
-        "lm_medium_1c",
+        run_name,
         argv=sys.argv,
         hparams={
             "preset": "medium",
             "cfg": config_dict(cfg),
+            "corpus": corpus_name,
             "steps": args.steps,
             "seeds": seeds,
             "seq_len": args.seq_len,
@@ -91,6 +149,10 @@ def main(argv=None) -> dict:
             "n_batches": args.n_batches,
             "lr": args.lr,
             "data_bytes": int(data.numel()),
+            "valid": str(args.valid) if args.valid else None,
+            "test": str(args.test) if args.test else None,
+            "valid_bytes": int(valid_data.numel()) if valid_data is not None else None,
+            "test_bytes": int(test_data.numel()) if test_data is not None else None,
             "n_params": n_params,
         },
         extra_meta={"criterion": "success#1c_medium_lm"},
@@ -98,6 +160,7 @@ def main(argv=None) -> dict:
     print(
         f"#1c medium LM d={cfg.d} L={cfg.num_layers} params={n_params} "
         f"data_bytes={data.numel()} steps={args.steps} seeds={seeds}\n"
+        f"corpus={corpus_name}\n"
         f"run={rundir.path}",
         flush=True,
     )
@@ -113,18 +176,40 @@ def main(argv=None) -> dict:
             seed=2000 + seed,
         )
         print(f"\n=== seed={seed} ===", flush=True)
-        most = run_arm("most", cfg, batches, steps=args.steps, lr=args.lr, seed=seed)
+        most, most_model = run_arm("most", cfg, batches, steps=args.steps, lr=args.lr, seed=seed)
         print(
             f"  Most   {most['loss_first']:.3f}→{most['loss_final']:.3f} "
             f"ppl={most['ppl_final']:.2f} wall={most['wall_s']:.1f}s",
             flush=True,
         )
-        sm = run_arm("softmax", cfg, batches, steps=args.steps, lr=args.lr, seed=seed)
+        sm, sm_model = run_arm("softmax", cfg, batches, steps=args.steps, lr=args.lr, seed=seed)
         print(
             f"  Softmax {sm['loss_first']:.3f}→{sm['loss_final']:.3f} "
             f"ppl={sm['ppl_final']:.2f} wall={sm['wall_s']:.1f}s",
             flush=True,
         )
+        for name, arm, model in (("most", most, most_model), ("softmax", sm, sm_model)):
+            torch.save(model.state_dict(), rundir.path / f"{name}_seed{seed}.pt")
+            if valid_data is not None:
+                arm["valid"] = eval_lm(
+                    model, valid_data, seq_len=args.seq_len, batch_size=args.batch_size
+                )
+            if test_data is not None:
+                arm["test"] = eval_lm(
+                    model, test_data, seq_len=args.seq_len, batch_size=args.batch_size
+                )
+        if "valid" in most:
+            print(
+                f"  valid Most={most['valid']['loss']:.3f} SM={sm['valid']['loss']:.3f} "
+                f"Δ={sm['valid']['loss'] - most['valid']['loss']:+.3f}",
+                flush=True,
+            )
+        if "test" in most:
+            print(
+                f"  test  Most={most['test']['loss']:.3f} SM={sm['test']['loss']:.3f} "
+                f"Δ={sm['test']['loss'] - most['test']['loss']:+.3f}",
+                flush=True,
+            )
         rows.append(
             {
                 "seed": seed,
@@ -166,6 +251,7 @@ def main(argv=None) -> dict:
         "seeds": seeds,
         "seq_len": args.seq_len,
         "batch_size": args.batch_size,
+        "corpus": corpus_name,
         "data_bytes": int(data.numel()),
         "rows": rows,
         "aggregate": agg,
@@ -175,13 +261,21 @@ def main(argv=None) -> dict:
         "run_dir": str(rundir.path),
         "note": (
             "Skala medium (~3M), nie gate 100–300M vs Llama. "
-            "Ten sam korpus/pipeline co #1b; #3 VRAM nadal wymaga NVIDIA."
+            + (
+                "Korpus z --corpus. Valid i test to średnia strata na całym pliku, okna bez zachodzenia."
+                if (args.valid or args.test)
+                else (
+                    "Korpus z --corpus. Strata jest treningowa, nie na pliku valid/test."
+                    if args.corpus is not None
+                    else "Ten sam korpus/pipeline co #1b; #3 VRAM nadal wymaga NVIDIA."
+                )
+            )
         ),
     }
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    jp = OUT_DIR / "LM_MEDIUM_1C_results.json"
-    mp = OUT_DIR / "LM_MEDIUM_1C.md"
+    jp = OUT_DIR / f"{out_stem}_results.json"
+    mp = OUT_DIR / f"{out_stem}.md"
     jp.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     (rundir.path / "curves_by_seed.json").write_text(
         json.dumps(curves, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -192,6 +286,7 @@ def main(argv=None) -> dict:
         "",
         f"preset=medium · d={cfg.d} L={cfg.num_layers} h={cfg.h} vocab={cfg.vocab_size}",
         f"seq={args.seq_len} batch={args.batch_size} steps={args.steps} seeds={seeds}",
+        f"corpus={corpus_name}",
         f"params Most/SM = **{agg['n_params_most']}** / **{agg['n_params_sm']}**",
         f"data_bytes = {data.numel()}",
         "",
@@ -219,9 +314,49 @@ def main(argv=None) -> dict:
         f"- mean time ratio = **{agg['time_ratio']:.2f}×**",
         f"- both descend = **{both_descend}**",
         "",
+    ]
+    if rows and "valid" in rows[0]["most"]:
+        mv = sum(r["most"]["valid"]["loss"] for r in rows) / n
+        sv = sum(r["softmax"]["valid"]["loss"] for r in rows) / n
+        lines += [
+            "## Valid",
+            "",
+            f"- mean loss Most/SM = **{mv:.3f}** / **{sv:.3f}**",
+            f"- mean Δ(SM−Most) = **{sv - mv:+.3f}**",
+            "",
+            "| seed | Most | SM | Δ(SM−Most) | ppl Most | ppl SM |",
+            "|-----:|-----:|---:|-----------:|---------:|-------:|",
+        ]
+        for r in rows:
+            m, s = r["most"]["valid"], r["softmax"]["valid"]
+            lines.append(
+                f"| {r['seed']} | {m['loss']:.3f} | {s['loss']:.3f} | "
+                f"{s['loss'] - m['loss']:+.3f} | {m['ppl']:.2f} | {s['ppl']:.2f} |"
+            )
+        lines.append("")
+    if rows and "test" in rows[0]["most"]:
+        mt = sum(r["most"]["test"]["loss"] for r in rows) / n
+        st = sum(r["softmax"]["test"]["loss"] for r in rows) / n
+        lines += [
+            "## Test",
+            "",
+            f"- mean loss Most/SM = **{mt:.3f}** / **{st:.3f}**",
+            f"- mean Δ(SM−Most) = **{st - mt:+.3f}**",
+            "",
+            "| seed | Most | SM | Δ(SM−Most) | ppl Most | ppl SM |",
+            "|-----:|-----:|---:|-----------:|---------:|-------:|",
+        ]
+        for r in rows:
+            m, s = r["most"]["test"], r["softmax"]["test"]
+            lines.append(
+                f"| {r['seed']} | {m['loss']:.3f} | {s['loss']:.3f} | "
+                f"{s['loss'] - m['loss']:+.3f} | {m['ppl']:.2f} | {s['ppl']:.2f} |"
+            )
+        lines.append("")
+    lines += [
         f"elapsed={report['elapsed_s']:.0f}s · run-dir=`{rundir.path}`",
         "",
-        "JSON: `LM_MEDIUM_1C_results.json`",
+        f"JSON: `{jp.name}`",
         "",
     ]
     mp.write_text("\n".join(lines), encoding="utf-8")

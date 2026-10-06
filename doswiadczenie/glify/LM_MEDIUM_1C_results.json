@@ -9,7 +9,17 @@
     "n_dim": 4,
     "ff_mult": 4,
     "max_seq": 256,
-    "dropout": 0.0
+    "dropout": 0.0,
+    "side_sources": 0,
+    "most": {
+      "gamma_init": 0.0,
+      "beta_init": 0.0,
+      "e_scale": 1.0,
+      "couple_temp": 1.0,
+      "delta_mode": "square",
+      "delta_alpha": 1.0,
+      "directed_bias": 0.25
+    }
   },
   "steps": 600,
   "seeds": [
@@ -18,70 +28,70 @@
   ],
   "seq_len": 128,
   "batch_size": 8,
-  "data_bytes": 691696,
+  "data_bytes": 1267399,
   "rows": [
     {
       "seed": 0,
       "most": {
         "attn": "most",
-        "n_params": 3287668,
-        "wall_s": 75.37464850000106,
+        "n_params": 3287684,
+        "wall_s": 62.75132969999686,
         "steps": 600,
-        "loss_first": 166.2367401123047,
-        "loss_final": 2.819035053253174,
-        "ppl_final": 16.760669708251953,
-        "sec_per_step": 0.12562441416666842
+        "loss_first": 167.44729614257812,
+        "loss_final": 2.0919930934906006,
+        "ppl_final": 8.101045608520508,
+        "sec_per_step": 0.10458554949999477
       },
       "softmax": {
         "attn": "softmax",
         "n_params": 3286528,
-        "wall_s": 52.53511190001154,
+        "wall_s": 46.862999299992225,
         "steps": 600,
-        "loss_first": 165.91310119628906,
-        "loss_final": 2.70742130279541,
-        "ppl_final": 14.990569114685059,
-        "sec_per_step": 0.08755851983335257
+        "loss_first": 167.11981201171875,
+        "loss_final": 2.108289957046509,
+        "ppl_final": 8.234148025512695,
+        "sec_per_step": 0.07810499883332038
       },
-      "delta_final_loss_sm_minus_most": -0.11161375045776367,
-      "time_ratio_most_over_sm": 1.4347480337237941
+      "delta_final_loss_sm_minus_most": 0.016296863555908203,
+      "time_ratio_most_over_sm": 1.3390378472853586
     },
     {
       "seed": 1,
       "most": {
         "attn": "most",
-        "n_params": 3287668,
-        "wall_s": 67.34832079999615,
+        "n_params": 3287684,
+        "wall_s": 60.24789620000229,
         "steps": 600,
-        "loss_first": 164.8578338623047,
-        "loss_final": 2.6117541790008545,
-        "ppl_final": 13.622926712036133,
-        "sec_per_step": 0.11224720133332691
+        "loss_first": 167.93923950195312,
+        "loss_final": 2.740955114364624,
+        "ppl_final": 15.501784324645996,
+        "sec_per_step": 0.10041316033333715
       },
       "softmax": {
         "attn": "softmax",
         "n_params": 3286528,
-        "wall_s": 54.45218109997222,
+        "wall_s": 46.382700899994234,
         "steps": 600,
-        "loss_first": 164.2666473388672,
-        "loss_final": 2.606684446334839,
-        "ppl_final": 13.554037094116211,
-        "sec_per_step": 0.09075363516662037
+        "loss_first": 167.61647033691406,
+        "loss_final": 2.597350597381592,
+        "ppl_final": 13.42811393737793,
+        "sec_per_step": 0.0773045014999904
       },
-      "delta_final_loss_sm_minus_most": -0.005069732666015625,
-      "time_ratio_most_over_sm": 1.2368342174640734
+      "delta_final_loss_sm_minus_most": -0.14360451698303223,
+      "time_ratio_most_over_sm": 1.2989303130471597
     }
   ],
   "aggregate": {
-    "most_loss_final": 2.715394616127014,
-    "sm_loss_final": 2.6570528745651245,
-    "delta_sm_minus_most": -0.05834174156188965,
-    "time_ratio": 1.3357911255939339,
-    "n_params_most": 3287668,
+    "most_loss_final": 2.4164741039276123,
+    "sm_loss_final": 2.3528202772140503,
+    "delta_sm_minus_most": -0.06365382671356201,
+    "time_ratio": 1.3189840801662591,
+    "n_params_most": 3287684,
     "n_params_sm": 3286528
   },
   "both_curves_descend": true,
-  "verdict": "#1c medium LM: params=3287668 | mean loss Most=2.715 SM=2.657 Δ(SM−Most)=-0.058 | time≈1.34× | descend=True",
-  "elapsed_s": 249.81459212303162,
-  "run_dir": "C:\\Users\\drwis\\model Ai\\runs\\20260921_082007_lm_medium_1c",
+  "verdict": "#1c medium LM: params=3287684 | mean loss Most=2.416 SM=2.353 Δ(SM−Most)=-0.064 | time≈1.32× | descend=True",
+  "elapsed_s": 216.3137526512146,
+  "run_dir": "C:\\Users\\drwis\\model_Ai_breit\\runs\\20261006_061043_lm_medium_1c",
   "note": "Skala medium (~3M), nie gate 100–300M vs Llama. Ten sam korpus/pipeline co #1b; #3 VRAM nadal wymaga NVIDIA."
 }

@@ -9,6 +9,8 @@ venv/
 checkpoints/
 # wygenerowane dumpy / wagi
 dumps/
+# pobrane korpusy (nie w repo)
+dane/
 # run-dir treningów (kryterium #5) — zostaw README
 runs/*/
 !runs/README.md

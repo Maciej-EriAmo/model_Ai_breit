@@ -72,10 +72,22 @@ Most, w którym tracer pozycji wchodzi tylko przez ΔE, na tiny LM ma stratę wy
 
 Stary bench n-ciał, w którym Most wygrywał etykietę warstwy, dawał hierarchię jako one-hot w tracerze, a Softmax jej nie widział. Tego pomiaru tutaj nie powtarzamy.
 
+## Aktualizacja 2026-10-06
+
+Na jądrze Breita–Wignera, ten sam CPU.
+
+Pełna tablica (118 jąder, 328 krawędzi, sam Most, 3 seedy, 64 epoki): r@1 = 0,575, r@3 = 0,892, MRR = 0,739, próg 3/3. Stary bieg na Lorentzowym `model Ai` miał r@1 = 0,567. Czas 768 s. Seal został włączony, bo tak woła ten skrypt, a oś T na dumpie to okres.
+
+Średni model językowy na notatkach z repo (600 kroków, 2 seedy): Most 2,416, Softmax 2,353, czas 1,32×. Korpus był dłuższy niż w biegu z 21 września, więc niższa strata nie jest porównaniem jąder ze starym 2,715.
+
+Ten sam model na treningu WikiText-2 (10,9 MB, jeden przejazd, 2 seedy): ostatni batch Most 1,554 wobec Softmax 1,587. Cały valid: 1,557 wobec 1,604. Cały test: 1,580 wobec 1,627. Oba seedy, ten sam znak. Perplexity na teście około 4,9 wobec 5,1. Trafienie następnego bajta na próbce valid: 54,6% wobec 53,8%. Dopytany o fakty model pisze pętlę „the state of the state” — Most i Softmax tak samo.
+
+Zdanie, które ten pomiar trzyma: jądro się uczy i na tej skali jest lekko lepsze od bliźniaczego softmaxu. Różnica jest mała. Duży model zostaje niezmierzony.
+
 ## Czego to nie obejmuje
 
 - Zgody ciaśniejszej niż ±5 punktów na siatkach. T0 jej nie rozstrzygnął.
-- Dużego języka. Tiny LM ma sześć krótkich, powtarzalnych dokumentów i stratę około 0,05. Średniego modelu nie było.
+- Dużego języka (100–300 mln wag). Średni model, około 3,3 mln wag, jest zmierzony: notatki z repo i WikiText-2. Na WikiText-2 Most jest lekko lepszy od Softmaxu na valid i teście. To jeden zbiór i dwa seedy, nie duży język.
 - Kosztu po złożeniu wzoru Mostu w jedno wywołanie. Zmierzony czas jest czasem niezłożonego łańcucha.
 - Karty graficznej i NPU. Maszyna ma Radeona 780M i NPU XDNA 16 TOPS (Hawk Point). Laboratorium zostaje na CPU: tensory są małe, a NPU liczy tylko gotowy, skwantyzowany model.
 
@@ -90,3 +102,7 @@ Stary bench n-ciał, w którym Most wygrywał etykietę warstwy, dawał hierarch
 | `doswiadczenie/glify/JADRO_T1.md` | pisownia nuty jako dodatkowa zmienna |
 | `doswiadczenie/glify/JADRO_T2.md` | tiny LM, numer źródła w tokenie |
 | `doswiadczenie/glify/JADRO_OGOLNE.md` | program testów i bramka nazwy |
+| `doswiadczenie/glify/MENDELEJEW_FULL.md` | pełna tablica na jądrze Breita, r@1 = 0,575 |
+| `doswiadczenie/glify/LM_MEDIUM_1C.md` | średni model na notatkach z repo |
+| `doswiadczenie/glify/LM_MEDIUM_WIKITEXT.md` | średni model, trening WikiText-2 |
+| `doswiadczenie/glify/LM_MEDIUM_WIKITEXT_HOLDOUT.md` | valid i test WikiText-2 |
