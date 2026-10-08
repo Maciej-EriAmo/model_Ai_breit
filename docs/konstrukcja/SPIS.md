@@ -46,4 +46,4 @@ Wszystko do opracowania konstrukcji jądra Most jest w `docs/konstrukcja/`. Plik
 | `TSRA_Plan.txt` | `C:\Users\drwis\transformer2\Plan.txt` |
 | `TSRA_NOTATKA_ROZWOJOWA.md` | `C:\Users\drwis\transformer2\docs\NOTATKA_ROZWOJOWA.md` |
 
-Kod jądra zostaje w `breit_kernel.py`, `bridge.py`, `recall_model.py`, `lm_tiny.py` i `most_seal.py`. Do katalogu nie wszedł.
+Kod jądra zostaje w `breit_kernel.py`: `breit_wigner_rows` i `breit_wigner_weights`. Szkielet, który buduje `C` i `ΔE`, zostaje w `bridge.py` (`BridgeTransformer`), `recall_model.py` (`PhiBridgeEncoder`) i `lm_tiny.py` (`_MostCausalBlock`). Seal zostaje w `most_seal.py`. Żaden z tych plików do katalogu nie wszedł.

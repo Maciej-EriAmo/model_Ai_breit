@@ -7,10 +7,14 @@ Root: `C:\Users\drwis\model Ai`
 | Plik | Rola |
 |------|------|
 | `config.py` | `CANON` — softplus×2, n_dim=6, bramki, zakaz EMA-S |
+| `breit_kernel.py` | wzór Most-1: `breit_wigner_rows`, `breit_wigner_weights`. Dostaje gotowe `C` i `ΔE` |
 | `phi_schema.py` | `PhiAtom` / `PhiGraph` / `atom_content_vec` / `atom_tracer_vec` / `hash_embed` (SHA256) |
-| `bridge.py` | `BridgeTransformer` + `SoftmaxTransformer` + `train_eval` (classify) |
-| `recall_model.py` | `PhiBridgeEncoder` / `PhiSoftmaxEncoder` + InfoNCE + r@k |
+| `bridge.py` | szkielet: `BridgeTransformer` + `SoftmaxTransformer` + `train_eval` (classify) |
+| `recall_model.py` | szkielet: `PhiBridgeEncoder` / `PhiSoftmaxEncoder` + InfoNCE + r@k |
+| `lm_tiny.py` | szkielet językowy: `_MostCausalBlock` / `_SoftmaxCausalBlock` w `TinyLM` |
 | `scalar_r.py` | skalarne \(R = g V^2/(g^2+dE^2)\) (baseline Mazur-like) |
+
+Wzór Most-1 jest w `breit_kernel.py`. Trzy szkielety wołają go z `bridge.py`, `recall_model.py` i `lm_tiny.py`. Seal, `most_seal.py`, jest w tabeli poniżej.
 
 ## Dane / zadania
 

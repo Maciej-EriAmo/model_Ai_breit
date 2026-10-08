@@ -25,6 +25,8 @@ A_{ij} = \frac{\gamma_i\, C_{ij}}{\gamma_i^2 + \Delta E_{ij}^2}
 
 `C` dalej jest `softplus(QK)²`. `ΔE` dalej pochodzi z tracera. Do wagi wchodzi `ΔE²`. `beta_raw = 0` daje `beta = softplus(0) ≈ 0.69`, więc szerokość od razu zależy od szczytu wiersza. Tryby `directed` i `onesided` są odrzucone.
 
+Wzór liczą `breit_wigner_rows` i `breit_wigner_weights` w [`breit_kernel.py`](breit_kernel.py). Dostają gotowe `C` i `ΔE`. Transformer, który te tensory buduje, jest w trzech plikach: `bridge.BridgeTransformer`, `recall_model.PhiBridgeEncoder`, `lm_tiny._MostCausalBlock`. W każdym pliku obok jest bliźniak softmax. Seal jest w `most_seal.py`.
+
 ## Teza
 
 Szkielet zostaje: waga powstaje przy niezerowym \(\Delta E\) z tracera. Softmax jest bliźniakiem bez tej geometrii.  
@@ -76,7 +78,7 @@ Pełna tabela: [`docs/WYNIKI.md`](docs/WYNIKI.md) · stan: [`docs/STATUS.md`](do
 
 | Obszar | Pliki |
 |--------|--------|
-| Silnik | `bridge.py`, `recall_model.py`, `config.py` |
+| Silnik | wzór `breit_kernel.py`; szkielet `bridge.py`, `recall_model.py`, `lm_tiny.py`; seal `most_seal.py`; `config.py` |
 | Dane Φ | `phi_schema.py`, `synthetic_phi.py`, `phi_dump.py` |
 | Fizyka | `nbody_data.py`, `bench_nbody.py` |
 | Faza E | `live_store.py`, `gen_head.py`, `mazur_neural.py` |
