@@ -4,6 +4,8 @@
 **Komora SE:** `Most_Lorentz` (Holon / Karmin_Ae)  
 **Ostatnia aktualizacja docs:** 2026-09-16 (STATUS / Mendelejew / lingua / luki)
 
+**Pakiet konstrukcji jądra (2026-10-07):** [`konstrukcja/00_START.md`](konstrukcja/00_START.md) — wzór, kontrakt, szkielet, trzy drzewa, pomiary, otwarte miejsca, sprawdzenie. Od tego zaczyna inżynier. Reszta indeksu zostaje mapą laboratorium.
+
 ## Czytaj w tej kolejności
 
 | # | Dokument | Po co |

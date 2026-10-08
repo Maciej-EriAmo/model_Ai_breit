@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "task": "T2-tiny",
+  "seeds": 20,
+  "steps": 300,
+  "margin_loss": 0.05,
+  "prefix": "COMMON-PREFIX-0123456789-ABCDEFGHIJ-",
+  "tails": [
+    "aaa",
+    "bbb",
+    "ccc",
+    "ddd",
+    "eee",
+    "fff"
+  ],
+  "conditions": {
+    "A": "bw·0 vs sm·0, bez dodatkowej zmiennej, Most z zerowym ΔE",
+    "B": "ten sam numer źródła w tokenie obu jąder, Most bez ΔE",
+    "C": "Most kanoniczny (tracer pozycji przez ΔE) vs Softmax bez pluginu — mieszane"
+  },
+  "equivalence": "90% CI (Most−Softmax) w całości w ±0.05, osobno dla A i dla B",
+  "plugin": "90% CI (Softmax B − Softmax A) w całości pod zerem"
+}

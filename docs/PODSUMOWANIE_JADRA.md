@@ -4,7 +4,7 @@
 **Fork:** `C:\Users\drwis\model_Ai_breit`  
 **Komora:** `Most_Lorentz`
 
-Jeden dokument. Liczby i protokoły leżą w notatkach wymienionych na końcu.
+Jeden dokument pomiarów. Liczby i protokoły leżą w notatkach wymienionych na końcu. Konstrukcja dla inżynierów: [`konstrukcja/00_START.md`](konstrukcja/00_START.md).
 
 ## Wniosek
 

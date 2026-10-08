@@ -1,0 +1,221 @@
+Plan dla agenta: tylko **TSRA + protokół fazowy \((\beta,\rho)\)**. Bez RBT, bez LM, bez Prismatic, bez gate’ów.
+
+---
+
+## 0. Cel i twarde granice
+
+**Cel.** Biblioteka + skrypt, które:
+1. liczą jedną głowę TSRA (Most-1 i Most-K),
+2. rysują mapę fazową \((\beta,\rho)\),
+3. zapisują metryki i figurę do paperu.
+
+**Nie robić.** Softmax-baseline jako „model”. FFN, pozycje, multi-layer stack, train loop, HuggingFace, CUDA kernels, freeze/unfreeze \(\Delta E\) w tym samym \(K\)-loop jako wariant domyślny, nazwy Lorentz attention, thermostat w API.
+
+**Założenie SSRT w kodzie (nienaruszalne):**
+`delta_E` jest stałe przez cały inner-loop. Update `E` tylko *poza* `tsra_step`.
+
+---
+
+## 1. Repo
+
+```
+tsra/
+  pyproject.toml
+  README.md
+  tsra/
+    __init__.py
+    kernels.py      # BW, normalize, gamma
+    attention.py    # TSRA forward, Most-1 / Most-K
+    metrics.py
+    jacobian.py     # finite-diff J w S*
+    regimes.py      # generatory C, ΔE, S0
+    phase.py        # siatka β×ρ
+  scripts/
+    run_phase.py
+  tests/
+    test_kernels.py
+    test_attention.py
+    test_invariants.py
+  artifacts/        # outputy runów (gitignore duże npy)
+```
+
+Python 3.11+, numpy + matplotlib. PyTorch opcjonalnie później; **najpierw numpy** — agent ma łatwiej o testy numeryczne i jacobian.
+
+API publiczne (nie rozszerzać):
+
+```python
+gamma = resonance_width(kappa, gamma0, beta)
+W = breit_wigner_weights(C, delta_E, gamma, mask=None)
+S, trace = tsra_relax(C, delta_E, S0, gamma0, beta, rho, K, tol, kappa="max"|"lse")
+```
+
+---
+
+## 2. Kontrakt numeryczny
+
+Kształty: `C, delta_E, S: (N,)`, query pojedynczy.  
+Batch później: `(B, N)` — nie w v1, chyba że nic nie psuje testów.
+
+- `C >= 0`. Jeśli `mask`: `C = C * mask`, `support = mask > 0`.
+- `sum(C[support]) > 0` inaczej `raise ValueError`.
+- `gamma = gamma0 * (1 + beta * kappa)`, `gamma0 > 0`, `beta >= 0`.
+- BW: `W_tilde = gamma * C / (gamma**2 + delta_E**2)`, `W = W_tilde / W_tilde.sum()`.
+- Relaksacja: `S = (1-rho)*S + rho*W`, renormalizacja do simplexu (dryf fp).
+- `kappa="max"`: `S.max()` — default eksperymentu (zgodne z notatką).
+- `kappa="lse"`: `tau * logsumexp(S/tau)` z `tau=0.05` — tylko ablacjа, flaga.
+
+Floor: `gamma0 = max(gamma0, 1e-8)`. Nie clampować `gamma` do zera.
+
+`delta_E` nie zależy od `S` wewnątrz `tsra_relax`.
+
+---
+
+## 3. Zadania agenta (kolejność = PRs)
+
+### PR1 — kernel + testy niezmienników
+- [ ] `breit_wigner_weights`, `resonance_width`
+- [ ] test: `W>=0`, `W.sum()==1`
+- [ ] test: `delta_E==0` i `C==1` ⇒ `W` jednostajne, niezależne od `gamma`
+- [ ] test: wzrost `gamma` przy ustalonym niezerowym `delta_E` **nie zwiększa** `max(W)` (spłaszczenie)
+- [ ] test: `gamma0>0` ⇒ `gamma >= gamma0`
+
+### PR2 — relaksacja
+- [ ] `tsra_relax(..., K, tol, rho)`
+- [ ] `trace`: lista dict `{t, S, kappa, gamma, dS, H}`
+- [ ] Most-1: `K=1, rho=1` ≡ jeden `W(gamma(S0))` (uwaga: `gamma` od `S0`, nie od `W` — udokumentować; dla stałego punktu i tak `S=W(gamma(S))`)
+- [ ] test: po kroku `S` na simplexie
+- [ ] test: freeze — podmiana `delta_E` w środku pętli jest niemożliwa (brak hooka)
+
+**Doprecyzowanie Most-1 dla agenta.**  
+Liczyć: `g = gamma(kappa(S0)); S1 = W(C, dE, g)`. Nie iterować. To degeneracja, nie punkt stały.
+
+### PR3 — metryki
+Dla trajektorii i finału:
+- `H = -sum(S*log(S+eps))`
+- `kappa = max(S)`
+- `dS = ||S[t]-S[t-1]||_1`
+- `steps_to_eps` (pierwsze `t` z `dS < eps`)
+- `oscillating`: po `t > t_burn` znak `kappa[t]-kappa[t-1]` zmienia się ≥ `n_flips` albo period-2: `||S[t]-S[t-2]|| < eps` i `||S[t]-S[t-1]|| > eps`
+- `diverged`: `K==Kmax` i `dS >= eps` i nie period-2
+- `converged`: `dS < eps`
+
+Klasyfikacja punktu siatki (po wielu startach):
+`converged | oscillate | mixed | diverged`  
+`mixed` = różne starty, różne klasy.
+
+### PR4 — reżimy syntetyczne
+Funkcje czyste, seedowane:
+
+| id | C | ΔE |
+|---|---|---|
+| `uniform_flat` | 1 | 0 |
+| `uniform_random_E` | 1 | N(0,1) * scale |
+| `single_well` | 1 | duże wszędzie, 0 na j* |
+| `two_well` | 1 | dwa minima |
+| `sparse_C` | 90% zero, reszta 1 | random |
+| `near_degenerate` | 1 | N(0, 0.01) |
+
+`S0 ~ Dirichlet(ones)` — 100 startów.
+
+`N` default 32. Parametry `scale` w CLI.
+
+### PR5 — jacobian (finite diff)
+- W `S*` (po konwergencji), komora stałego `argmax` (nie przechodzić przez ścianę).
+- `J = (1-rho)*I + rho * dW/dS`
+- `dW/dS` kolumnami: perturbacja `e_k`, projekcja z powrotem na simplex (`S' = (S+h e_k)_+ / sum`) albo perturbacja w hiperpłaszczyźnie `sum=0`.
+- `spectral_radius = max|eig(J)|`
+- Jeśli `kappa=max` i perturbacja zmienia `argmax` — oznacz `unreliable=True`, nie używaj do linii \(\rho(J)=1\).
+
+### PR6 — `scripts/run_phase.py`
+CLI:
+
+```
+python scripts/run_phase.py \
+  --regime two_well --N 32 --n-start 100 \
+  --gamma0 0.3 --K 64 --tol 1e-6 \
+  --beta 0,0.25,0.5,1,2,4,8 \
+  --rho 0.2,0.4,0.6,0.8,1.0 \
+  --kappa max \
+  --out artifacts/two_well
+```
+
+Wyjście:
+- `summary.csv` — wiersz na `(beta,rho)` + frakcje klas + median steps + median H* + median kappa* + median rho(J)
+- `trajectories.npz` opcjonalnie `--save-traj` tylko dla wybranych komórek
+- `phase.png` — heatmapa frakcji `converged`; druga `oscillate`
+- `boundary.png` — overlay komórek z median `rho(J) >= 1` vs empiryczny onset oscylacji
+
+Bez GUI. Seed w CSV.
+
+### PR7 — testy regresji „paper”
+Mały, szybki (`N=8`, 10 startów, 3×3 siatka):
+- `uniform_flat`: zawsze converged, `W` płaskie, `rho(J)` ~ `|1-rho|` albo 0 w kierunku simplexu
+- `single_well`, małe `beta`, `rho<=0.5`: converged ≥ 90%
+- `single_well`, `beta=8`, `rho=1`: oscylacje albo mixed (nie assertuj dokładnego progu — assertuj że *istnieje* komórka oscillate gdzieś na siatce smoke)
+
+Nie failować CI na dokładnym \(\beta_*\).
+
+---
+
+## 4. Kryteria akceptacji (Definition of Done)
+
+Agent kończy, gdy:
+
+1. `pytest -q` zielone.
+2. Jeden pełny run `two_well` + `single_well` + `near_degenerate` zapisany w `artifacts/`.
+3. README ma:
+   - wzór BW i \(\gamma(S)\)
+   - zdanie: SSRT = existence + local criterion; nie globalna zbieżność
+   - „Breit–Wigner / Cauchy lineshape, not Lorentz geometry”
+   - freeze `ΔE`
+   - jak odtworzyć heatmapę
+4. CSV ma kolumny: `regime,N,beta,rho,gamma0,kappa_mode,n_start,frac_converged,frac_oscillate,frac_diverged,frac_mixed,median_steps,median_H,median_kappa,median_specrad,n_unreliable_J`.
+5. Żadnego train loop / torch.nn.
+
+---
+
+## 5. Prompt startowy dla agenta
+
+Wkleić jako spec:
+
+```
+Implement TSRA as specified in IMPLEMENTATION.md.
+Do not build a transformer, optimizer, or softmax baseline model.
+delta_E must be immutable inside the K-loop.
+Call the kernel breit_wigner, never lorentz_attention.
+kappa default is max; lse is a flag.
+Prove invariants with tests before writing run_phase.py.
+After code works, run the three regimes and stop.
+Do not add features not listed in the PR sequence.
+```
+
+Plik `IMPLEMENTATION.md` = ten plan (agent czyta, nie zgaduje z czatu).
+
+---
+
+## 6. Kolejność, której agent ma nie odwracać
+
+`testy kernela → relaksacja → metryki → reżimy → jacobian → faza → README`.
+
+Jeśli brakuje czasu: **obciąć jacobian**, zostawić klasyfikację z `dS`/`kappa`. Mapa \((\beta,\rho)\) bez \(J\) nadal jest wynikiem. \(J\) jest bonusem do figury „linia \(\rho(J)=1\)”.
+
+---
+
+## 7. Sygnały, że agent się rozjechał
+
+- klasa `Transformer`, `nn.Module`, `softmax`
+- `delta_E` liczone z `S` w pętli
+- `gamma` clamp do 0
+- nazwy `lorentz`, `thermostat`, `RBT` w kodzie produkcyjnym (RBT tylko w README „out of scope”)
+- jeden skrypt-monolit 800 linii bez testów
+- assert na dokładne \(\beta_*\)
+
+Wtedy revert do ostatniego zielonego PR i wrócić do sekwencji.
+
+---
+
+## 8. Po DoD (człowiek, nie agent)
+
+Ty patrzysz na heatmapę. Jeśli granica \(\beta(\rho)\) jest czytelna → nota SSRT ma wynik empiryczny. Jeśli nie — zmieniasz tylko reżim \(\Delta E\) / `gamma0`, nie architekturę.
+
+Dopiero wtedy osobny ticket: `tsra_torch.py` drop-in Most-1 (jedna funkcja, ten sam kernel). To już nie jest ten sprint.
