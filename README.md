@@ -7,6 +7,12 @@
 
 To jest fork `C:\Users\drwis\model Ai` z commita `592bf00`. Tamten katalog nie jest ruszany. Zdalnego remote tu nie ma.
 
+## Licencje
+
+Kod programu (`*.py`) jest na licencji MIT: [`LICENSE-MIT`](LICENSE-MIT).
+Teksty (`*.md`, `*.txt`) i specyfikacje pomiarów (`*.json` z notatkami) są na licencji CC BY 4.0: [`LICENSE-CC-BY-4.0`](LICENSE-CC-BY-4.0).
+Podział: [`LICENSE`](LICENSE). Autor: Maciej Mazur, 2026.
+
 Waga uwagi:
 
 \[

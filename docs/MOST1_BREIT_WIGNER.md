@@ -4,7 +4,8 @@
 **Wersja dokumentu:** 2026-10-07
 **Seria pomiarów:** 2026-10-05 i 2026-10-06
 **Kod:** fork `model_Ai_breit` — [uzupełnić adres repozytorium]
-**Licencja:** Creative Commons Uznanie autorstwa 4.0 Międzynarodowe (CC BY 4.0) — https://creativecommons.org/licenses/by/4.0/deed.pl
+**Licencja tekstu:** Creative Commons Uznanie autorstwa 4.0 Międzynarodowe (CC BY 4.0) — https://creativecommons.org/licenses/by/4.0/deed.pl
+**Licencja kodu:** MIT — plik `LICENSE-MIT` w forku `model_Ai_breit`
 
 ---
 

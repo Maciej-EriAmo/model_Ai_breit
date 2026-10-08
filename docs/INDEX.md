@@ -6,6 +6,8 @@
 
 **Pakiet konstrukcji jądra (2026-10-07):** [`konstrukcja/00_START.md`](konstrukcja/00_START.md) — wzór, kontrakt, szkielet, trzy drzewa, pomiary, otwarte miejsca, sprawdzenie. Od tego zaczyna inżynier. Reszta indeksu zostaje mapą laboratorium.
 
+**Licencje:** kod `*.py` — MIT ([`../LICENSE-MIT`](../LICENSE-MIT)); teksty `*.md`, `*.txt` i specyfikacje pomiarów `*.json` — CC BY 4.0 ([`../LICENSE-CC-BY-4.0`](../LICENSE-CC-BY-4.0)). Podział: [`../LICENSE`](../LICENSE).
+
 ## Czytaj w tej kolejności
 
 | # | Dokument | Po co |

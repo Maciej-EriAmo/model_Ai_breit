@@ -1,0 +1,12 @@
+# Licencje forka model_Ai_breit
+
+Autor: Maciej Mazur, 2026.
+
+| Co | Licencja | Tekst |
+|----|----------|--------|
+| Kod programu (`*.py`) | MIT | [LICENSE-MIT](LICENSE-MIT) |
+| Teksty (`*.md`, `*.txt`) oraz specyfikacje pomiarów (`*.json` trzymane z notatkami) | CC BY 4.0 | [LICENSE-CC-BY-4.0](LICENSE-CC-BY-4.0) |
+
+Kod nie jest na CC BY. Teksty nie są na MIT.
+
+Wagi, dumpy i pobrane korpusy nie wchodzą do tego repozytorium. Ta nota ich nie obejmuje.
