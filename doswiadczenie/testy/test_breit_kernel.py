@@ -114,6 +114,58 @@ if __name__ == "__main__":
     print("ok")
 
 
+def test_beta_zero_ignores_the_row_and_the_raw_parameter():
+    coupling = torch.tensor([[[[5.0, 0.2, 0.2]]]], dtype=torch.float64)
+    delta = torch.tensor([[[[0.0, 1.0, -2.0]]]], dtype=torch.float64)
+    log_gamma0 = torch.zeros(1, 1, 1, dtype=torch.float64)
+    beta_raw = torch.full((1, 1, 1), 4.0, dtype=torch.float64)
+    got = breit_wigner_rows(
+        coupling, delta, log_gamma0, beta_raw, beta_exact=0.0
+    )
+    gamma0 = F.softplus(log_gamma0) + 1e-3
+    raw = gamma0 * coupling / (gamma0.square() + delta.square() + 1e-12)
+    assert torch.allclose(got, raw)
+
+
+def test_excess_scale_starts_flat_rows_at_gamma0():
+    log_gamma0 = torch.zeros(1, 1, 1, dtype=torch.float64)
+    beta_raw = torch.zeros(1, 1, 1, dtype=torch.float64)
+    gamma0 = F.softplus(log_gamma0) + 1e-3
+
+    def amplitude_over_c(n: int, scale: str) -> torch.Tensor:
+        coupling = torch.ones(1, 1, 1, n, dtype=torch.float64)
+        delta = torch.zeros_like(coupling)
+        got = breit_wigner_rows(
+            coupling, delta, log_gamma0, beta_raw, scale=scale
+        )
+        return got / coupling
+
+    short = amplitude_over_c(2, "excess")
+    long = amplitude_over_c(8, "excess")
+    assert torch.allclose(short, 1.0 / gamma0)
+    assert torch.allclose(long, 1.0 / gamma0)
+    historical_short = float(amplitude_over_c(2, "kappa").reshape(-1)[0])
+    historical_long = float(amplitude_over_c(8, "kappa").reshape(-1)[0])
+    assert abs(historical_short - historical_long) > 1e-4
+
+
+def test_width_arms_build_and_stay_finite():
+    cfg = TinyLMConfig(d=32, h=2, num_layers=1, max_seq=16)
+    beta0 = TinyLM(cfg, attn="beta0")
+    excess = TinyLM(cfg, attn="excess")
+    historical = TinyLM(cfg, attn="most")
+    assert beta0.arm == "beta0" and beta0.attn == "most"
+    assert beta0.blocks[0].beta_exact == 0.0
+    assert beta0.blocks[0].beta_raw.requires_grad is False
+    assert excess.blocks[0].width_scale == "excess"
+    assert excess.blocks[0].beta_raw.requires_grad is True
+    assert historical.blocks[0].width_scale == "kappa"
+    assert historical.blocks[0].beta_exact is None
+    idx = torch.randint(0, 128, (2, 8))
+    assert torch.isfinite(beta0(idx)).all()
+    assert torch.isfinite(excess(idx)).all()
+
+
 def test_weights_equal_normalised_rows():
     torch.manual_seed(0)
     coupling = F.softplus(torch.randn(3, 2, 5, 7, dtype=torch.float64)).square()

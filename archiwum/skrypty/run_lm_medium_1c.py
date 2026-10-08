@@ -4,6 +4,10 @@ To nadal NIE jest gate 100–300M. To skalowanie toru #1b na medium.
 
   python archiwum/skrypty/run_lm_medium_1c.py
   python archiwum/skrypty/run_lm_medium_1c.py --steps 600 --seeds 0,1
+  python archiwum/skrypty/run_lm_medium_1c.py --arms most,softmax,beta0,excess
+
+beta0: γ = γ0, bez szerokości zależnej od wiersza.
+excess: płaski wiersz startuje od γ0. Para most,softmax zostaje protokołem #1c.
 """
 
 from __future__ import annotations
@@ -38,6 +42,17 @@ from runlog import RunDir
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "doswiadczenie" / "glify"
+
+
+def _parse_arms(text: str) -> list[str]:
+    arms = [part.strip() for part in text.split(",") if part.strip()]
+    known = ("most", "softmax", "beta0", "excess")
+    bad = [name for name in arms if name not in known]
+    if bad or not arms:
+        raise SystemExit(f"ramiona {arms!r}; dozwolone: {', '.join(known)}")
+    if "most" not in arms or "softmax" not in arms:
+        raise SystemExit("para most,softmax zostaje; beta0 i excess są dodatkowe")
+    return arms
 
 
 def run_arm(attn, cfg, batches, *, steps, lr, seed):
@@ -113,7 +128,13 @@ def main(argv=None) -> dict:
     )
     ap.add_argument("--valid", type=Path, default=None, help="plik valid, średnia strata po treningu")
     ap.add_argument("--test", type=Path, default=None, help="plik test, średnia strata po treningu")
+    ap.add_argument(
+        "--arms",
+        default="most,softmax",
+        help="most,softmax oraz opcjonalnie beta0,excess",
+    )
     args = ap.parse_args(argv)
+    arms = _parse_arms(args.arms)
 
     seeds = [int(x) for x in args.seeds.split(",") if x.strip()]
     cfg = TinyLMConfig.preset("medium")
@@ -140,6 +161,7 @@ def main(argv=None) -> dict:
         argv=sys.argv,
         hparams={
             "preset": "medium",
+            "arms": arms,
             "cfg": config_dict(cfg),
             "corpus": corpus_name,
             "steps": args.steps,
@@ -176,19 +198,18 @@ def main(argv=None) -> dict:
             seed=2000 + seed,
         )
         print(f"\n=== seed={seed} ===", flush=True)
-        most, most_model = run_arm("most", cfg, batches, steps=args.steps, lr=args.lr, seed=seed)
-        print(
-            f"  Most   {most['loss_first']:.3f}→{most['loss_final']:.3f} "
-            f"ppl={most['ppl_final']:.2f} wall={most['wall_s']:.1f}s",
-            flush=True,
-        )
-        sm, sm_model = run_arm("softmax", cfg, batches, steps=args.steps, lr=args.lr, seed=seed)
-        print(
-            f"  Softmax {sm['loss_first']:.3f}→{sm['loss_final']:.3f} "
-            f"ppl={sm['ppl_final']:.2f} wall={sm['wall_s']:.1f}s",
-            flush=True,
-        )
-        for name, arm, model in (("most", most, most_model), ("softmax", sm, sm_model)):
+        ran: dict[str, tuple] = {}
+        for name in arms:
+            info, model = run_arm(name, cfg, batches, steps=args.steps, lr=args.lr, seed=seed)
+            print(
+                f"  {name:7} {info['loss_first']:.3f}→{info['loss_final']:.3f} "
+                f"ppl={info['ppl_final']:.2f} wall={info['wall_s']:.1f}s",
+                flush=True,
+            )
+            ran[name] = (info, model)
+        most, _most_model = ran["most"]
+        sm, _sm_model = ran["softmax"]
+        for name, (arm, model) in ran.items():
             torch.save(model.state_dict(), rundir.path / f"{name}_seed{seed}.pt")
             if valid_data is not None:
                 arm["valid"] = eval_lm(
@@ -210,14 +231,22 @@ def main(argv=None) -> dict:
                 f"Δ={sm['test']['loss'] - most['test']['loss']:+.3f}",
                 flush=True,
             )
+        extra = {
+            name: {k: v for k, v in info.items() if k != "curve"}
+            for name, (info, _model) in ran.items()
+            if name not in ("most", "softmax")
+        }
         rows.append(
             {
                 "seed": seed,
                 "most": {k: v for k, v in most.items() if k != "curve"},
                 "softmax": {k: v for k, v in sm.items() if k != "curve"},
+                "extra": extra,
                 "delta_final_loss_sm_minus_most": sm["loss_final"] - most["loss_final"],
                 "time_ratio_most_over_sm": most["wall_s"] / max(1e-9, sm["wall_s"]),
-                "curves": {"most": most["curve"], "softmax": sm["curve"]},
+                "curves": {
+                    name: info["curve"] for name, (info, _model) in ran.items()
+                },
             }
         )
 
@@ -352,6 +381,23 @@ def main(argv=None) -> dict:
                 f"| {r['seed']} | {m['loss']:.3f} | {s['loss']:.3f} | "
                 f"{s['loss'] - m['loss']:+.3f} | {m['ppl']:.2f} | {s['ppl']:.2f} |"
             )
+        lines.append("")
+    extra_names = [name for name in arms if name not in ("most", "softmax")]
+    if extra_names and rows:
+        lines += [
+            "## Szerokość wiersza",
+            "",
+            "beta0: γ = γ0 na każdym wierszu. excess: płaski wiersz startuje od γ0.",
+            "To nie jest werdykt pary Most/Softmax.",
+            "",
+            "| seed | " + " | ".join(extra_names) + " |",
+            "|-----:|" + "|".join("------:" for _ in extra_names) + "|",
+        ]
+        for r in rows:
+            cells = " | ".join(
+                f"{r['extra'][name]['loss_final']:.3f}" for name in extra_names
+            )
+            lines.append(f"| {r['seed']} | {cells} |")
         lines.append("")
     lines += [
         f"elapsed={report['elapsed_s']:.0f}s · run-dir=`{rundir.path}`",

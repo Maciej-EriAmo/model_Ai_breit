@@ -7,7 +7,7 @@ Softmax: klasyczny causal attn.
 from __future__ import annotations
 
 import math
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
 import torch
@@ -19,18 +19,22 @@ from breit_kernel import breit_wigner_rows
 
 @dataclass(frozen=True)
 class MostKnobs:
-    """Gałki Most-1. beta_raw=0 daje beta = softplus(0) ≈ 0.69.
+    """Gałki Most-1. beta_init=0 to beta_raw, więc beta = softplus(0) ≈ 0.69, nie zero.
 
+    Ramię β=0: beta_exact=0. Szerokość jest wtedy γ0 na każdym wierszu.
+    width_scale='excess': płaski wiersz startuje od γ0, niezależnie od liczby kluczy.
     dE[i,j] = E_i - E_j. Do wagi wchodzi dE². delta_mode poza 'square' jest odrzucony.
     """
 
     gamma_init: float = 0.0  # init log_gamma0; softplus(0)≈0.69
-    beta_init: float = 0.0  # init beta_raw
+    beta_init: float = 0.0  # init beta_raw, nie wartość β
     e_scale: float = 1.0  # skala ΔE po projekcji e()
     couple_temp: float = 1.0  # τ: softplus(S/τ); >1 → gładsze C
     delta_mode: str = "square"
     delta_alpha: float = 1.0
     directed_bias: float = 0.25
+    beta_exact: float | None = None  # 0 = ramię bez szerokości zależnej od wiersza
+    width_scale: str = "kappa"  # "kappa" historyczna, "excess" skala startowa γ0
 
 
 @dataclass(frozen=True)
@@ -167,6 +171,10 @@ class _MostCausalBlock(nn.Module):
         nn.init.zeros_(self.e.bias)
         self.log_gamma = nn.Parameter(torch.full((h, 1, 1), float(kn.gamma_init)))
         self.beta_raw = nn.Parameter(torch.full((h, 1, 1), float(kn.beta_init)))
+        self.beta_exact = kn.beta_exact
+        self.width_scale = str(kn.width_scale)
+        if kn.beta_exact is not None:
+            self.beta_raw.requires_grad_(False)
         self.ff = nn.Sequential(
             nn.LayerNorm(d),
             nn.Linear(d, cfg.ff_mult * d),
@@ -179,7 +187,14 @@ class _MostCausalBlock(nn.Module):
         C = F.softplus(S / self.couple_temp).square()
         blocked = causal_mask(S.shape[-1], S.device).view(1, 1, S.shape[-1], S.shape[-1])
         C = C.masked_fill(blocked, 0.0)
-        return breit_wigner_rows(C, dE, self.log_gamma, self.beta_raw)
+        return breit_wigner_rows(
+            C,
+            dE,
+            self.log_gamma,
+            self.beta_raw,
+            beta_exact=self.beta_exact,
+            scale=self.width_scale,
+        )
 
     def forward(self, x: torch.Tensor, tracer: torch.Tensor, return_attn: bool = False):
         B, N, _ = x.shape
@@ -204,18 +219,38 @@ class _MostCausalBlock(nn.Module):
         return x
 
 
+def resolve_lm_arm(attn: str, cfg: TinyLMConfig) -> tuple[str, str, TinyLMConfig]:
+    """Nazwa ramienia → (jądro most|softmax, nazwa, konfiguracja).
+
+    most: historyczne κ i β = softplus(beta_raw).
+    beta0: β = 0, γ = γ0 na każdym wierszu.
+    excess: płaski wiersz startuje od γ0; β zostaje uczone.
+    """
+    if attn == "beta0":
+        return "most", "beta0", replace(cfg, most=replace(cfg.most, beta_exact=0.0))
+    if attn == "excess":
+        return (
+            "most",
+            "excess",
+            replace(cfg, most=replace(cfg.most, width_scale="excess")),
+        )
+    if attn in ("softmax", "most"):
+        return attn, attn, cfg
+    raise ValueError(attn)
+
+
 class TinyLM(nn.Module):
     def __init__(self, cfg: TinyLMConfig, attn: str = "softmax"):
         super().__init__()
-        if attn not in ("softmax", "most"):
-            raise ValueError(attn)
+        kernel, arm, cfg = resolve_lm_arm(attn, cfg)
         self.cfg = cfg
-        self.attn = attn
+        self.arm = arm
+        self.attn = kernel
         self.tok = nn.Embedding(cfg.vocab_size, cfg.d)
         self.pos = nn.Embedding(cfg.max_seq, cfg.d)
         n_side = int(getattr(cfg, "side_sources", 0) or 0)
         self.side = nn.Embedding(n_side, cfg.d) if n_side else None
-        if attn == "most":
+        if kernel == "most":
             self.blocks = nn.ModuleList([_MostCausalBlock(cfg) for _ in range(cfg.num_layers)])
             self.tracer_mix = nn.Linear(cfg.d + cfg.n_dim, cfg.n_dim)
         else:
