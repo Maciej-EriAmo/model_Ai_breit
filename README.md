@@ -5,7 +5,7 @@
 
 ## Fork — jądro Breita–Wignera (Most-1)
 
-To jest fork `C:\Users\drwis\model Ai` z commita `592bf00`. Tamten katalog nie jest ruszany. Zdalnego remote tu nie ma.
+To jest fork `C:\Users\drwis\model Ai` z commita `592bf00`. Tamten katalog nie jest ruszany. Repozytorium: <https://github.com/Maciej-EriAmo/model_Ai_breit>.
 
 ## Licencje
 
