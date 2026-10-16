@@ -165,6 +165,8 @@ def save_gen_bundle(
             "dim_tracer": head.dim_tracer,
             "encoder_layers": len(encoder.layers),
             "coupling": getattr(encoder, "coupling", CANON.coupling),
+            # None = kanon przy apply. False musi przeżyć load, tak jak w checkpoint.py.
+            "t_seal": getattr(encoder, "t_seal", None),
         },
         "encoder_state_dict": encoder.state_dict(),
         "head_state_dict": head.state_dict(),
@@ -187,12 +189,15 @@ def load_gen_bundle(
     except TypeError:
         payload = torch.load(path, map_location=map_location)
     arch = payload.get("arch") or {}
+    # Stary bundel bez klucza: None, czyli seal kanoniczny w apply_t_key_seal.
+    t_seal = arch.get("t_seal") if "t_seal" in arch else None
     enc = PhiBridgeEncoder(
         input_dim=arch.get("d_x", CANON.d_x),
         d=arch.get("d_model", CANON.d_model),
         dim_tracer=arch.get("dim_tracer", CANON.n_dim),
         num_layers=arch.get("encoder_layers", CANON.num_layers),
         coupling=arch.get("coupling", CANON.coupling),
+        t_seal=t_seal,
     )
     head = PhiGenHead(
         d_model=arch.get("d_model", CANON.d_model),

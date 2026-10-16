@@ -21,6 +21,7 @@ from phi_schema import (
     PhiState,
     graphs_to_batch,
     hash_embed,
+    layer_parent_edges,
 )
 
 
@@ -129,9 +130,16 @@ def generate_recall_batch(
     topics_t = torch.zeros(batch_size, seq_len, dtype=torch.long)
     query_idx = torch.zeros(batch_size, dtype=torch.long)
     pos_idx = torch.zeros(batch_size, dtype=torch.long)
+    # Układ i pary nie zależą od numeru próbki. Liczone raz, poza pętlą batcha.
+    topic_of = _topics_for_layout(seq_len)
+    pairs = [
+        (i, j)
+        for i in range(seq_len)
+        for j in range(seq_len)
+        if i != j and topic_of[i] == topic_of[j] and DEPTHS[i] == DEPTHS[j]
+    ] or [(0, 1)]
 
     for b in range(batch_size):
-        topic_of = _topics_for_layout(seq_len)
         topics_t[b] = torch.tensor(topic_of, dtype=torch.long)
         atoms: list[PhiAtom] = []
         noise = torch.randn(seq_len, d_x)
@@ -170,26 +178,14 @@ def generate_recall_batch(
                 )
             )
 
-        # wybierz query i pozytyw: ten sam topic + ta sama depth, inny slot
-        # zbierz pary
-        pairs = []
-        for i in range(seq_len):
-            for j in range(seq_len):
-                if i == j:
-                    continue
-                if topic_of[i] == topic_of[j] and DEPTHS[i] == DEPTHS[j]:
-                    pairs.append((i, j))
-        if not pairs:
-            # fallback — nie powinno się zdarzyć przy layoutcie
-            pairs = [(0, 1)]
+        # query i pozytyw: ten sam topic + ta sama depth, inny slot
         q, p = pairs[torch.randint(0, len(pairs), (1,)).item()]
         query_idx[b] = q
         pos_idx[b] = p
 
         edges = [
             PhiEdge("bind", atoms[q].atom_id, atoms[p].atom_id, name="same_layer_topic"),
-            PhiEdge("parent", "bub-d1", "bub-d0"),
-            PhiEdge("parent", "bub-d2", "bub-d1"),
+            *layer_parent_edges(atoms),
         ]
         graphs.append(PhiGraph(atoms=atoms, edges=edges, label=int(topic_of[q])))
 

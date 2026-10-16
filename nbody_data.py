@@ -94,8 +94,6 @@ def solar_system_batch(
         phases = rng.uniform(0, 2 * math.pi, size=N)
         raw_feats = []
         raw_E = []
-        raw_a = []
-        raw_m = []
         for i, (name, mass, a, hier) in enumerate(bodies):
             if hier == 0:
                 x = y = vx = vy = v = r = 0.0
@@ -127,8 +125,6 @@ def solar_system_batch(
             feat = feat / feat.norm().clamp_min(1e-6)
             raw_feats.append(feat)
             raw_E.append(eps)
-            raw_a.append(math.log10(max(a, 1e-6)) if hier != 0 else -2.0)
-            raw_m.append(math.log10(max(mass, 1e-12)))
 
         feats = torch.stack(raw_feats, dim=0)
         content[b] = feats
@@ -178,13 +174,16 @@ def three_body_batch(
     Etykieta = interakcje znaków contentu WEWNĄTRZ warstw masy % n_classes
     (jak Φ-drzewo; nie indeks uciekiniera).
 
-    Tracer: masa-rank one-hot + energia spektralna (meta); dim5 = log m, nie content.
+    Tracer: masa-rank one-hot + energia spektralna (meta).
+    dim4 = log odległości od środka masy (odpowiednik log a w Układzie Słonecznym).
+    dim5 = log m, nie content.
     """
     rng = np.random.default_rng(seed)
     N = 3
     content = torch.zeros(batch_size, N, d_x)
     tracer = torch.zeros(batch_size, N, n_dim)
     energy = torch.zeros(batch_size, N)
+    radius = torch.zeros(batch_size, N)
     mass_log = torch.zeros(batch_size, N)
     labels = torch.zeros(batch_size, dtype=torch.long)
 
@@ -233,8 +232,10 @@ def three_body_batch(
         cm = (m[:, None] * pos).sum(0) / m.sum()
         cv = (m[:, None] * vel).sum(0) / m.sum()
         eps = []
+        rs = []
         for i in range(3):
             r = float(np.linalg.norm(pos[i] - cm)) + 1e-6
+            rs.append(r)
             v = float(np.linalg.norm(vel[i] - cv))
             # potential w.r.t others
             pot = 0.0
@@ -245,6 +246,7 @@ def three_body_batch(
                 pot -= G * m[j] / rij
             eps.append(0.5 * v * v + pot)
         energy[b] = torch.tensor(eps, dtype=torch.float32)
+        radius[b] = torch.tensor(rs, dtype=torch.float32)
         # hierarchy by mass rank: heaviest=0, mid=1, lightest=2 — TYLKO tracer
         order = list(np.argsort(-m))
         hier_of = {order[0]: 0, order[1]: 1, order[2]: 2}
@@ -288,12 +290,15 @@ def three_body_batch(
     denom = max(e_max - e_min, 1e-6)
     ml_min, ml_max = mass_log.min().item(), mass_log.max().item()
     ml_den = max(ml_max - ml_min, 1e-6)
+    r_log = torch.log10(radius.clamp_min(1e-6))
+    rl_min, rl_max = r_log.min().item(), r_log.max().item()
+    rl_den = max(rl_max - rl_min, 1e-6)
     for b in range(batch_size):
         for i in range(N):
             if n_dim > 3:
                 tracer[b, i, 3] = (energy[b, i] - e_min) / denom
             if n_dim > 4:
-                tracer[b, i, 4] = float(i) / 2.0
+                tracer[b, i, 4] = (r_log[b, i] - rl_min) / rl_den
             if n_dim > 5:
                 tracer[b, i, 5] = (mass_log[b, i] - ml_min) / ml_den
 

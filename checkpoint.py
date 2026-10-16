@@ -19,6 +19,17 @@ ROOT = Path(__file__).resolve().parent
 CKPT_DIR = ROOT / "checkpoints"
 DEFAULT_MOST = CKPT_DIR / "most_dump_recall.pt"
 
+# Stare pliki .pt nie mają arch.t_seal. Te źródła uczyły się z seal wyłączonym,
+# bo oś 3 to energia orbitalu albo barwa, nie temperatura archiwum.
+_LEGACY_SEAL_OFF = ("struktura", "qm_orbital", "glyphs_photo", "from_photo")
+
+
+def _legacy_t_seal(meta: dict[str, Any]) -> bool | None:
+    blob = " ".join(str(meta.get(k, "")) for k in ("dump", "source", "task")).lower()
+    if any(tok in blob for tok in _LEGACY_SEAL_OFF):
+        return False
+    return None
+
 
 def ensure_dir(path: Path | None = None) -> Path:
     d = path or CKPT_DIR
@@ -35,6 +46,7 @@ def build_encoder(
     dim_tracer: int | None = None,
     num_layers: int | None = None,
     coupling: str | None = None,
+    t_seal: bool | None = None,
 ) -> nn.Module:
     kw = dict(
         input_dim=input_dim if input_dim is not None else CANON.d_x,
@@ -45,7 +57,7 @@ def build_encoder(
     )
     if kind == "most":
         return PhiBridgeEncoder(
-            **kw, coupling=coupling or CANON.coupling
+            **kw, coupling=coupling or CANON.coupling, t_seal=t_seal
         )
     if kind == "softmax":
         return PhiSoftmaxEncoder(**kw)
@@ -75,6 +87,8 @@ def save_encoder(
     }
     if kind == "most":
         arch["coupling"] = getattr(model, "coupling", CANON.coupling)
+        # None = kanon (seal włączony w apply_t_key_seal). False musi przeżyć load.
+        arch["t_seal"] = getattr(model, "t_seal", None)
     payload = {
         "protocol": "phimost-encoder-v1",
         "arch": arch,
@@ -108,6 +122,12 @@ def load_encoder(
         raise ValueError(f"nieznany format checkpointu: {path}")
     arch = payload.get("arch") or {}
     kind = arch.get("kind", "most")
+    t_seal = None
+    if kind == "most":
+        if "t_seal" in arch:
+            t_seal = arch.get("t_seal")
+        else:
+            t_seal = _legacy_t_seal(payload.get("meta") or {})
     model = build_encoder(
         kind,
         input_dim=arch.get("input_dim"),
@@ -116,6 +136,7 @@ def load_encoder(
         dim_tracer=arch.get("dim_tracer"),
         num_layers=arch.get("num_layers"),
         coupling=arch.get("coupling"),
+        t_seal=t_seal,
     )
     model.load_state_dict(payload["state_dict"])
     model.eval()

@@ -9,7 +9,14 @@ from __future__ import annotations
 
 import torch
 
-from phi_schema import PhiAtom, PhiEdge, PhiGraph, PhiGraphBatch, PhiState, graphs_to_batch
+from phi_schema import (
+    PhiAtom,
+    PhiGraph,
+    PhiGraphBatch,
+    PhiState,
+    graphs_to_batch,
+    layer_parent_edges,
+)
 
 
 def generate_phi_tree(
@@ -64,10 +71,7 @@ def generate_phi_tree(
                 )
             )
 
-        edges = [
-            PhiEdge("parent", f"bub-d{d}", f"bub-d{d - 1}")
-            for d in (1, 2)
-        ]
+        edges = layer_parent_edges(atoms)
         graphs.append(PhiGraph(atoms=atoms, edges=edges, label=label))
 
     batch = graphs_to_batch(graphs, d_x=d_x, n_dim=n_dim, use_tracer=use_tracer)

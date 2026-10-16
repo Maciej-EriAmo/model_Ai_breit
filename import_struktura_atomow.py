@@ -29,12 +29,15 @@ DEFAULT_JSON = ROOT / "archiwum" / "dane" / "struktura_atomow.json"
 DEFAULT_OUT = ROOT / "dumps" / "from_struktura"
 
 # rdzenie gazów szlachetnych (rozszerzenie [He], [Ne], …)
+_XE = "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6"
 NOBLE_CORE = {
     "He": "1s2",
     "Ne": "1s2 2s2 2p6",
     "Ar": "1s2 2s2 2p6 3s2 3p6",
     "Kr": "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6",
-    "Xe": "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6",
+    "Xe": _XE,
+    # Rn = Xe + 4f14 5d10 6s2 6p6 (86 elektronów). Bez tego pełna tablica pada na [Rn].
+    "Rn": _XE + " 4f14 5d10 6s2 6p6",
 }
 
 _TERM = re.compile(r"(\d+)([spdf])(\d+)", re.I)

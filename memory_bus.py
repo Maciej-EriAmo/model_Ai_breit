@@ -18,7 +18,7 @@ import torch.nn.functional as F
 from checkpoint import DEFAULT_MOST, load_encoder
 from dump_recall import graph_to_tensors, records_to_graph
 from phi_dump import load_dump, warm_without_payload
-from phi_schema import PhiGraph, hash_embed
+from phi_schema import PhiGraph, text_as_content_vec
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_EPISODES = ROOT / "dumps" / "episodes.jsonl"
@@ -175,11 +175,10 @@ class MemoryBus:
 
     @torch.no_grad()
     def recall_by_text(self, text: str, k: int = 5) -> list[RecallHit]:
-        """Query = hash_embed(text) w przestrzeni content → najbliższy atom → expand."""
+        """Query w połowie E contentu → najbliższy atom → expand w enkoderze."""
         g, tok = self._require_encoded()
         assert self.content is not None
-        q = hash_embed(text, self.d_x, seed=2)
-        q = F.normalize(q, dim=-1)
+        q = F.normalize(text_as_content_vec(text, self.d_x), dim=-1)
         c = F.normalize(self.content, dim=-1)
         sims = c @ q
         if self.mask is not None:

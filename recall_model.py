@@ -12,6 +12,7 @@ import torch.nn.functional as F
 
 from breit_kernel import breit_wigner_weights
 from bridge import key_keep, masked_softmax
+from precision import assert_finite
 from recall_data import RecallBatch
 
 
@@ -63,9 +64,11 @@ class PhiBridgeEncoder(nn.Module):
         self.t_seal = t_seal
         self.e_scale = float(e_scale)
         self.couple_temp = max(float(couple_temp), 1e-3)
-        self.delta_mode = delta_mode
-        self.delta_alpha = float(delta_alpha)
-        self.directed_bias = float(min(max(directed_bias, 0.0), 1.0))
+        if float(delta_alpha) != 1.0 or float(directed_bias) != 0.25:
+            raise ValueError(
+                "delta_alpha i directed_bias nie wchodzą do jądra Breita–Wignera; "
+                "zostaw wartości domyślne"
+            )
         self.embed = nn.Linear(input_dim, d)
         self.cls = nn.Parameter(torch.zeros(1, 1, d))
         self.layers = nn.ModuleList(
@@ -134,8 +137,6 @@ class PhiBridgeEncoder(nn.Module):
             dE = self.e_scale * (E - E.transpose(-2, -1))
             C = self._couple(S) * keep
             w = breit_wigner_weights(C, dE, self.log_gammas[li], self.beta_raw[li])
-            from precision import assert_finite
-
             assert_finite(S, f"enc.S[L{li}]")
             assert_finite(dE, f"enc.dE[L{li}]")
             assert_finite(w, f"enc.w[L{li}]")
@@ -145,8 +146,6 @@ class PhiBridgeEncoder(nn.Module):
             dE_last = dE.detach()
 
         tok = self.out_norm(x[:, 1:, :])  # drop CLS → [B,N0,d]
-        from precision import assert_finite
-
         assert_finite(tok, "enc.tok")
         return tok, dE_last
 
@@ -255,6 +254,25 @@ def info_nce_loss(
 
 
 @torch.no_grad()
+def metrics_from_scores(
+    scores: torch.Tensor,
+    pos_idx: torch.Tensor,
+    ks: tuple[int, ...] = (1, 3, 5),
+) -> dict:
+    """Ranking po gotowych score'ach [B,N]. Wyższy score jest lepszy."""
+    B, N = scores.shape
+    order = scores.argsort(dim=-1, descending=True)
+    pos_exp = pos_idx.view(B, 1).expand_as(order)
+    hits = (order == pos_exp).float()
+    ranks = hits.argmax(dim=-1)
+    has = hits.max(dim=-1).values
+    ranks = torch.where(has > 0, ranks, torch.full_like(ranks, N))
+    out = {"mrr": (1.0 / (ranks.float() + 1.0)).mean().item()}
+    for k in ks:
+        out[f"r@{k}"] = (ranks < k).float().mean().item()
+    return out
+
+
 def recall_metrics(
     tok: torch.Tensor,
     query_idx: torch.Tensor,
@@ -267,21 +285,7 @@ def recall_metrics(
     all_h = F.normalize(tok, dim=-1)
     scores = torch.einsum("bd,bnd->bn", q, all_h)
     scores = _apply_cand_mask(scores, query_idx, mask)
-
-    # rank: higher score better
-    order = scores.argsort(dim=-1, descending=True)  # [B,N]
-    # position of positive (0-based)
-    pos_exp = pos_idx.view(B, 1).expand_as(order)
-    hits = (order == pos_exp).float()
-    ranks = hits.argmax(dim=-1)  # first True index
-    # if somehow missing, rank = N
-    has = hits.max(dim=-1).values
-    ranks = torch.where(has > 0, ranks, torch.full_like(ranks, N))
-
-    out = {"mrr": (1.0 / (ranks.float() + 1.0)).mean().item()}
-    for k in ks:
-        out[f"r@{k}"] = (ranks < k).float().mean().item()
-    return out
+    return metrics_from_scores(scores, pos_idx, ks)
 
 
 def _avg_val_metrics(

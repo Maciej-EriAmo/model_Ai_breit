@@ -152,15 +152,12 @@ def file_to_graph(path: Path, *, doc_id: str | None = None) -> PhiGraph:
             mazur = 0.5 + 0.1 * level
             section_ids.append(aid)
         else:
-            state = PhiState.WARM
-            T = 0.45
-            payload = body if state == PhiState.HOT else None
-            # chunk: semantyka w E (WARM bez payload — S/E wystarczy)
-            E = body[:240]
-            mazur = 0.35
-            payload = body  # lab: chunk HOT-ish content via payload for learning
+            # chunk niesie treść w E i w payload, więc stan jest HOT
             state = PhiState.HOT
             T = 0.55
+            E = body[:240]
+            payload = body
+            mazur = 0.35
 
         atoms.append(
             PhiAtom(

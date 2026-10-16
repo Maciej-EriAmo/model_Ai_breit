@@ -137,6 +137,9 @@ def load_preset(name: str) -> Path:
         src = imp.DEFAULT_JSON if imp.DEFAULT_JSON.is_file() else imp.DEFAULT_CSV
         return load_source(src, DUMPS / "from_struktura")
     if name in ("karmazyn", "live", "store"):
+        scripts = ROOT / "archiwum" / "skrypty"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
         import export_karmazyn_live as ex
         from bubblefs_import import bubblefs_to_graph, export_graph_as_dump
 

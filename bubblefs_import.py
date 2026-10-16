@@ -12,6 +12,8 @@ Atomstore nie jest kanonem — to adapter offline pod MemoryBus / dump.
 from __future__ import annotations
 
 import base64
+import hashlib
+import hmac
 import json
 import math
 from pathlib import Path
@@ -24,6 +26,29 @@ ROOT = Path(__file__).resolve().parent
 
 def _ub64(s: str) -> bytes:
     return base64.b64decode(s)
+
+
+def _export_key(shared_secret: bytes, bubble_id: str) -> bytes:
+    """Klucz eksportu BubbleFS: HMAC-SHA256(secret, bbl-export:id)."""
+    return hmac.new(
+        shared_secret, b"bbl-export:" + bubble_id.encode(), hashlib.sha256
+    ).digest()
+
+
+def _xor_crypt(data: bytes, key: bytes) -> bytes:
+    """Strumień XOR ze SHA256(key || licznik), jak extras/bubblefs.py."""
+    out = bytearray(len(data))
+    offset = 0
+    counter = 0
+    while offset < len(data):
+        block = hashlib.sha256(key + counter.to_bytes(4, "big")).digest()
+        for b in block:
+            if offset >= len(data):
+                break
+            out[offset] = data[offset] ^ b
+            offset += 1
+        counter += 1
+    return bytes(out)
 
 
 def _vec_digest(vec: list | None, n: int = 4) -> str:
@@ -55,9 +80,7 @@ def _state_from_bbl(bbl: dict) -> PhiState:
     return PhiState.WARM
 
 
-def _decode_payload(bbl: dict) -> str | None:
-    if bbl.get("content_encrypted"):
-        return None  # nie zgadujemy shared_secret
+def _decode_payload(bbl: dict, shared_secret: bytes | None = None) -> str | None:
     raw_b64 = bbl.get("content_b64") or ""
     if not raw_b64:
         return None
@@ -65,6 +88,10 @@ def _decode_payload(bbl: dict) -> str | None:
         raw = _ub64(raw_b64)
     except Exception:
         return None
+    if bbl.get("content_encrypted"):
+        if not shared_secret:
+            return None
+        raw = _xor_crypt(raw, _export_key(shared_secret, str(bbl.get("id") or "")))
     # UTF-8 tekst gdy się da; inaczej hex-skrót
     try:
         text = raw.decode("utf-8")
@@ -104,6 +131,7 @@ def bbl_to_atom(
     *,
     vacuum: float = 0.1,
     inode_rank: dict[int, int] | None = None,
+    shared_secret: bytes | None = None,
 ) -> PhiAtom:
     label = str(bbl.get("label") or bbl.get("id") or "bubble")
     bid = str(bbl.get("id") or label)
@@ -111,19 +139,32 @@ def bbl_to_atom(
     e_dig = _vec_digest(bbl.get("S_sem"))
     state = _state_from_bbl(bbl)
     # payload tylko HOT; E woli plaintext content (czytelny recall)
-    raw_payload = _decode_payload(bbl)
+    raw_payload = _decode_payload(bbl, shared_secret=shared_secret)
+    # Zaszyfrowany bąbel bez metadanych stanu jest WARM tylko dlatego, że nie
+    # było plaintextu. Po udanym odszyfrowaniu to jest HOT.
+    meta = bbl.get("metadata") or {}
+    if (
+        bbl.get("content_encrypted")
+        and raw_payload
+        and state == PhiState.WARM
+        and "state" not in meta
+        and bbl.get("decay_start_epoch") is None
+    ):
+        state = PhiState.HOT
     payload = raw_payload if state == PhiState.HOT else None
     if raw_payload:
         E = raw_payload[:240]
     else:
         E = f"bbl/E/{label}/{e_dig}"
     mz = None
-    meta = bbl.get("metadata") or {}
     if "mazur_tracer" in meta:
         mz = float(meta["mazur_tracer"])
     elif bbl.get("fingerprint_b64"):
         # sonda z fingerprintu (0..1)
-        fp = _ub64(bbl["fingerprint_b64"])
+        try:
+            fp = _ub64(bbl["fingerprint_b64"])
+        except Exception:
+            fp = b""
         mz = (fp[0] / 255.0) if fp else 0.5
     return PhiAtom(
         atom_id=bid,
@@ -150,7 +191,8 @@ def load_hgm_file(path: str | Path) -> dict:
 
 def _inode_ranks(bbls: list[dict]) -> dict[int, int]:
     inodes = sorted({int(b["inode"]) for b in bbls if b.get("inode") is not None})
-    return {ino: i % 3 for i, ino in enumerate(inodes)}
+    # Głębokość Φ ma trzy kosze. Kolejny inode zostaje na 2, nie zawija się do 0.
+    return {ino: min(2, i) for i, ino in enumerate(inodes)}
 
 
 def bubblefs_to_graph(
@@ -160,9 +202,9 @@ def bubblefs_to_graph(
 ) -> tuple[dict, PhiGraph]:
     """
     Wczytaj katalog BubbleFS → (manifest, PhiGraph).
-    `shared_secret` zarezerwowane (szyfrowane content → bez payload).
+    `shared_secret` odszyfrowuje content_b64 (HMAC + strumień XOR z BubbleFS).
+    Bez sekretu zaszyfrowany bąbel zostaje bez payloadu.
     """
-    _ = shared_secret  # nie deszyfrujemy tu — RO adapter
     root = Path(root)
     man_path = root / "manifest.json"
     manifest = (
@@ -187,7 +229,10 @@ def bubblefs_to_graph(
 
     vacuum = float(manifest.get("t_vacuum()", 0.1) or 0.1)
     ranks = _inode_ranks(bbls)
-    atoms = [bbl_to_atom(b, vacuum=vacuum, inode_rank=ranks) for b in bbls]
+    atoms = [
+        bbl_to_atom(b, vacuum=vacuum, inode_rank=ranks, shared_secret=shared_secret)
+        for b in bbls
+    ]
     id_set = {a.atom_id for a in atoms}
     label_to_id = {str(b.get("label") or b.get("id")): str(b.get("id") or b.get("label")) for b in bbls}
 

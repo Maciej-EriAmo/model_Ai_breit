@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 import time
 from pathlib import Path
 
@@ -35,6 +36,9 @@ def ensure_live_dump(skip_export: bool) -> Path:
     if skip_export and (FALLBACK_PHI / "atoms.jsonl").is_file():
         return FALLBACK_PHI
 
+    scripts = ROOT / "archiwum" / "skrypty"
+    if str(scripts) not in sys.path:
+        sys.path.insert(0, str(scripts))
     import export_karmazyn_live as ex
     from bubblefs_import import bubblefs_to_graph, export_graph_as_dump
 

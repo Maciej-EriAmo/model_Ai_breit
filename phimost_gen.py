@@ -33,10 +33,16 @@ DUMP = ROOT / "dumps" / "textfile_phi"
 
 
 def train_on_dump(dump: Path, epochs: int = 12) -> Path:
+    dump = Path(dump)
     if not (dump / "atoms.jsonl").is_file():
-        import make_dump_textfile
+        # Fixture lab jest tylko dla kanonicznego dumpa textfile. Inna ścieżka
+        # nie może cicho zapisać dumps/textfile_phi i dalej czytać pusty --dump.
+        if dump.resolve() == DUMP.resolve():
+            import make_dump_textfile
 
-        make_dump_textfile.main()
+            make_dump_textfile.main()
+        if not (dump / "atoms.jsonl").is_file():
+            raise FileNotFoundError(f"brak atoms.jsonl w {dump}")
     _, train, val, _ = make_dump_loaders(
         dump,
         n_train=60,

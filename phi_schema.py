@@ -107,6 +107,30 @@ def atom_content_vec(atom: PhiAtom, d_x: int) -> torch.Tensor:
     return v
 
 
+def text_as_content_vec(text: str, d_x: int) -> torch.Tensor:
+    """Tekst w tej samej połowie co E w `atom_content_vec`. Połowa S zostaje zerem."""
+    half = max(d_x // 2, 1)
+    v = torch.zeros(d_x)
+    v[half:] = hash_embed(text, d_x - half, seed=2)
+    return v / v.norm().clamp_min(1e-6)
+
+
+def layer_parent_edges(atoms: Sequence[PhiAtom], *, name: str = "bubble") -> list[PhiEdge]:
+    """Dziecko warstwy d>0 → pierwszy atom warstwy d−1. Oba końce są atom_id."""
+    root: dict[int, str] = {}
+    for atom in atoms:
+        root.setdefault(int(atom.depth), atom.atom_id)
+    edges: list[PhiEdge] = []
+    for atom in atoms:
+        if int(atom.depth) <= 0:
+            continue
+        parent = root.get(int(atom.depth) - 1)
+        if parent is None:
+            continue
+        edges.append(PhiEdge("parent", atom.atom_id, parent, name=name))
+    return edges
+
+
 def atom_tracer_vec(atom: PhiAtom, n_dim: int) -> torch.Tensor:
     """
     Tracer z osi Φ (obserwator) — packing zgodny z kanonem n_dim=6:

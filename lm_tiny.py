@@ -129,6 +129,13 @@ class _SoftmaxCausalBlock(nn.Module):
             nn.GELU(),
             nn.Linear(cfg.ff_mult * d, d),
         )
+        # F.dropout, nie nn.Dropout: p=0 nie dokłada parametrów do state_dict.
+        self.drop_p = float(cfg.dropout)
+
+    def _drop(self, x: torch.Tensor) -> torch.Tensor:
+        if self.drop_p > 0.0:
+            return F.dropout(x, self.drop_p, self.training)
+        return x
 
     def forward(self, x: torch.Tensor, return_attn: bool = False):
         B, N, _ = x.shape
@@ -138,8 +145,8 @@ class _SoftmaxCausalBlock(nn.Module):
         S = S.masked_fill(causal_mask(N, x.device).view(1, 1, N, N), -1e9)
         w = F.softmax(S, dim=-1)
         y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
-        x = x + self.o(y)
-        x = x + self.ff(x)
+        x = self._drop(x + self.o(y))
+        x = self._drop(x + self.ff(x))
         if return_attn:
             return x, w
         return x
@@ -156,13 +163,19 @@ class _MostCausalBlock(nn.Module):
         self.h, self.dh = h, d // h
         self.e_scale = float(kn.e_scale)
         self.couple_temp = max(float(kn.couple_temp), 1e-3)
-        self.delta_mode = str(kn.delta_mode)
-        self.delta_alpha = float(kn.delta_alpha)
-        self.directed_bias = float(min(max(kn.directed_bias, 0.0), 1.0))
-        if self.delta_mode != "square":
+        delta_mode = str(kn.delta_mode)
+        if delta_mode != "square":
             raise ValueError(
                 "ten fork ma jądro Breita–Wignera: delta_mode musi być 'square'"
             )
+        # Pola zostają w MostKnobs (skrypty archiwum je przekazują), ale nie
+        # wchodzą do jądra i nie są stanem modułu.
+        if float(kn.delta_alpha) != 1.0 or float(kn.directed_bias) != 0.25:
+            raise ValueError(
+                "delta_alpha i directed_bias nie wchodzą do jądra Breita–Wignera; "
+                "zostaw wartości domyślne"
+            )
+        self.drop_p = float(cfg.dropout)
         self.n1 = nn.LayerNorm(d)
         self.qkv = nn.Linear(d, 3 * d, bias=False)
         self.o = nn.Linear(d, d, bias=False)
@@ -181,6 +194,11 @@ class _MostCausalBlock(nn.Module):
             nn.GELU(),
             nn.Linear(cfg.ff_mult * d, d),
         )
+
+    def _drop(self, x: torch.Tensor) -> torch.Tensor:
+        if self.drop_p > 0.0:
+            return F.dropout(x, self.drop_p, self.training)
+        return x
 
     def _most_weights(self, S: torch.Tensor, dE: torch.Tensor) -> torch.Tensor:
         """C z QK, potem Most-1. Przyszłe klucze są zerem zanim liczone jest kappa."""
@@ -212,8 +230,8 @@ class _MostCausalBlock(nn.Module):
         assert_finite(A, "lm.A")
         assert_finite(w, "lm.w")
         y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
-        x = x + self.o(y)
-        x = x + self.ff(x)
+        x = self._drop(x + self.o(y))
+        x = self._drop(x + self.ff(x))
         if return_attn:
             return x, w
         return x
@@ -402,15 +420,5 @@ def config_dict(cfg: TinyLMConfig) -> dict:
 
 
 def with_most_knobs(cfg: TinyLMConfig, knobs: MostKnobs) -> TinyLMConfig:
-    """Kopia cfg z innymi gałkami zamka."""
-    return TinyLMConfig(
-        vocab_size=cfg.vocab_size,
-        d=cfg.d,
-        h=cfg.h,
-        num_layers=cfg.num_layers,
-        n_dim=cfg.n_dim,
-        ff_mult=cfg.ff_mult,
-        max_seq=cfg.max_seq,
-        dropout=cfg.dropout,
-        most=knobs,
-    )
+    """Kopia cfg z innymi gałkami zamka. Reszta pól (side_sources, dropout) zostaje."""
+    return replace(cfg, most=knobs)

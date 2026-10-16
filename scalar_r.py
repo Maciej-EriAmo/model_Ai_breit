@@ -12,7 +12,7 @@ import torch
 import torch.nn.functional as F
 
 from recall_data import RecallBatch
-from recall_model import recall_metrics
+from recall_model import metrics_from_scores
 
 
 def lorentz_R(V: torch.Tensor, dE: torch.Tensor, g: float = 0.3) -> torch.Tensor:
@@ -67,18 +67,7 @@ def eval_scalar_R(
     metrics = []
     for batch in batches:
         scores = score_scalar_R(batch, g=g, **score_kw)
-        # Direct rank from scores (padding już -inf w score_scalar_R):
-        B, N = scores.shape
-        order = scores.argsort(dim=-1, descending=True)
-        pos_exp = batch.pos_idx.view(B, 1).expand_as(order)
-        hits = (order == pos_exp).float()
-        ranks = hits.argmax(dim=-1)
-        has = hits.max(dim=-1).values
-        ranks = torch.where(has > 0, ranks, torch.full_like(ranks, N))
-        m = {"mrr": (1.0 / (ranks.float() + 1.0)).mean().item()}
-        for k in (1, 3, 5):
-            m[f"r@{k}"] = (ranks < k).float().mean().item()
-        metrics.append(m)
+        metrics.append(metrics_from_scores(scores, batch.pos_idx))
     keys = metrics[0].keys()
     return {k: float(sum(m[k] for m in metrics) / len(metrics)) for k in keys}
 
