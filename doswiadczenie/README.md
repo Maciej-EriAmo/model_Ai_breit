@@ -23,6 +23,7 @@
 | **Holo-Φ** | [`glify/`](glify/) (`HOLO_*`) | P5.1 **FAIL** holdout 0/8 |
 | **Lingua / hologram-znaki** | [`glify/`](glify/) + `karmazyn_lingua.py` | warstwa **DONE**; Kana P1 negatyw |
 | **Mendelejew** | [`glify/`](glify/) (`MENDELEJEW_*`) | P0 parity · FULL118 **DONE** · hold-out Na/K **FAIL** (brak gen. grupy) |
+| **Zlew uwagi** | [`run_zlew_uwagi.py`](run_zlew_uwagi.py) | pilot 2026-10-26; nota [`docs/ZLEW_UWAGI_PILOT.md`](../docs/ZLEW_UWAGI_PILOT.md) — L1 potrzebne, zlew nierozstrzygnięty |
 | **Testy** | [`testy/`](testy/) | regresje silnika / kontraktów (`test_*.py`) |
 
 Mapa plików glify: [`glify/README.md`](glify/README.md).
