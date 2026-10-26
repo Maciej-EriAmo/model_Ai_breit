@@ -6,9 +6,13 @@ sink_frac = odsetek takich głów. Dla ramienia raw udział liczony z A_i0 / sum
 (tylko do metryki; model używa A / N).
 
 Ramiona:
-  softmax  klasyczna uwaga przyczynowa
-  most     Most-1, wiersz dzielony przez sumę (L1), jak w lm_tiny.py
-  raw      Most-1 bez normalizacji wiersza, stała skala 1/N
+  softmax    klasyczna uwaga przyczynowa
+  most       Most-1, wiersz dzielony przez sumę (L1), jak w lm_tiny.py
+  raw        Most-1 bez normalizacji wiersza, stała skala 1/N
+  most_logn  Most-1 z wynikiem LSSA: log d · log N_i · cos(q, k)
+  lssa       softplus(wynik LSSA) + L1, bez Lorentza (Gao i in. 2025, etap 1)
+  lssa2      jak lssa, ale softplus²
+  softmax_logn  softmax z wynikiem LSSA (kontrola skali)
 
 Dodatkowo strata na ćwiartkach pozycji (czy raw traci na dalszych pozycjach).
 Wynik: jeden wiersz JSON na (ramię, ziarno), na stdout i do --out.
@@ -54,11 +58,81 @@ def raw_forward(self, x, tracer, return_attn=False):
     return (x, w) if return_attn else x
 
 
+def logn_scores(q: torch.Tensor, k: torch.Tensor) -> torch.Tensor:
+    """Wynik jak w LSSA (Gao i in. 2025): log d · log N_i · cos(q, k).
+
+    N_i = i + 1, liczba kluczy widocznych z zapytania i (maska przyczynowa).
+    """
+    N, dh = q.shape[-2], q.shape[-1]
+    n_i = torch.arange(1, N + 1, device=q.device, dtype=q.dtype).view(N, 1)
+    scale = math.log(dh) * torch.log(n_i)
+    return scale * (F.normalize(q, dim=-1) @ F.normalize(k, dim=-1).transpose(-2, -1))
+
+
+def most_logn_forward(self, x, tracer, return_attn=False):
+    """Most-1 (softplus², Lorentz, L1) z wynikiem LSSA zamiast QKᵀ/√d."""
+    B, N, _ = x.shape
+    q, k, v = self.qkv(self.n1(x)).chunk(3, dim=-1)
+    q, k, v = [t.view(B, N, self.h, self.dh).transpose(1, 2) for t in (q, k, v)]
+    S = logn_scores(q, k)
+    E = self.e(tracer).transpose(1, 2).unsqueeze(-1)
+    dE = self.e_scale * (E - E.transpose(-2, -1))
+    A = self._most_weights(S, dE)
+    w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
+    y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
+    x = self._drop(x + self.o(y))
+    x = self._drop(x + self.ff(x))
+    return (x, w) if return_attn else x
+
+
+def make_lssa_forward(power: int):
+    """LSSA etap 1: softplus(wynik LSSA)^power, maska, L1. Bez Lorentza i ΔE."""
+
+    def forward(self, x, return_attn=False):
+        B, N, _ = x.shape
+        q, k, v = self.qkv(self.n1(x)).chunk(3, dim=-1)
+        q, k, v = [t.view(B, N, self.h, self.dh).transpose(1, 2) for t in (q, k, v)]
+        A = F.softplus(logn_scores(q, k)).pow(power)
+        A = A.masked_fill(L.causal_mask(N, x.device).view(1, 1, N, N), 0.0)
+        w = A / A.sum(-1, keepdim=True).clamp_min(1e-12)
+        y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
+        x = self._drop(x + self.o(y))
+        x = self._drop(x + self.ff(x))
+        return (x, w) if return_attn else x
+
+    return forward
+
+
+def softmax_logn_forward(self, x, return_attn=False):
+    """Softmax z wynikiem LSSA. Kontrola: czy sama skala zamyka różnicę."""
+    B, N, _ = x.shape
+    q, k, v = self.qkv(self.n1(x)).chunk(3, dim=-1)
+    q, k, v = [t.view(B, N, self.h, self.dh).transpose(1, 2) for t in (q, k, v)]
+    S = logn_scores(q, k).masked_fill(L.causal_mask(N, x.device).view(1, 1, N, N), -1e9)
+    w = F.softmax(S, dim=-1)
+    y = (w @ v).transpose(1, 2).contiguous().view(B, N, -1)
+    x = self._drop(x + self.o(y))
+    x = self._drop(x + self.ff(x))
+    return (x, w) if return_attn else x
+
+
+ARMS = {
+    "softmax_logn": ("softmax", softmax_logn_forward),
+    "softmax": ("softmax", None),
+    "most": ("most", None),
+    "raw": ("most", raw_forward),
+    "most_logn": ("most", most_logn_forward),
+    "lssa": ("softmax", make_lssa_forward(1)),
+    "lssa2": ("softmax", make_lssa_forward(2)),
+}
+
+
 def build(arm: str, cfg: L.TinyLMConfig) -> L.TinyLM:
-    m = L.TinyLM(cfg, attn="softmax" if arm == "softmax" else "most")
-    if arm == "raw":
+    kernel, fwd = ARMS[arm]
+    m = L.TinyLM(cfg, attn=kernel)
+    if fwd is not None:
         for b in m.blocks:
-            b.forward = raw_forward.__get__(b)
+            b.forward = fwd.__get__(b)
     return m
 
 

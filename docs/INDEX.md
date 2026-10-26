@@ -40,7 +40,7 @@
 | 5f17 | [`../doswiadczenie/glify/NBODY_COMP.md`](../doswiadczenie/glify/NBODY_COMP.md) | relacja na katalogu słonecznym i trójce hierarchicznej — kolumna pomaga, gdy jest cicha; jądro BW bez przewagi |
 | 5f18 | [`../doswiadczenie/glify/JADRO_OGOLNE.md`](../doswiadczenie/glify/JADRO_OGOLNE.md) | **wnioski 2026-10-05** i program brakujących testów jądra ogólnego (T0–T3) |
 | 5f19 | [`PODSUMOWANIE_JADRA.md`](PODSUMOWANIE_JADRA.md) | **jedno podsumowanie** Most i Softmax: wniosek, plugin, relacja, czas |
-| 5f20 | [`ZLEW_UWAGI_PILOT.md`](ZLEW_UWAGI_PILOT.md) | **pilot 2026-10-26** — zlew uwagi i normalizacja L1: Most bez L1 wyraźnie gorszy (L1 zostaje); zlewu brak nawet w softmaksie — nierozstrzygnięte |
+| 5f20 | [`ZLEW_UWAGI_PILOT.md`](ZLEW_UWAGI_PILOT.md) | **pilot 2026-10-26** — zlew uwagi i normalizacja L1: Most bez L1 wyraźnie gorszy (L1 zostaje); zlewu brak nawet w softmaksie — nierozstrzygnięte; seria C (skala log N, LSSA): most_logn najlepszy na 1 ziarnie, brak kontroli softmax_logn — plan dalszych badań |
 | 5f21 | [`SIGMOID_W_UWADZE.md`](SIGMOID_W_UWADZE.md) | przegląd literatury 2023–2025: uwaga sigmoidalna, zlew uwagi, normalizacja L1, bramki — tło dla 5f20 |
 | 5g | [`../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md`](../doswiadczenie/glify/AUDYT_HOLOGRAM_ZNAKI.md) | lingua 6/6 DONE · mapa torów (nie mylić z Holo-Φ) |
 | 5h | [`../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md`](../doswiadczenie/glify/CV_BLURB_MOST_PARITY.md) | one-liner pod CV / portfolio |

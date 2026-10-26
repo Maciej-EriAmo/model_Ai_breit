@@ -4,7 +4,7 @@
 **Skrypt:** [`../doswiadczenie/run_zlew_uwagi.py`](../doswiadczenie/run_zlew_uwagi.py)  
 **Surowe wyniki:** [`../archiwum/historia/zlew_uwagi/`](../archiwum/historia/zlew_uwagi/)  
 **Tło literaturowe:** [`SIGMOID_W_UWADZE.md`](SIGMOID_W_UWADZE.md)  
-**Status:** pilot, 1 ziarno na ramię. Nie spełnia zasad porównań serii Mendelejewa (≥20 przebiegów, TOST).
+**Status:** pilot, 1 ziarno na ramię. Seria C (ablacja log N / LSSA) niekompletna — plan w sekcji „Plan kolejnych badań”. Nie spełnia zasad porównań serii Mendelejewa (≥20 przebiegów, TOST).
 
 ## Pytania
 
@@ -70,17 +70,75 @@ Wnioski dla Mostu:
 - Most nie ma skali zależnej od długości (log N_i). Według LSSAR to ona, razem z wyostrzaniem, daje ekstrapolację długości. Naturalna ablacja: Most z s = log d · log N_i zamiast 1/√d.
 - Uczciwe porównanie na długości wymaga ramienia LSSA, czyli softplus + L1 + skala log N, bez Lorentza. Inaczej nie da się oddzielić wkładu jądra Lorentza od wkładu samego softplus + L1. To ten sam problem co w ablacji jądra serii Mendelejewa (5f11).
 
-## Co dalej
+## Seria C — ablacja skali log N i LSSA (niekompletna)
 
-- Rozstrzygający test wymaga skali, w której softmax ma zlew: większy model i korpus, najpewniej GPU. Dopiero wtedy `most` vs `raw` vs `softmax`.
-- Potem ≥20 ziaren, zamrożona specyfikacja, TOST, jak w serii Mendelejewa ([`../doswiadczenie/glify/MENDELEJEW_KERNEL_EQUIV.md`](../doswiadczenie/glify/MENDELEJEW_KERNEL_EQUIV.md)).
-- Osobno: długość. Test jakości `raw` vs `most` przy N ≫ 256 (preset `medium_long`) sprawdziłby narastanie straty z pozycją, sygnalizowane w serii A.
+**Data:** 2026-10-26. Przerwana o 12:40 decyzją autora i przełożona na kolejny termin. Policzone 6 z 16 zaplanowanych przebiegów.
+
+Preset `small` (~0,8 mln), N=256, 2000 kroków, bez BOS. Odniesienie równego rozkładu: 0,011. Wynik LSSA: s = log d · log N_i · cos(q, k), N_i = i + 1.
+
+| ramię | wynik | jądro | normalizacja |
+|---|---|---|---|
+| `softmax` | QKᵀ/√d | exp | L1 (softmax) |
+| `most` | QKᵀ/√d | softplus² · Lorentz | L1 |
+| `most_logn` | LSSA | softplus² · Lorentz | L1 |
+| `lssa` | LSSA | softplus | L1 |
+| `lssa2` | LSSA | softplus² | L1 |
+| `softmax_logn` | LSSA | exp | L1 (softmax) |
+
+Wyniki (ziarno 0, softmax także ziarno 1):
+
+| ramię | strata | ćwiartki pozycji | śr. udział tokenu 0 | czas przebiegu |
+|---|---|---|---|---|
+| softmax | 2,131 · 2,167 | 2,10 / 2,10 / 2,11 / 2,21 | 0,005 | 54 min |
+| most | 2,025 | 2,06 / 1,99 / 1,97 / 2,08 | 0,003 | 97 min |
+| lssa | 1,996 | 2,01 / 1,96 / 1,96 / 2,04 | 0,005 | 72 min |
+| lssa2 | 1,958 | 1,98 / 1,91 / 1,92 / 2,02 | 0,004 | 72 min |
+| **most_logn** | **1,891** | 1,95 / 1,86 / 1,85 / 1,90 | 0,003 | 101 min |
+| softmax_logn | — (przerwane) | | | |
+
+Czasy przy 5 procesach naraz po 3 wątki. Zlewu nie ma w żadnym ramieniu (0/16 głów).
+
+Wstępne różnice (jedno ziarno, rozrzut softmaxa między ziarnami 0,04):
+
+| porównanie | co izoluje | Δ straty |
+|---|---|---|
+| `most_logn` − `most` | skala LSSA w Moście | **−0,13** |
+| `most_logn` − `lssa2` | czynnik Lorentza (reszta wspólna) | −0,07 |
+| `lssa2` − `lssa` | kwadrat softplusa | −0,04 |
+| `lssa` − `softmax` | wynik LSSA + softplus zamiast exp (dwie zmiany naraz) | −0,14 |
+
+Ponadto tylko `most_logn` nie ma skoku straty w ostatniej ćwiartce pozycji (+0,05 wobec +0,07…+0,11 w pozostałych ramionach).
+
+**Czego te liczby nie mówią:**
+
+- Bez `softmax_logn` nie wiadomo, czy sama skala LSSA nie daje softmaxowi tyle samo. Wtedy przewaga `most_logn` należałaby do skali, nie do jądra.
+- Różnice −0,04 i −0,07 są rzędu rozrzutu między ziarnami. Tylko −0,13 jest wyraźnie ponad nim.
+- 2000 kroków na małym modelu to trening niezbieżny. Różnice mogą mierzyć szybkość uczenia, nie jakość końcową.
+- Wszystko w obrębie długości treningowej. Ekstrapolacji, z której znany jest LSSAR, tu nie ma (wyuczone embeddingi pozycji w `lm_tiny`).
+
+## Plan kolejnych badań
+
+Kolejność według tego, co najtaniej rozstrzyga najwięcej.
+
+1. **`softmax_logn`, ziarno 0** (~1 h na CPU). Rozstrzyga, czy przewaga `most_logn` to skala, czy jądro.
+   - `softmax_logn` ≈ 1,89 → przewagę daje skala. Wniosek dla Mostu: przyjąć skalę log N, jądro bez przewagi (zgodnie z 5f11 i 5f15).
+   - `softmax_logn` ≥ ~2,0 → skala razem z jądrem Lorentza. Warto iść do kroku 2.
+2. **Dokończyć serię C: ziarna 1 i 2** dla wszystkich sześciu ramion (11 przebiegów, ~3–4 h przy równoległym uruchomieniu). Średnie i rozrzut zamiast pojedynczych liczb.
+3. **Dłuższy trening** dla ramion, które przeżyją kroki 1–2 (np. 10 000 kroków). Sprawdza, czy różnice zostają po zbieżności.
+4. **Ekstrapolacja długości.** Wariant `lm_tiny` bez wyuczonych embeddingów pozycji (pozycja tylko przez tracer ΔE albo RoPE). Trening przy N=256, ocena przy 512–2048. Tu LSSAR ma swoją główną przewagę, a Most z ΔE może mieć naturalną przewagę pozycyjną. Do porównania: `softmax`, `softmax_logn`, `lssa`, `most`, `most_logn`; opcjonalnie pełny LSSAR z ponownym ważeniem ReLUᵖ.
+5. **Test równoważności / przewagi** na ramionach, które zostaną: zamrożona specyfikacja, ≥20 ziaren, Holm/TOST, jak w serii Mendelejewa ([`../doswiadczenie/glify/MENDELEJEW_KERNEL_EQUIV.md`](../doswiadczenie/glify/MENDELEJEW_KERNEL_EQUIV.md)). Na CPU to dziesiątki godzin, więc raczej GPU.
+6. **Zlew uwagi** (pytanie 1 tej noty, otwarte). Potrzebna skala, w której softmax ma zlew: większy model i korpus, najpewniej GPU. Dopiero wtedy `most` vs `raw` vs `softmax`, a także `most_logn`.
+7. **Długość dla `raw` vs `most`** przy N ≫ 256 (preset `medium_long`). Potwierdza narastanie straty z pozycją bez L1, sygnalizowane w serii A. Niski priorytet, bo L1 i tak zostaje.
+
+Uwaga praktyczna: zadania w tle sesji Claude mają limit 2 h. Przebiegi trwają do ~100 min, a przy wielu procesach naraz dłużej. Uruchamiać je jako procesy odłączone (PowerShell `Start-Process`), po jednym ziarnie na proces. Każdy wynik dopisuje się do JSONL od razu po przebiegu, a przerwany przebieg przepada w całości.
 
 ## Odtworzenie
 
 ```
 python doswiadczenie/run_zlew_uwagi.py --preset medium --steps 2000 --seq-len 256 --seeds 0 --out archiwum/historia/zlew_uwagi/seria_A_medium_bez_bos.jsonl
 python doswiadczenie/run_zlew_uwagi.py --preset small --steps 6000 --seq-len 128 --bos 2 --seeds 0 --out archiwum/historia/zlew_uwagi/seria_B_small_bos.jsonl
+# seria C: jedno ramię i jedno ziarno na proces
+python doswiadczenie/run_zlew_uwagi.py --preset small --steps 2000 --seq-len 256 --seeds 0 --arms softmax_logn --threads 3 --out archiwum/historia/zlew_uwagi/seria_C_softmax_logn.jsonl
 ```
 
 Czas na CPU (8 wątków, sam proces): ~17 min na przebieg softmax w serii A. Most jest droższy. Przy kilku procesach naraz czasy rosną 2–3×.
