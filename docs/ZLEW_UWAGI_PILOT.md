@@ -3,6 +3,7 @@
 **Data:** 2026-10-26  
 **Skrypt:** [`../doswiadczenie/run_zlew_uwagi.py`](../doswiadczenie/run_zlew_uwagi.py)  
 **Surowe wyniki:** [`../archiwum/historia/zlew_uwagi/`](../archiwum/historia/zlew_uwagi/)  
+**Tło literaturowe:** [`SIGMOID_W_UWADZE.md`](SIGMOID_W_UWADZE.md)  
 **Status:** pilot, 1 ziarno na ramię. Nie spełnia zasad porównań serii Mendelejewa (≥20 przebiegów, TOST).
 
 ## Pytania
