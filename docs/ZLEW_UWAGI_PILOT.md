@@ -50,6 +50,26 @@ Korpus: `load_text_corpus()` (docs/ + glify + teksty domyślne), losowe okna zna
 1. **Normalizacja L1 zostaje.** Most bez niej jest wyraźnie gorszy (strata +0,22…+0,42 względem Mostu z L1). Przy N=256 strata `raw` rośnie z pozycją (2,02 → 2,12), u pozostałych ramion nie. Kierunkowo zgadza się to z literaturą o uwadze sigmoidalnej. Most z L1 jest na poziomie softmaxa. Niższa strata Mostu w obu seriach to jedno ziarno — bez wniosku.
 2. **Zlew: nierozstrzygnięte.** Nie ma go w żadnym ramieniu, także w softmaksie, nawet z BOS. Bez dodatniej kontroli porównanie nic nie mówi o zlewie w Moście. Jedyna obserwacja: Most (z L1 i bez) daje tokenowi 0 3–10× mniej, niż wynikałoby z równego rozkładu. Softmax z BOS ma jedną głowę ~3× powyżej równego rozkładu. Czy to cecha jądra, czy skali — nie wiadomo.
 
+## Najbliższy krewny w literaturze: LSSAR
+
+Gao, Spratling, Gionfrida, *Softplus Attention with Re-weighting Boosts Length Extrapolation in Large Language Models* (2025, https://arxiv.org/abs/2501.13428). Rozkładają softmax na „dodatniość + normalizacja L1” i zamieniają exp na softplus — tę samą konstrukcję, którą ma Most.
+
+| | LSSAR | Most-1 |
+|---|---|---|
+| dodatniość | softplus(s · QKᵀ) | softplus²(QKᵀ/√d) |
+| normalizacja | L1 w wierszu | L1 w wierszu |
+| skala | s = log d · log N_i (N_i = liczba widzianych kluczy), Q i K normalizowane L2 | stała 1/√d, temperatura `couple_temp` |
+| dodatkowy czynnik | ponowne ważenie ReLUᵖ(A·N − O), znów L1 (wyostrzanie) | Lorentz 1/(γ² + ΔE²), γ zależne od skupienia wiersza κ |
+| wynik | prawie stała strata przy 16× długości treningu | — (nie testowane na długości) |
+
+Ich Tabela 1 to też źródło drugiego pytania tej noty. Sigmoida (b = −log N) bez L1 ma stratę 7,46 przy 2K i 14,50 przy 8K. Z L1 ma 4,35 i 6,19, a softmax 4,17 i 6,28.
+
+Wnioski dla Mostu:
+
+- Rdzeń „softplus + L1” nie jest nowością Mostu. Recenzent o to zapyta. Wkładem Mostu jest tylko czynnik Lorentza z ΔE i zależną od wiersza szerokością γ.
+- Most nie ma skali zależnej od długości (log N_i). Według LSSAR to ona, razem z wyostrzaniem, daje ekstrapolację długości. Naturalna ablacja: Most z s = log d · log N_i zamiast 1/√d.
+- Uczciwe porównanie na długości wymaga ramienia LSSA, czyli softplus + L1 + skala log N, bez Lorentza. Inaczej nie da się oddzielić wkładu jądra Lorentza od wkładu samego softplus + L1. To ten sam problem co w ablacji jądra serii Mendelejewa (5f11).
+
 ## Co dalej
 
 - Rozstrzygający test wymaga skali, w której softmax ma zlew: większy model i korpus, najpewniej GPU. Dopiero wtedy `most` vs `raw` vs `softmax`.
